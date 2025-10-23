@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="80dp"
+    android:height="80dp"
+    android:viewportWidth="80"
+    android:viewportHeight="80">
+    <!-- University building icon -->
+    <path
+        android:fillColor="@color/primary_teal"
+        android:pathData="M40,5L10,20v10h60V20z"/>
+    <path
+        android:fillColor="@color/primary_teal"
+        android:pathData="M15,35h10v30H15z"/>
+    <path
+        android:fillColor="@color/primary_teal"
+        android:pathData="M35,35h10v30H35z"/>
+    <path
+        android:fillColor="@color/primary_teal"
+        android:pathData="M55,35h10v30H55z"/>
+    <path
+        android:fillColor="@color/primary_teal"
+        android:pathData="M10,65h60v8H10z"/>
+</vector>

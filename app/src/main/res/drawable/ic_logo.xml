@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+    <!-- Simple logo representation - box with magnifying glass -->
+    <path
+        android:fillColor="@color/primary_teal"
+        android:pathData="M4,4h24v24H4z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M14,10c-2.21,0 -4,1.79 -4,4s1.79,4 4,4 4,-1.79 4,-4 -1.79,-4 -4,-4zM14,16c-1.1,0 -2,-0.9 -2,-2s0.9,-2 2,-2 2,0.9 2,2 -0.9,2 -2,2z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M21,20l-3,-3 -1.5,1.5 4,4z"/>
+</vector>
