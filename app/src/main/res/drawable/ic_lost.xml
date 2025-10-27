@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <!-- Suitcase -->
+    <path
+        android:fillColor="@color/black"
+        android:pathData="M25,40 L75,40 L75,85 L25,85 Z"
+        android:strokeColor="@color/black"
+        android:strokeWidth="3"/>
+    <!-- Handle -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M35,40 L35,30 L65,30 L65,40"
+        android:strokeColor="@color/black"
+        android:strokeWidth="3"/>
+    <!-- Question mark -->
+    <path
+        android:fillColor="@color/black"
+        android:pathData="M45,52 Q50,48 55,52 Q55,58 50,60 L50,65 M50,70 L50,72"/>
+</vector>

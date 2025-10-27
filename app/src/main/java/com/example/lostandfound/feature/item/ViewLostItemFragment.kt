@@ -1,60 +1,105 @@
 package com.example.lostandfound.feature.item
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.lostandfound.R
+import android.widget.ArrayAdapter
+import androidx.fragment.app.Fragment
+import com.example.lostandfound.databinding.FragmentViewLostItemBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [ViewLostItemFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ViewLostItemFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private var _binding: FragmentViewLostItemBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentViewLostItemBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupViews()
+        setupListeners()
+    }
+
+    private fun setupViews() {
+        // Setup Category Spinner
+        val categories = arrayOf("Smartphone", "Keys", "Wallet", "Documents", "Others")
+        val categoryAdapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            categories
+        )
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerCategory.adapter = categoryAdapter
+
+        // Setup Status Spinner
+        val statuses = arrayOf("Available", "Claimed", "Pending")
+        val statusAdapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            statuses
+        )
+        statusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerStatus.adapter = statusAdapter
+
+        // Load item data
+        loadItemData()
+    }
+
+    private fun loadItemData() {
+        // Load from database or arguments
+        // For now, using dummy data shown in layouts
+    }
+
+    private fun setupListeners() {
+        binding.btnBack.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+
+        binding.btnEdit.setOnClickListener {
+            enableEditing()
+        }
+
+        binding.btnDelete.setOnClickListener {
+            // Show delete confirmation dialog
+            deleteItem()
+        }
+
+        // Bottom navigation
+        binding.bottomNav.navHome.setOnClickListener {
+            // Navigate to home
+        }
+
+        binding.bottomNav.navMessage.setOnClickListener {
+            // Navigate to messages
+        }
+
+        binding.bottomNav.navAccount.setOnClickListener {
+            // Navigate to account
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_view_lost_item, container, false)
+    private fun enableEditing() {
+        binding.etItemName.isEnabled = true
+        binding.spinnerCategory.isEnabled = true
+        binding.etLocation.isEnabled = true
+        binding.etDescription.isEnabled = true
+        binding.spinnerStatus.isEnabled = true
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ViewLostItemFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ViewLostItemFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun deleteItem() {
+        // Implement delete logic
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
