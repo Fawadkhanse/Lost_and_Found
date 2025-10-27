@@ -73,15 +73,15 @@ class ViewLostItemFragment : Fragment() {
         }
 
         // Bottom navigation
-        binding.bottomNav.navHome.setOnClickListener {
+        binding.bottomBar.navHome.setOnClickListener {
             // Navigate to home
         }
 
-        binding.bottomNav.navMessage.setOnClickListener {
+        binding.bottomBar.navMessage.setOnClickListener {
             // Navigate to messages
         }
 
-        binding.bottomNav.navAccount.setOnClickListener {
+        binding.bottomBar.navAccount.setOnClickListener {
             // Navigate to account
         }
     }

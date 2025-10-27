@@ -1,5 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Lost and Found</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Common -->
+    <string name="back">Back</string>
+    <string name="home">Home</string>
+    <string name="message">Message</string>
+    <string name="account">Account</string>
+    <string name="lost_and_found">Lost and Found</string>
+
+    <!-- Login -->
+    <string name="login">Login</string>
+    <string name="log_in">Log In</string>
+    <string name="enter_user_id">Enter User ID</string>
+    <string name="user_id">User ID</string>
+    <string name="user_id_hint">CB12345</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="password">Password</string>
+    <string name="password_hint">********</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="user_type">User Type</string>
+    <string name="university_logo">University Logo</string>
+
+    <!-- Forgot Password -->
+    <string name="forgot_password_title">Forgot Password</string>
+    <string name="email">Email</string>
+    <string name="reset">Reset</string>
+
+    <!-- Home -->
+    <string name="found">Found</string>
+    <string name="lost">Lost</string>
+    <string name="new_post">New Post</string>
+    <string name="load_more">load more</string>
+    <string name="search">Search</string>
+    <string name="categories">Categories</string>
+    <string name="clothes">Clothes</string>
+    <string name="electronics">Electronics</string>
+
+    <!-- Account -->
+    <string name="profile_photo">Profile Photo</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="ten_digit_number">10-digit number</string>
+    <string name="email_user">Email</string>
+    <string name="email_format">user@gmail.com</string>
+    <string name="faculty">Faculty</string>
+    <string name="address">Address</string>
+    <string name="create">Create</string>
+    <string name="update_info">Update Info</string>
+
+    <!-- View Item -->
+    <string name="view_item">View Item</string>
+    <string name="view_found_item">View Found Item</string>
+    <string name="view_lost_item">View Lost Item</string>
+    <string name="scan_item">Scan Item</string>
+    <string name="item_name">Item Name :</string>
+    <string name="category">Category :</string>
+    <string name="date_lost">Date Lost :</string>
+    <string name="date_found">Date Found :</string>
+    <string name="location">Location :</string>
+    <string name="view_claims_for_this_item">View Claims for this item</string>
+    <string name="pending">Pending</string>
+    <string name="approved">Approved</string>
+    <string name="attach_image">Attach Image</string>
+    <string name="select_category">Select Category</string>
+    <string name="description">Description</string>
+    <string name="status">Status</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+
+    <!-- My Lists -->
+    <string name="my_lists">My Lists</string>
+    <string name="claims">Claims</string>
+    <string name="posts">Posts</string>
+
+    <!-- Chat -->
+    <string name="type_message">Type message...</string>
+    <string name="send">Send</string>
 </resources>
