@@ -77,4 +77,12 @@
     <!-- Chat -->
     <string name="type_message">Type message...</string>
     <string name="send">Send</string>
+
+    <string name="unable_fetch_response">Unable to fetch response</string>
+    <string name="no_internet_available">No internet connection</string>
+    <string name="session_expired">Session expired. Please login again</string>
+    <string name="not_found">Resource not found</string>
+    <string name="server_error">Server error occurred</string>
+    <string name="poor_internet_connection">Poor internet connection</string>
+
 </resources>

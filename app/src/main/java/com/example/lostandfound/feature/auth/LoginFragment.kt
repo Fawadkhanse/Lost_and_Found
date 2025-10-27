@@ -4,23 +4,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
-import com.example.lostandfound.R
-import com.example.lostandfound.data.model.Resource
+import androidx.lifecycle.lifecycleScope
 import com.example.lostandfound.databinding.FragmentLoginBinding
-import com.example.lostandfound.presentation.viewmodel.AuthViewModel
+import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
+/**
+ * LoginFragment - Example implementation
+ * Demonstrates how to use ViewModel with single API call pattern
+ */
 class LoginFragment : Fragment() {
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
-    // ViewModel initialization
-    private val viewModel: AuthViewModel by viewModels()
+    // Inject ViewModel using Koin
+    private val authViewModel: AuthViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,94 +34,94 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         setupViews()
-        setupListeners()
         observeViewModel()
     }
 
     private fun setupViews() {
-        // Setup Spinner
-        val userTypes = arrayOf("Student", "Staff", "Admin")
-        val adapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            userTypes
-        )
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerUserType.adapter = adapter
-    }
-
-    private fun setupListeners() {
-        binding.btnBack.setOnClickListener {
-            requireActivity().onBackPressed()
-        }
-
         binding.btnLogin.setOnClickListener {
-            handleLogin()
+            val email = binding.etEmail.text.toString()
+            val password = binding.etPassword.text.toString()
+            val userType = binding.spinnerUserType.selectedItem.toString().lowercase()
+
+            if (validateInput(email, password)) {
+                authViewModel.login(email, password, userType)
+            }
         }
 
         binding.tvForgotPassword.setOnClickListener {
             // Navigate to forgot password
-            // findNavController().navigate(R.id.action_loginFragment_to_forgotPasswordFragment)
         }
+
+//        binding.tvRegister.setOnClickListener {
+//            // Navigate to register
+//        }
     }
 
     private fun observeViewModel() {
         // Observe login state
-        viewModel.loginState.observe(viewLifecycleOwner) { resource ->
-            when (resource) {
-                is Resource.Loading -> {
-                    showLoading(true)
-                }
-                is Resource.Success -> {
-                    showLoading(false)
-                    Toast.makeText(
-                        requireContext(),
-                        "Login successful!",
-                        Toast.LENGTH_SHORT
-                    ).show()
+        viewLifecycleOwner.lifecycleScope.launch {
+            authViewModel.loginState.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        showLoading(true)
+                    }
+                    is Resource.Success -> {
+                        showLoading(false)
+                        val loginResponse = resource.data
 
-                    // Navigate to home
-                    findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
-                }
-                is Resource.Error -> {
-                    showLoading(false)
-                    Toast.makeText(
-                        requireContext(),
-                        "Login failed: ${resource.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-                else -> {
-                    // Handle None state
+                        // Save token
+                        loginResponse.data?.token?.let { token ->
+                            // Save to TokenManager or SharedPreferences
+                        }
+
+                        Toast.makeText(
+                            requireContext(),
+                            loginResponse.responseMessage,
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        // Navigate to home
+                        navigateToHome()
+                    }
+                    is Resource.Failure -> {
+                        showLoading(false)
+                        Toast.makeText(
+                            requireContext(),
+                            resource.message,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    Resource.None -> {
+                        // Initial state
+                    }
                 }
             }
         }
     }
 
-    private fun handleLogin() {
-        val userId = binding.etUserId.text.toString().trim()
-        val password = binding.etPassword.text.toString().trim()
-        val userType = binding.spinnerUserType.selectedItem.toString().lowercase()
-
-        // Validate inputs
-        if (userId.isEmpty()) {
-            binding.etUserId.error = "User ID is required"
-            return
+    private fun validateInput(email: String, password: String): Boolean {
+        if (email.isEmpty()) {
+            binding.etEmail.error = "Email is required"
+            return false
         }
 
         if (password.isEmpty()) {
             binding.etPassword.error = "Password is required"
-            return
+            return false
         }
 
-        // Call ViewModel to perform login
-        viewModel.login(userId, password, userType)
+        return true
     }
 
     private fun showLoading(show: Boolean) {
+        binding.progressBar.visibility = if (show) View.VISIBLE else View.GONE
         binding.btnLogin.isEnabled = !show
-        binding.btnLogin.text = if (show) "Logging in..." else "Log In"
+    }
+
+    private fun navigateToHome() {
+        // Navigation logic
     }
 
     override fun onDestroyView() {
