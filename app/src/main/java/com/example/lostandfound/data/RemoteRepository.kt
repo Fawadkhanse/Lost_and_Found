@@ -8,7 +8,6 @@ interface RemoteRepository {
         requestModel: Any? = null,
         endpoint: String,
         httpMethod: HttpMethod = HttpMethod.POST,
-        isEncrypted: Boolean = false,
         returnErrorBody: Boolean = false,
         isMockResponse: Boolean = false
     ): Flow<Resource<String>>

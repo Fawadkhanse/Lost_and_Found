@@ -26,7 +26,7 @@ class LostAndFoundApplication : Application() {
             androidContext(this@LostAndFoundApplication)
 
             // Load modules
-            modules(a)
+            modules(appModules)
         }
     }
 }
