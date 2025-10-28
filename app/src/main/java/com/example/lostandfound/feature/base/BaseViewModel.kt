@@ -20,15 +20,12 @@ abstract class BaseViewModel : ViewModel() {
         mockResponse: T? = null,
         useMock: Boolean = false
     ) {
-        if (useMock && mockResponse != null) {
-            onEmit(Resource.Success(mockResponse))
-            return
-        }
-
+        // Map JSON string to typed object
         this.map { resource ->
             when (resource) {
                 is Resource.Success -> {
                     try {
+                        // Convert JSON string to UserLoginResponse
                         val parsed = resource.data.toPojoOrNull<T>()
                         parsed?.let { Resource.Success(it) }
                             ?: Resource.Error(Exception("Failed to parse response"))
@@ -36,13 +33,12 @@ abstract class BaseViewModel : ViewModel() {
                         Resource.Error(e)
                     }
                 }
-
                 is Resource.Error -> Resource.Error(resource.exception)
                 is Resource.Loading -> Resource.Loading
                 Resource.None -> Resource.None
             }
         }.collect { mapped ->
-            onEmit(mapped)
+            onEmit(mapped)  // Send typed Resource<T> to ViewModel
         }
     }
 

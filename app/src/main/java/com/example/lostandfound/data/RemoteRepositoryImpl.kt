@@ -23,51 +23,34 @@ class RemoteRepositoryImpl(
         returnErrorBody: Boolean,
         isMock: Boolean
     ): Flow<Resource<String>> = flow {
+
+        // Emit loading state
         emit(Resource.Loading)
 
         try {
             // Make network request using Retrofit
             val response: Response<Any> = when (httpMethod) {
-                HttpMethod.GET -> if (requestModel != null)
-                    apiService.getWithBody(endpoint, requestModel)
-                else apiService.get(endpoint)
-
-                HttpMethod.POST -> if (requestModel != null)
-                    apiService.post(endpoint, requestModel)
-                else apiService.post(endpoint)
-
+                HttpMethod.POST -> apiService.post(endpoint, requestModel ?: Any())
+                HttpMethod.GET -> apiService.get(endpoint)
                 HttpMethod.PUT -> apiService.put(endpoint, requestModel ?: Any())
                 HttpMethod.DELETE -> apiService.delete(endpoint)
             }
 
-            // Mock mode shortcut
-            if (isMock) {
-                emit(Resource.Success("00",))
-                return@flow
-            }
-
-            // Handle successful response
+            // Handle response
             if (response.isSuccessful) {
                 val body = gson.toJson(response.body() ?: "{}")
-                emit(Resource.Success( body))
+                emit(Resource.Success(body))  // Raw JSON string
             } else {
                 val errorBody = response.errorBody()?.string() ?: ""
-                val message = parseErrorMessage(errorBody)
-
-                if (returnErrorBody)
-                    emit(Resource.Success("${errorBody}"))
-                else {
-                    val errorCode = response.code().toString()
-                    emit(Resource.Error(Exception(errorCode)))
-                }
+                val errorCode = response.code().toString()
+                emit(Resource.Error(Exception(errorCode)))
             }
 
         } catch (e: Exception) {
-            e.printStackTrace()
-            emit(Resource.Error(exception = Exception(e.message ?: "Unexpected error", )))
+            emit(Resource.Error(Exception(e.message ?: "Unexpected error")))
         }
     }.catch { e ->
-        emit(Resource.Error(Exception(e.message ?: "Network error", )))
+        emit(Resource.Error(Exception(e.message ?: "Network error")))
     }.flowOn(Dispatchers.IO)
 
     private fun parseErrorMessage(errorBody: String): String {

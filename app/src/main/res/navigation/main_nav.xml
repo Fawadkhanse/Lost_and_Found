@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/addAccountFragment"
+        android:name="com.example.lostandfound.feature.home.AddAccountFragment"
+        android:label="fragment_add_account"
+        tools:layout="@layout/fragment_add_account" />
+    <fragment
+        android:id="@+id/chatFragment"
+        android:name="com.example.lostandfound.feature.chat.ChatFragment"
+        android:label="fragment_chat"
+        tools:layout="@layout/fragment_chat" />
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.lostandfound.feature.home.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/myListFragment"
+        android:name="com.example.lostandfound.feature.mylist.MyListFragment"
+        android:label="fragment_my_list"
+        tools:layout="@layout/fragment_my_list" />
+    <fragment
+        android:id="@+id/viewFoundItemFragment"
+        android:name="com.example.lostandfound.feature.item.ViewFoundItemFragment"
+        android:label="fragment_view_found_item"
+        tools:layout="@layout/fragment_view_found_item" />
+    <fragment
+        android:id="@+id/viewItemFragment"
+        android:name="com.example.lostandfound.feature.item.ViewItemFragment"
+        android:label="fragment_view_item"
+        tools:layout="@layout/fragment_view_item" />
+    <fragment
+        android:id="@+id/viewLostItemFragment"
+        android:name="com.example.lostandfound.feature.item.ViewLostItemFragment"
+        android:label="fragment_view_lost_item"
+        tools:layout="@layout/fragment_view_lost_item" />
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.lostandfound.feature.auth.LoginFragment"
+        android:label="LoginFragment"
+        tools:layout="@layout/fragment_login"
+        >
+        <action
+            android:id="@+id/action_loginFragment_to_addAccountFragment"
+            app:destination="@id/addAccountFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/forgotPasswordFragment"
+        android:name="com.example.lostandfound.feature.auth.ForgotPasswordFragment"
+        android:label="fragment_forgot_password"
+        tools:layout="@layout/fragment_forgot_password" />
+    <fragment
+        android:id="@+id/personalInfoFragment"
+        android:name="com.example.lostandfound.feature.profile.PersonalInfoFragment"
+        android:label="fragment_personal_info"
+        tools:layout="@layout/fragment_personal_info" />
+</navigation>

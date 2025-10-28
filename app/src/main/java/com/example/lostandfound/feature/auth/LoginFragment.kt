@@ -7,7 +7,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.example.lostandfound.data.Resource
+import com.example.lostandfound.data.TokenManager
 import com.example.lostandfound.databinding.FragmentLoginBinding
+import com.example.lostandfound.feature.base.BaseFragment
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -15,7 +18,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  * LoginFragment - Example implementation
  * Demonstrates how to use ViewModel with single API call pattern
  */
-class LoginFragment : Fragment() {
+class LoginFragment : BaseFragment() {
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
@@ -41,7 +44,7 @@ class LoginFragment : Fragment() {
 
     private fun setupViews() {
         binding.btnLogin.setOnClickListener {
-            val email = binding.etEmail.text.toString()
+            val email = binding.etUserId.text.toString()
             val password = binding.etPassword.text.toString()
             val userType = binding.spinnerUserType.selectedItem.toString().lowercase()
 
@@ -52,10 +55,12 @@ class LoginFragment : Fragment() {
 
         binding.tvForgotPassword.setOnClickListener {
             // Navigate to forgot password
+            // findNavController().navigate(R.id.action_loginFragment_to_forgotPasswordFragment)
         }
 
 //        binding.tvRegister.setOnClickListener {
 //            // Navigate to register
+//            // findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
 //        }
     }
 
@@ -65,15 +70,16 @@ class LoginFragment : Fragment() {
             authViewModel.loginState.collect { resource ->
                 when (resource) {
                     is Resource.Loading -> {
-                        showLoading(true)
+                        showLoading()
                     }
                     is Resource.Success -> {
-                        showLoading(false)
+                        hideLoading()
                         val loginResponse = resource.data
 
-                        // Save token
+                        // Save token to TokenManager
                         loginResponse.data?.token?.let { token ->
-                            // Save to TokenManager or SharedPreferences
+                            TokenManager.setToken(token)
+                            // Also save to SharedPreferences if needed for persistence
                         }
 
                         Toast.makeText(
@@ -85,17 +91,36 @@ class LoginFragment : Fragment() {
                         // Navigate to home
                         navigateToHome()
                     }
-                    is Resource.Failure -> {
-                        showLoading(false)
+                    is Resource.Error -> {
+                        hideLoading()
+                        val errorMessage = resource.exception.message ?: "Login failed"
                         Toast.makeText(
                             requireContext(),
-                            resource.message,
+                            errorMessage,
                             Toast.LENGTH_LONG
                         ).show()
                     }
                     Resource.None -> {
-                        // Initial state
+                        // Initial state - do nothing
                     }
+                }
+            }
+        }
+
+        // Observe logged in state
+        viewLifecycleOwner.lifecycleScope.launch {
+            authViewModel.isLoggedIn.collect { isLoggedIn ->
+                if (isLoggedIn) {
+                    // Additional actions when user is logged in
+                }
+            }
+        }
+
+        // Observe current user
+        viewLifecycleOwner.lifecycleScope.launch {
+            authViewModel.currentUser.collect { user ->
+                user?.let {
+                    // Handle current user data if needed
                 }
             }
         }
@@ -103,25 +128,31 @@ class LoginFragment : Fragment() {
 
     private fun validateInput(email: String, password: String): Boolean {
         if (email.isEmpty()) {
-            binding.etEmail.error = "Email is required"
+            binding.etUserId.error = "Email is required"
             return false
         }
+//
+//        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+//            binding.etEmail.error = "Please enter a valid email"
+//            return false
+//        }
 
         if (password.isEmpty()) {
             binding.etPassword.error = "Password is required"
             return false
         }
 
+        if (password.length < 6) {
+            binding.etPassword.error = "Password must be at least 6 characters"
+            return false
+        }
+
         return true
     }
 
-    private fun showLoading(show: Boolean) {
-        binding.progressBar.visibility = if (show) View.VISIBLE else View.GONE
-        binding.btnLogin.isEnabled = !show
-    }
 
     private fun navigateToHome() {
-        // Navigation logic
+
     }
 
     override fun onDestroyView() {

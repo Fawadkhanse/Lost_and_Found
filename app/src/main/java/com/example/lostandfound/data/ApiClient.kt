@@ -1,6 +1,9 @@
 package com.example.lostandfound.data
 
 
+import com.bumptech.glide.load.model.stream.HttpGlideUrlLoader
+import com.bumptech.glide.load.model.stream.HttpGlideUrlLoader.TIMEOUT
+import com.example.lostandfound.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -15,31 +18,27 @@ import java.util.concurrent.TimeUnit
 object ApiClient {
 
     private const val BASE_URL = "https://your-api-url.com/api/"
-    private const val TIMEOUT = 60L
 
-    /**
-     * Create configured Retrofit instance
-     */
-    fun createRetrofit(): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(createOkHttpClient())
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        fun createRetrofit(): Retrofit {
+            return Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .client(createOkHttpClient())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+        }
+
+        private fun createOkHttpClient(): OkHttpClient {
+             val TIMEOUT = 60L
+            return OkHttpClient.Builder()
+                .connectTimeout(TIMEOUT, TimeUnit.SECONDS)
+                .readTimeout(TIMEOUT, TimeUnit.SECONDS)
+                .writeTimeout(TIMEOUT, TimeUnit.SECONDS)
+                .addInterceptor(createLoggingInterceptor())
+                .addInterceptor(createHeaderInterceptor())  // Adds auth token
+                .build()
+        }
     }
 
-    /**
-     * Create configured OkHttpClient
-     */
-    private fun createOkHttpClient(): OkHttpClient {
-        return OkHttpClient.Builder()
-            .connectTimeout(TIMEOUT, TimeUnit.SECONDS)
-            .readTimeout(TIMEOUT, TimeUnit.SECONDS)
-            .writeTimeout(TIMEOUT, TimeUnit.SECONDS)
-            .addInterceptor(createLoggingInterceptor())
-            .addInterceptor(createHeaderInterceptor())
-            .build()
-    }
 
     /**
      * Create logging interceptor
@@ -74,7 +73,7 @@ object ApiClient {
             chain.proceed(request)
         }
     }
-}
+
 
 /**
  * Token Manager - Manage authentication token
