@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
  */
 object ApiClient {
 
-    private const val BASE_URL = "https://your-api-url.com/api/"
+    private const val BASE_URL = "https://lost-found-project-1-f795.onrender.com/"
 
         fun createRetrofit(): Retrofit {
             return Retrofit.Builder()
