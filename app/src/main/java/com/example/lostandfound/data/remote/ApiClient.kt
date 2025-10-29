@@ -1,6 +1,7 @@
 package com.example.lostandfound.data.remote
 
 
+import android.util.Log
 import com.example.lostandfound.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -32,6 +33,7 @@ object ApiClient {
                 .writeTimeout(TIMEOUT, TimeUnit.SECONDS)
                 .addInterceptor(createLoggingInterceptor())
                 .addInterceptor(createHeaderInterceptor())  // Adds auth token
+                .addInterceptor(createHeaderLoggingInterceptor())
                 .build()
         }
     }
@@ -50,6 +52,29 @@ object ApiClient {
         }
     }
 
+private fun createHeaderLoggingInterceptor(): Interceptor {
+    return Interceptor { chain ->
+        val request = chain.request()
+
+        // Log all request headers
+        println("➡️ REQUEST ${request.method} ${request.url}")
+        for ((name, value) in request.headers) {
+            println("   🔹 $name: $value")
+        }
+
+        val response = chain.proceed(request)
+
+        // Log all response headers
+        println("⬅️ RESPONSE ${response.code} ${response.message}")
+        for ((name, value) in response.headers) {
+            println("   🔸 $name: $value")
+        }
+
+        response
+    }
+}
+
+
     /**
      * Create header interceptor
      * Add common headers to all requests
@@ -62,6 +87,8 @@ object ApiClient {
                 .header("Accept", "application/json")
 
             // Add authorization token if available
+
+            Log.d("TAG", "createHeaderInterceptor: ${TokenManager.getToken()}")
             TokenManager.getToken()?.let { token ->
                 requestBuilder.header("Authorization", "Bearer $token")
             }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".feature.report.ReportLostItemFragment">
+    tools:context=".feature.report.ReportFoundItemFragment">
 
     <!-- Top Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -33,7 +33,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Lost Item"
+            android:text="Found Item"
             android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -81,6 +81,17 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvAttachImageLabel">
+
+                <ImageView
+                    android:id="@+id/ivItemImage"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:contentDescription="Item Image"
+                    android:scaleType="centerCrop"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/ivCamera"
@@ -163,13 +174,13 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvCategoryLabel" />
 
-            <!-- Date Lost Label -->
+            <!-- Date Found Label -->
             <TextView
-                android:id="@+id/tvDateLostLabel"
+                android:id="@+id/tvDateFoundLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/date_lost"
+                android:text="@string/date_found"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -185,10 +196,10 @@
                 android:background="@drawable/rounded_edit_text"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvDateLostLabel">
+                app:layout_constraintTop_toBottomOf="@id/tvDateFoundLabel">
 
                 <EditText
-                    android:id="@+id/etDateLost"
+                    android:id="@+id/etDateFound"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"
@@ -215,6 +226,36 @@
                     app:tint="@color/dark_gray" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <!-- Time Found Label (Optional) -->
+            <TextView
+                android:id="@+id/tvTimeFoundLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Time Found"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/dateContainer" />
+
+            <!-- Time Input -->
+            <EditText
+                android:id="@+id/etTimeFound"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_edit_text"
+                android:clickable="true"
+                android:focusable="false"
+                android:hint="HH:MM"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvTimeFoundLabel" />
+
             <!-- Location Label -->
             <TextView
                 android:id="@+id/tvLocationLabel"
@@ -226,7 +267,7 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/dateContainer" />
+                app:layout_constraintTop_toBottomOf="@id/etTimeFound" />
 
             <!-- Location Input with Find Button -->
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -269,6 +310,35 @@
                     app:tint="@color/dark_gray" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <!-- Storage Location Label -->
+            <TextView
+                android:id="@+id/tvStorageLocationLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Storage Location"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/locationContainer" />
+
+            <!-- Storage Location Input -->
+            <EditText
+                android:id="@+id/etStorageLocation"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_edit_text"
+                android:hint="Where is the item stored?"
+                android:inputType="text"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvStorageLocationLabel" />
+
             <!-- Description Label -->
             <TextView
                 android:id="@+id/tvDescriptionLabel"
@@ -280,7 +350,7 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/locationContainer" />
+                app:layout_constraintTop_toBottomOf="@id/etStorageLocation" />
 
             <!-- Description Input -->
             <EditText
@@ -320,8 +390,8 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
 

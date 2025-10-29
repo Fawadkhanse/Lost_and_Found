@@ -1,61 +1,138 @@
 package com.example.lostandfound.feature.item
 
+import android.app.Activity
+import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.lostandfound.R
+import com.example.lostandfound.data.Resource
+import com.example.lostandfound.databinding.FragmentAddItemBinding
+import com.example.lostandfound.domain.auth.CategoryResponse
 import com.example.lostandfound.feature.base.BaseFragment
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+import com.example.lostandfound.feature.category.CategoryViewModel
+import com.example.lostandfound.utils.AuthData
+import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
- * A simple [Fragment] subclass.
- * Use the [AddItemFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * AddItemFragment - Complete implementation for adding Lost or Found items
  */
 class AddItemFragment : BaseFragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private var _binding: FragmentAddItemBinding? = null
+    private val binding get() = _binding!!
+
+    private val itemViewModel: ItemViewModel by viewModel()
+    private val categoryViewModel: CategoryViewModel by viewModel()
+
+    private var categories: List<CategoryResponse> = emptyList()
+
+    private var itemType: ItemType = ItemType.LOST // Default to Lost
+
+    enum class ItemType {
+        LOST, FOUND
+    }
+
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentAddItemBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupViews()
+
+
+    }
+
+    private fun setupViews() {
+        // Set welcome message
+        binding.tvWelcome.text = "Hello ${AuthData.fullName}"
+
+        // Back button
+        binding.btnBack.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+
+        // Item type buttons (Lost or Found)
+        binding.btnLost.setOnClickListener {
+            selectItemType(ItemType.LOST)
+        }
+
+        binding.btnFound.setOnClickListener {
+            selectItemType(ItemType.FOUND)
+        }
+
+
+
+    }
+
+    private fun selectItemType(type: ItemType) {
+        itemType = type
+
+        when (type) {
+            ItemType.LOST -> {
+                binding.btnLost.backgroundTintList =
+                    androidx.core.content.ContextCompat.getColorStateList(requireContext(), R.color.primary_teal)
+                binding.btnLost.alpha = 1.0f
+                binding.btnFound.backgroundTintList = null
+                binding.btnFound.alpha = 0.6f
+
+                // Navigate to ReportLostItemFragment
+                findNavController().navigate(R.id.action_addItemFragment_to_reportLostItemFragment)
+            }
+            ItemType.FOUND -> {
+                binding.btnFound.backgroundTintList =
+                    androidx.core.content.ContextCompat.getColorStateList(requireContext(), R.color.primary_teal)
+                binding.btnFound.alpha = 1.0f
+                binding.btnLost.backgroundTintList = null
+                binding.btnLost.alpha = 0.6f
+
+                   findNavController().navigate(R.id.action_addItemFragment_to_reportFoundItemFragment)
+            }
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_item, container, false)
+    private fun loadCategories() {
+        categoryViewModel.getAllCategories()
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AddItemFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AddItemFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    private fun observeViewModels() {
+        // Observe categories
+        viewLifecycleOwner.lifecycleScope.launch {
+            categoryViewModel.categoriesListState.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        showLoading("Loading categories...")
+                    }
+                    is Resource.Success -> {
+                        hideLoading()
+                        categories = resource.data
+                    }
+                    is Resource.Error -> {
+                        hideLoading()
+                        showError("Failed to load categories: ${resource.exception.message}")
+                    }
+                    Resource.None -> {
+                        hideLoading()
+                    }
                 }
             }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

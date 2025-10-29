@@ -100,5 +100,22 @@
         android:id="@+id/addItemFragment"
         android:name="com.example.lostandfound.feature.item.AddItemFragment"
         android:label="fragment_add_item"
-        tools:layout="@layout/fragment_add_item" />
+        tools:layout="@layout/fragment_add_item" >
+        <action
+            android:id="@+id/action_addItemFragment_to_reportLostItemFragment"
+            app:destination="@id/reportLostItemFragment" />
+        <action
+            android:id="@+id/action_addItemFragment_to_reportFoundItemFragment"
+            app:destination="@id/reportFoundItemFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/reportFoundItemFragment"
+        android:name="com.example.lostandfound.feature.report.ReportFoundItemFragment"
+        android:label="fragment_report_found_item"
+        tools:layout="@layout/fragment_report_found_item" />
+    <fragment
+        android:id="@+id/reportLostItemFragment"
+        android:name="com.example.lostandfound.feature.report.ReportLostItemFragment"
+        android:label="fragment_report_lost_item"
+        tools:layout="@layout/fragment_report_lost_item" />
 </navigation>

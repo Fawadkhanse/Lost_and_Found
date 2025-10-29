@@ -1,29 +1,39 @@
-package com.example.lostandfound.feature.item
+package com.example.lostandfound.feature.report
 
+import android.app.Activity
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.lostandfound.R
+import com.bumptech.glide.Glide
 import com.example.lostandfound.data.Resource
-import com.example.lostandfound.databinding.FragmentReportLostItemBinding
+import com.example.lostandfound.databinding.FragmentReportFoundItemBinding
 import com.example.lostandfound.domain.auth.CategoryResponse
-import com.example.lostandfound.domain.auth.LostItemRequest
+import com.example.lostandfound.domain.item.FoundItemRequest
 import com.example.lostandfound.feature.base.BaseFragment
 import com.example.lostandfound.feature.category.CategoryViewModel
+import com.example.lostandfound.feature.item.ItemViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ReportLostItemFragment : BaseFragment() {
+/**
+ * ReportFoundItemFragment - Report a found item
+ */
+class ReportFoundItemFragment : BaseFragment() {
 
-    private var _binding: FragmentReportLostItemBinding? = null
+    private var _binding: FragmentReportFoundItemBinding? = null
     private val binding get() = _binding!!
 
     private val itemViewModel: ItemViewModel by viewModel()
@@ -31,14 +41,28 @@ class ReportLostItemFragment : BaseFragment() {
 
     private var categories: List<CategoryResponse> = emptyList()
     private var selectedCategoryId: Int = 0
+    private var selectedImageUri: Uri? = null
     private var selectedDate: String = ""
+    private var selectedTime: String = "00:00:00"
+
+    // Image picker launcher
+    private val imagePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.data?.let { uri ->
+                selectedImageUri = uri
+                displaySelectedImage(uri)
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentReportLostItemBinding.inflate(inflater, container, false)
+        _binding = FragmentReportFoundItemBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -57,30 +81,85 @@ class ReportLostItemFragment : BaseFragment() {
 
         // Attach image
         binding.cardScanItem.setOnClickListener {
-            // TODO: Implement image picker
-            Toast.makeText(requireContext(), "Image picker coming soon", Toast.LENGTH_SHORT).show()
+            openImagePicker()
         }
 
         // Date picker
-        binding.etDateLost.setOnClickListener {
+        binding.etDateFound.setOnClickListener {
             showDatePicker()
+        }
+
+        // Time picker
+        binding.etTimeFound?.setOnClickListener {
+            showTimePicker()
         }
 
         // Location finder
         binding.btnFindLocation.setOnClickListener {
-            // TODO: Implement location picker
             Toast.makeText(requireContext(), "Location picker coming soon", Toast.LENGTH_SHORT).show()
         }
 
         // Submit button
         binding.btnSubmit.setOnClickListener {
-            submitLostItem()
+            submitFoundItem()
         }
-
-        // Bottom navigation
-
     }
 
+
+    private fun openImagePicker() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        intent.type = "image/*"
+        imagePickerLauncher.launch(intent)
+    }
+
+    private fun displaySelectedImage(uri: Uri) {
+        Glide.with(requireContext())
+            .load(uri)
+            .centerCrop()
+            .into(binding.ivItemImage)
+
+        // Hide the scan text
+        binding.tvScanItem.visibility = View.GONE
+        binding.ivCamera.visibility = View.GONE
+    }
+
+    private fun showDatePicker() {
+        val calendar = Calendar.getInstance()
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            { _, year, month, dayOfMonth ->
+                calendar.set(year, month, dayOfMonth)
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                selectedDate = dateFormat.format(calendar.time)
+
+                // Display format
+                val displayFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                binding.etDateFound.setText(displayFormat.format(calendar.time))
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+        datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
+        datePickerDialog.show()
+    }
+
+    private fun showTimePicker() {
+        val calendar = Calendar.getInstance()
+        val timePickerDialog = TimePickerDialog(
+            requireContext(),
+            { _, hourOfDay, minute ->
+                selectedTime = String.format("%02d:%02d:00", hourOfDay, minute)
+
+                // Display format
+                binding.etTimeFound?.setText(String.format("%02d:%02d", hourOfDay, minute))
+            },
+            calendar.get(Calendar.HOUR_OF_DAY),
+            calendar.get(Calendar.MINUTE),
+            true // 24 hour format
+        )
+        timePickerDialog.show()
+    }
 
     private fun loadCategories() {
         categoryViewModel.getAllCategories()
@@ -102,7 +181,7 @@ class ReportLostItemFragment : BaseFragment() {
                     is Resource.Error -> {
                         hideLoading()
                         showError("Failed to load categories: ${resource.exception.message}")
-                        setupCategorySpinner() // Setup with empty list
+                        setupCategorySpinner()
                     }
                     Resource.None -> {
                         hideLoading()
@@ -111,21 +190,21 @@ class ReportLostItemFragment : BaseFragment() {
             }
         }
 
-        // Observe lost item creation
+        // Observe found item creation
         viewLifecycleOwner.lifecycleScope.launch {
-            itemViewModel.createLostItemState.collect { resource ->
+            itemViewModel.createFoundItemState.collect { resource ->
                 when (resource) {
                     is Resource.Loading -> {
-                        showLoading("Submitting lost item...")
+                        showLoading("Submitting found item...")
                     }
                     is Resource.Success -> {
                         hideLoading()
                         Toast.makeText(
                             requireContext(),
-                            "Lost item reported successfully!",
+                            "Found item reported successfully!",
                             Toast.LENGTH_SHORT
                         ).show()
-                        itemViewModel.resetCreateLostItemState()
+                        itemViewModel.resetCreateFoundItemState()
                         findNavController().navigateUp()
                     }
                     is Resource.Error -> {
@@ -156,31 +235,11 @@ class ReportLostItemFragment : BaseFragment() {
         binding.spinnerCategory.adapter = adapter
     }
 
-    private fun showDatePicker() {
-        val calendar = Calendar.getInstance()
-        val datePickerDialog = DatePickerDialog(
-            requireContext(),
-            { _, year, month, dayOfMonth ->
-                calendar.set(year, month, dayOfMonth)
-                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                selectedDate = dateFormat.format(calendar.time)
-
-                // Display format
-                val displayFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                binding.etDateLost.setText(displayFormat.format(calendar.time))
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-        datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
-        datePickerDialog.show()
-    }
-
-    private fun submitLostItem() {
+    private fun submitFoundItem() {
         val itemName = binding.etItemName.text.toString().trim()
         val description = binding.etDescription.text.toString().trim()
         val location = binding.etLocation.text.toString().trim()
+        val storageLocation = binding.etStorageLocation?.text.toString().trim().ifEmpty { location }
         val categoryPosition = binding.spinnerCategory.selectedItemPosition
 
         // Validation
@@ -189,13 +248,13 @@ class ReportLostItemFragment : BaseFragment() {
             return
         }
 
-        if (categoryPosition == 0 || categories.isEmpty()) {
-            Toast.makeText(requireContext(), "Please select a category", Toast.LENGTH_SHORT).show()
-            return
-        }
+//        if (categoryPosition == 0 || categories.isEmpty()) {
+//            Toast.makeText(requireContext(), "Please select a category", Toast.LENGTH_SHORT).show()
+//            return
+//        }
 
         if (selectedDate.isEmpty()) {
-            Toast.makeText(requireContext(), "Please select date lost", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Please select date found", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -210,28 +269,30 @@ class ReportLostItemFragment : BaseFragment() {
         }
 
         // Get selected category
-        selectedCategoryId = categories[categoryPosition - 1].id
+        if (categories.isNotEmpty()) {
+            selectedCategoryId = categories[categoryPosition - 1].id
+        }
 
         // Create request
-        val request = LostItemRequest(
+        val request = FoundItemRequest(
             title = itemName,
             description = description,
             category = selectedCategoryId,
-            lostLocation = location,
-            lostDate = selectedDate,
-            lostTime = "00:00:00", // Default time
+            foundLocation = location,
+            foundDate = selectedDate,
+            foundTime = selectedTime,
             brand = "", // Optional
             color = "", // Optional
             size = "", // Optional
             searchTags = itemName.lowercase(),
             colorTags = "",
             materialTags = "",
-            status = "lost",
-            isVerified = false,
-            itemImage = null // TODO: Implement image upload
+            storageLocation = storageLocation,
+            status = "found",
+            imageUrl = selectedImageUri?.toString()
         )
 
-        itemViewModel.createLostItem(request)
+        itemViewModel.createFoundItem(request)
     }
 
     override fun onDestroyView() {

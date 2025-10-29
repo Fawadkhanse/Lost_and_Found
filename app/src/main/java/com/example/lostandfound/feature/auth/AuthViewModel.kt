@@ -74,7 +74,7 @@ class AuthViewModel(
                         _isLoggedIn.value = true
 
                         // Save token to TokenManager
-                        result.data?.tokens?.let { token ->
+                        result.data.tokens?.let { token ->
                             TokenManager.setToken(token.access)
                         }
                         AuthData.setAuthResponse(result.data)
