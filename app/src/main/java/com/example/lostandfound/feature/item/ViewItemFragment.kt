@@ -5,13 +5,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.example.lostandfound.R
+import com.example.lostandfound.data.Resource
 import com.example.lostandfound.databinding.FragmentViewItemBinding
+import com.example.lostandfound.domain.auth.LostItemResponse
+import com.example.lostandfound.feature.base.BaseFragment
+import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class ViewItemFragment : Fragment() {
+class ViewItemFragment : BaseFragment() {
 
     private var _binding: FragmentViewItemBinding? = null
     private val binding get() = _binding!!
+
+    private val itemViewModel: ItemViewModel by viewModel()
+    private val claimViewModel: ClaimViewModel by viewModel()
+
+    private var itemId: String? = null
+    private var currentItem: LostItemResponse? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        itemId = arguments?.getString("itemId")
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -24,55 +43,142 @@ class ViewItemFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadItemData()
         setupListeners()
+        observeViewModels()
+        loadItemData()
     }
 
     private fun loadItemData() {
-        // Load item data from arguments or database
-        // For now using sample data
-        binding.tvItemName.text = "Tablet"
-        binding.tvCategory.text = "Electronic"
-        binding.tvDateLost.text = "10/06/2025"
-        binding.tvLocation.text = "Parking Blok"
+        itemId?.let {
+            itemViewModel.getLostItemById(it)
+        } ?: run {
+            showError("Item ID not found")
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+    }
+
+    private fun observeViewModels() {
+        // Observe lost item detail
+        viewLifecycleOwner.lifecycleScope.launch {
+            itemViewModel.lostItemDetailState.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        showLoading("Loading item details...")
+                    }
+                    is Resource.Success -> {
+                        hideLoading()
+                        currentItem = resource.data
+                        displayItemData(resource.data)
+                    }
+                    is Resource.Error -> {
+                        hideLoading()
+                        showError("Failed to load item: ${resource.exception.message}")
+                    }
+                    Resource.None -> {
+                        hideLoading()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun displayItemData(item: LostItemResponse) {
+        binding.tvItemName.text = item.title
+        binding.tvCategory.text = item.categoryName
+        binding.tvDateLost.text = item.lostDate
+        binding.tvLocation.text = item.lostLocation
+
+        // Load image if available
+        if (!item.itemImage.isNullOrEmpty()) {
+            Glide.with(requireContext())
+                .load(item.itemImage)
+                .placeholder(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_placeholder)
+                .into(binding.ivItemImage)
+
+            // Hide scan text when image is loaded
+            binding.tvScanItem.visibility = View.GONE
+            binding.ivCamera.visibility = View.GONE
+        }
+
+        // Update button visibility based on status
+        when (item.status.lowercase()) {
+            "found", "claimed", "returned" -> {
+                binding.btnFound.isEnabled = false
+                binding.btnFound.alpha = 0.5f
+                binding.btnFound.text = item.status.uppercase()
+            }
+        }
     }
 
     private fun setupListeners() {
         binding.btnBack.setOnClickListener {
-            requireActivity().onBackPressed()
+            requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
         binding.cardScanItem.setOnClickListener {
-            // Open camera or image picker
-            Toast.makeText(requireContext(), "Opening camera...", Toast.LENGTH_SHORT).show()
+            // TODO: Implement image picker
+            Toast.makeText(requireContext(), "Image upload coming soon", Toast.LENGTH_SHORT).show()
         }
 
         binding.btnFound.setOnClickListener {
-            // Mark item as found
-            Toast.makeText(requireContext(), "Item marked as found", Toast.LENGTH_SHORT).show()
+            markItemAsFound()
         }
 
         binding.btnPendingClaims.setOnClickListener {
-            // Navigate to pending claims
-            Toast.makeText(requireContext(), "Viewing pending claims", Toast.LENGTH_SHORT).show()
+            viewPendingClaims()
         }
 
         // Bottom navigation
+        setupBottomNavigation()
+    }
+
+    private fun setupBottomNavigation() {
         binding.bottomNav.navHome.setOnClickListener {
-            // Navigate to home
+            findNavController().navigate(R.id.residentHomeFragment)
         }
 
         binding.bottomNav.navMessage.setOnClickListener {
-            // Navigate to messages
+            Toast.makeText(requireContext(), "Messages", Toast.LENGTH_SHORT).show()
         }
 
         binding.bottomNav.navAccount.setOnClickListener {
-            // Navigate to account
+            Toast.makeText(requireContext(), "Account", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun markItemAsFound() {
+        // TODO: Implement update item status API
+        Toast.makeText(
+            requireContext(),
+            "Mark as found feature coming soon",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+    private fun viewPendingClaims() {
+        itemId?.let { id ->
+            // TODO: Navigate to claims list for this item
+            Toast.makeText(
+                requireContext(),
+                "Viewing claims for item: $id",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        fun newInstance(itemId: String): ViewItemFragment {
+            return ViewItemFragment().apply {
+                arguments = Bundle().apply {
+                    putString("itemId", itemId)
+                }
+            }
+        }
     }
 }

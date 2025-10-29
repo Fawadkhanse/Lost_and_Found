@@ -1,14 +1,335 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".feature.item.ReportLostItemFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <!-- Top Bar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topBar"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:background="@color/light_gray"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-</FrameLayout>
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="@string/back"
+            android:src="@drawable/ic_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/black" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lost Item"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBar">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <!-- Attach Image Label -->
+            <TextView
+                android:id="@+id/tvAttachImageLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/attach_image"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Scan Item Card -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cardScanItem"
+                android:layout_width="0dp"
+                android:layout_height="160dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/image_placeholder"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvAttachImageLabel">
+
+                <ImageView
+                    android:id="@+id/ivCamera"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:contentDescription="@string/scan_item"
+                    android:src="@drawable/ic_logo"
+                    app:layout_constraintBottom_toTopOf="@id/tvScanItem"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed"
+                    app:tint="@color/dark_gray" />
+
+                <TextView
+                    android:id="@+id/tvScanItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/scan_item"
+                    android:textColor="@color/dark_gray"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/ivCamera" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Item Name Label -->
+            <TextView
+                android:id="@+id/tvItemNameLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/item_name"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardScanItem" />
+
+            <!-- Item Name Input -->
+            <EditText
+                android:id="@+id/etItemName"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_edit_text"
+                android:hint="Item Name"
+                android:inputType="text"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvItemNameLabel" />
+
+            <!-- Select Category Label -->
+            <TextView
+                android:id="@+id/tvCategoryLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/select_category"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etItemName" />
+
+            <!-- Category Spinner -->
+            <Spinner
+                android:id="@+id/spinnerCategory"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_edit_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvCategoryLabel" />
+
+            <!-- Date Lost Label -->
+            <TextView
+                android:id="@+id/tvDateLostLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/date_lost"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/spinnerCategory" />
+
+            <!-- Date Input with Calendar Icon -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/dateContainer"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_edit_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvDateLostLabel">
+
+                <EditText
+                    android:id="@+id/etDateLost"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:hint="DD/MM/YYYY"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="48dp"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="12dp"
+                    android:contentDescription="Calendar"
+                    android:src="@drawable/ic_logo"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/dark_gray" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Location Label -->
+            <TextView
+                android:id="@+id/tvLocationLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/location"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/dateContainer" />
+
+            <!-- Location Input with Find Button -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/locationContainer"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_edit_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvLocationLabel">
+
+                <EditText
+                    android:id="@+id/etLocation"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:hint="Find Location"
+                    android:inputType="text"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="48dp"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/btnFindLocation"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="12dp"
+                    android:clickable="true"
+                    android:contentDescription="Find Location"
+                    android:focusable="true"
+                    android:src="@drawable/ic_logo"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/dark_gray" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Description Label -->
+            <TextView
+                android:id="@+id/tvDescriptionLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/description"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/locationContainer" />
+
+            <!-- Description Input -->
+            <EditText
+                android:id="@+id/etDescription"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_edit_text"
+                android:gravity="top"
+                android:hint="Type here (eg.: colour, company, size)"
+                android:inputType="textMultiLine"
+                android:minHeight="100dp"
+                android:padding="16dp"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvDescriptionLabel" />
+
+            <!-- Submit Button -->
+            <Button
+                android:id="@+id/btnSubmit"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/rounded_button_gray"
+                android:paddingStart="48dp"
+                android:paddingEnd="48dp"
+                android:text="@string/submit"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etDescription" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <!-- Bottom Navigation -->
+    <include
+        android:id="@+id/bottomNav"
+        layout="@layout/layout_bottom_navigation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
