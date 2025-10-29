@@ -94,7 +94,7 @@ class ViewItemFragment : BaseFragment() {
                 .load(item.itemImage)
                 .placeholder(R.drawable.ic_placeholder)
                 .error(R.drawable.ic_placeholder)
-                .into(binding.ivItemImage)
+                .into(binding.ivCamera)
 
             // Hide scan text when image is loaded
             binding.tvScanItem.visibility = View.GONE

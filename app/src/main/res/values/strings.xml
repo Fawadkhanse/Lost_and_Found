@@ -84,5 +84,6 @@
     <string name="not_found">Resource not found</string>
     <string name="server_error">Server error occurred</string>
     <string name="poor_internet_connection">Poor internet connection</string>
+    <string name="submit">submit</string>
 
 </resources>

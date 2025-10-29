@@ -2,34 +2,41 @@ package com.example.lostandfound.feature.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.view.GravityCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.example.lostandfound.R
 import com.example.lostandfound.data.Resource
 import com.example.lostandfound.databinding.FragmentResidentBinding
 import com.example.lostandfound.domain.auth.LostItemResponse
 import com.example.lostandfound.domain.item.FoundItemResponse
+import com.example.lostandfound.feature.auth.AuthViewModel
 import com.example.lostandfound.feature.base.BaseFragment
 import com.example.lostandfound.feature.item.ItemViewModel
 import com.example.lostandfound.utils.AuthData
+import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
- * Resident Home Fragment
+ * Resident Home Fragment with Navigation Drawer
  * Displays lost and found items on the home screen
  */
-class ResidentHomeFragment : BaseFragment() {
+class ResidentHomeFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedListener {
 
     private var _binding: FragmentResidentBinding? = null
     private val binding get() = _binding!!
 
     private val itemViewModel: ItemViewModel by viewModel()
     private val dashboardViewModel: DashboardViewModel by viewModel()
+    private val authViewModel: AuthViewModel by viewModel()
 
     private lateinit var itemsAdapter: ItemsAdapter
     private val allItems = mutableListOf<ItemModel>()
@@ -45,6 +52,7 @@ class ResidentHomeFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupNavigationDrawer()
         setupRecyclerView()
         setupListeners()
         observeViewModels()
@@ -52,9 +60,37 @@ class ResidentHomeFragment : BaseFragment() {
         loadData()
     }
 
-    private fun setView() {
-        binding.tvWelcome.text = "Hello "+AuthData.fullName
+    private fun setupNavigationDrawer() {
+        // Set up navigation item selected listener
+        binding.navigationView.setNavigationItemSelectedListener(this)
+
+        // Update navigation header with user info
+        val headerView = binding.navigationView.getHeaderView(0)
+        val tvUserName = headerView.findViewById<android.widget.TextView>(R.id.tvUserName)
+        val tvUserEmail = headerView.findViewById<android.widget.TextView>(R.id.tvUserEmail)
+        val ivProfileImage = headerView.findViewById<android.widget.ImageView>(R.id.ivProfileImage)
+
+        // Set user data
+        AuthData.userDetailInfo?.let { user ->
+            tvUserName.text = "${user.firstName} ${user.lastName}"
+            tvUserEmail.text = user.email
+
+            // Load profile image if available
+            if (!user.profileImage.isNullOrEmpty()) {
+                Glide.with(requireContext())
+                    .load(user.profileImage)
+                    .placeholder(R.drawable.ic_account)
+                    .error(R.drawable.ic_account)
+                    .circleCrop()
+                    .into(ivProfileImage)
+            }
+        }
     }
+
+    private fun setView() {
+        binding.tvWelcome.text = "Hello " + AuthData.fullName
+    }
+
     private fun setupRecyclerView() {
         itemsAdapter = ItemsAdapter { item ->
             onItemClicked(item)
@@ -73,15 +109,17 @@ class ResidentHomeFragment : BaseFragment() {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
-        // Menu button
+        // Menu button - opens drawer
         binding.btnMenu.setOnClickListener {
-            // Navigate to menu or show options
-            Toast.makeText(requireContext(), "Menu clicked", Toast.LENGTH_SHORT).show()
+            if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
+                binding.drawerLayout.closeDrawer(GravityCompat.END)
+            } else {
+                binding.drawerLayout.openDrawer(GravityCompat.END)
+            }
         }
 
         // Search
         binding.etSearch.setOnClickListener {
-            // Navigate to search screen
             Toast.makeText(requireContext(), "Search clicked", Toast.LENGTH_SHORT).show()
         }
 
@@ -105,20 +143,57 @@ class ResidentHomeFragment : BaseFragment() {
         }
 
         binding.bottomNav.navMessage.setOnClickListener {
-            // Navigate to messages/chat
-            // findNavController().navigate(R.id.action_residentHomeFragment_to_chatFragment)
             Toast.makeText(requireContext(), "Messages", Toast.LENGTH_SHORT).show()
         }
 
         binding.bottomNav.navAccount.setOnClickListener {
-            // Navigate to account/profile
-            // findNavController().navigate(R.id.action_residentHomeFragment_to_profileFragment)
-            Toast.makeText(requireContext(), "Account", Toast.LENGTH_SHORT).show()
+            // Navigate to profile
+            findNavController().navigate(R.id.action_residentHomeFragment_to_personalInfoFragment)
         }
+
         binding.fabAdd.setOnClickListener {
-            // Navigate to add item screen
-             findNavController().navigate(R.id.action_residentHomeFragment_to_addItemFragment)
+            findNavController().navigate(R.id.action_residentHomeFragment_to_addItemFragment)
         }
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.nav_profile -> {
+                // Navigate to profile
+                findNavController().navigate(R.id.action_residentHomeFragment_to_personalInfoFragment)
+            }
+            R.id.nav_logout -> {
+                // Show logout confirmation
+                showLogoutConfirmation()
+            }
+        }
+        binding.drawerLayout.closeDrawer(GravityCompat.END)
+        return true
+    }
+
+    private fun showLogoutConfirmation() {
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Logout")
+            .setMessage("Are you sure you want to logout?")
+            .setPositiveButton("Yes") { dialog, _ ->
+                performLogout()
+                dialog.dismiss()
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun performLogout() {
+        // Clear auth data
+        authViewModel.logout()
+        AuthData.clearAuthData()
+
+        // Navigate to login
+        findNavController().navigate(R.id.action_residentHomeFragment_to_loginFragment)
+
+        Toast.makeText(requireContext(), "Logged out successfully", Toast.LENGTH_SHORT).show()
     }
 
     private fun observeViewModels() {
@@ -178,7 +253,7 @@ class ResidentHomeFragment : BaseFragment() {
                         updateWelcomeMessage()
                     }
                     is Resource.Error -> {
-                        // Handle error silently or show a toast
+                        // Handle error silently
                     }
                     else -> {}
                 }
@@ -199,7 +274,6 @@ class ResidentHomeFragment : BaseFragment() {
     }
 
     private fun loadMoreItems() {
-        // Implement pagination if needed
         Toast.makeText(requireContext(), "Loading more items...", Toast.LENGTH_SHORT).show()
         loadData()
     }
@@ -221,9 +295,7 @@ class ResidentHomeFragment : BaseFragment() {
     }
 
     private fun updateWelcomeMessage() {
-        // Update welcome text with user info
-        // For now using default from layout
-        // You can get user info from AuthViewModel if needed
+        // Update welcome text is already set in setView()
     }
 
     private fun filterByCategory(category: String) {
@@ -233,18 +305,7 @@ class ResidentHomeFragment : BaseFragment() {
     }
 
     private fun onItemClicked(item: ItemModel) {
-        // Navigate to item detail screen
         Toast.makeText(requireContext(), "Clicked: ${item.title}", Toast.LENGTH_SHORT).show()
-
-        // Example navigation:
-        // val bundle = Bundle().apply {
-        //     putString("itemId", item.id)
-        //     putBoolean("isFound", item.isFound)
-        // }
-        // findNavController().navigate(
-        //     R.id.action_residentHomeFragment_to_itemDetailFragment,
-        //     bundle
-        // )
     }
 
     override fun onDestroyView() {

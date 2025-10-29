@@ -78,22 +78,9 @@ class ReportLostItemFragment : BaseFragment() {
         }
 
         // Bottom navigation
-        setupBottomNavigation()
+
     }
 
-    private fun setupBottomNavigation() {
-        binding.bottomNav.navHome.setOnClickListener {
-            findNavController().navigate(R.id.residentHomeFragment)
-        }
-
-        binding.bottomNav.navMessage.setOnClickListener {
-            Toast.makeText(requireContext(), "Messages", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.bottomNav.navAccount.setOnClickListener {
-            Toast.makeText(requireContext(), "Account", Toast.LENGTH_SHORT).show()
-        }
-    }
 
     private fun loadCategories() {
         categoryViewModel.getAllCategories()
