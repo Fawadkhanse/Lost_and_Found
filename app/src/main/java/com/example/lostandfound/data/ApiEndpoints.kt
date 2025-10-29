@@ -1,40 +1,45 @@
 package com.example.lostandfound.data
 
+
 object ApiEndpoints {
     // Auth endpoints
-    const val LOGIN = "auth/login"
-    const val REGISTER = "auth/register"
-    const val FORGOT_PASSWORD = "auth/forgot-password"
-    const val RESET_PASSWORD = "auth/reset-password"
-    const val CHANGE_PASSWORD = "auth/change-password"
-
-    // Item endpoints
-    const val LOST_ITEMS = "items/lost"
-    const val FOUND_ITEMS = "items/found"
-    const val MY_ITEMS = "items/my-items"
-    const val ITEM_DETAIL = "items/{id}"
-    const val CREATE_ITEM = "items/create"
-    const val UPDATE_ITEM = "items/{id}/update"
-    const val DELETE_ITEM = "items/{id}/delete"
-
-    // Claim endpoints
-    const val CLAIMS = "claims"
-    const val MY_CLAIMS = "claims/my-claims"
-    const val CREATE_CLAIM = "claims/create"
-    const val CLAIM_DETAIL = "claims/{id}"
-    const val APPROVE_CLAIM = "claims/{id}/approve"
-    const val REJECT_CLAIM = "claims/{id}/reject"
-
-    // Chat/Message endpoints
-    const val MESSAGES = "messages"
-    const val CONVERSATION = "messages/{userId}"
-    const val SEND_MESSAGE = "messages/send"
+    const val REGISTER = "api/auth/register/"
+    const val LOGIN = "api/auth/login/"
 
     // Profile endpoints
-    const val PROFILE = "profile"
-    const val UPDATE_PROFILE = "profile/update"
-    const val UPLOAD_IMAGE = "profile/upload-image"
+    const val PROFILE = "profile/"
+    const val UPDATE_PASSWORD = "profile/password/"
+    const val CURRENT_USER = "me/"
+    const val ALL_USERS = "users/"
 
     // Category endpoints
-    const val CATEGORIES = "categories"
+    const val CATEGORIES = "categories/"
+
+    // Lost Item endpoints
+    const val LOST_ITEMS = "lost-items/"
+    const val LOST_ITEM_DETAIL = "lost-items/{id}/"
+
+    // Found Item endpoints
+    const val FOUND_ITEMS = "found-items/"
+    const val FOUND_ITEM_DETAIL = "found-items/{id}/"
+
+    // Claim endpoints
+    const val CLAIMS = "claims/"
+    const val CLAIM_DETAIL = "claims/{id}/"
+
+    // Notification endpoints
+    const val NOTIFICATIONS = "notifications/"
+    const val NOTIFICATION_DETAIL = "notifications/{id}/"
+    const val MARK_NOTIFICATION_READ = "notifications/{id}/mark-read/"
+
+    // Dashboard endpoints
+    const val ADMIN_DASHBOARD = "dashboard/admin/"
+    const val USER_DASHBOARD = "dashboard/user/"
+
+    // Search endpoints
+    const val MANUAL_IMAGE_SEARCH = "search/manual-image/"
+
+    // Admin Verification endpoints
+    const val VERIFY_LOST_ITEM = "admin/verify/lost-item/{id}/"
+    const val VERIFY_FOUND_ITEM = "admin/verify/found-item/{id}/"
 }

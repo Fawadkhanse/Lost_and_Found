@@ -7,6 +7,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+
+import androidx.navigation.fragment.findNavController
+import com.example.lostandfound.R
 import com.example.lostandfound.data.Resource
 import com.example.lostandfound.data.TokenManager
 import com.example.lostandfound.databinding.FragmentLoginBinding
@@ -23,7 +26,6 @@ class LoginFragment : BaseFragment() {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
-    // Inject ViewModel using Koin
     private val authViewModel: AuthViewModel by viewModel()
 
     override fun onCreateView(
@@ -46,113 +48,73 @@ class LoginFragment : BaseFragment() {
         binding.btnLogin.setOnClickListener {
             val email = binding.etUserId.text.toString()
             val password = binding.etPassword.text.toString()
-            val userType = binding.spinnerUserType.selectedItem.toString().lowercase()
 
-            if (validateInput(email, password)) {
-                authViewModel.login(email, password, userType)
+            if (validateInputs(email, password)) {
+                authViewModel.login(email, password)
             }
         }
 
         binding.tvForgotPassword.setOnClickListener {
-            // Navigate to forgot password
-            // findNavController().navigate(R.id.action_loginFragment_to_forgotPasswordFragment)
+            // Navigate to forgot password screen
         }
 
-//        binding.tvRegister.setOnClickListener {
-//            // Navigate to register
-//            // findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
-//        }
+        binding.tvRegister.setOnClickListener {
+           findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+        }
     }
 
     private fun observeViewModel() {
-        // Observe login state
         viewLifecycleOwner.lifecycleScope.launch {
             authViewModel.loginState.collect { resource ->
                 when (resource) {
                     is Resource.Loading -> {
-                        showLoading()
+                        showLoading("Logging in...")
                     }
                     is Resource.Success -> {
                         hideLoading()
-                        val loginResponse = resource.data
-
-                        // Save token to TokenManager
-                        loginResponse.data?.token?.let { token ->
-                            TokenManager.setToken(token)
-                            // Also save to SharedPreferences if needed for persistence
-                        }
-
+                        val response = resource.data
                         Toast.makeText(
                             requireContext(),
-                            loginResponse.responseMessage,
+                            response.message,
                             Toast.LENGTH_SHORT
                         ).show()
 
-                        // Navigate to home
-                        navigateToHome()
+                        // Navigate based on user type
+                        when (response.user.userType) {
+                            "admin" -> navigateToAdminDashboard()
+                            "resident" -> navigateToResidentDashboard()
+                        }
                     }
                     is Resource.Error -> {
                         hideLoading()
-                        val errorMessage = resource.exception.message ?: "Login failed"
-                        Toast.makeText(
-                            requireContext(),
-                            errorMessage,
-                            Toast.LENGTH_LONG
-                        ).show()
+                        showError(resource.exception.message)
                     }
                     Resource.None -> {
-                        // Initial state - do nothing
+                        // Initial state
                     }
-                }
-            }
-        }
-
-        // Observe logged in state
-        viewLifecycleOwner.lifecycleScope.launch {
-            authViewModel.isLoggedIn.collect { isLoggedIn ->
-                if (isLoggedIn) {
-                    // Additional actions when user is logged in
-                }
-            }
-        }
-
-        // Observe current user
-        viewLifecycleOwner.lifecycleScope.launch {
-            authViewModel.currentUser.collect { user ->
-                user?.let {
-                    // Handle current user data if needed
                 }
             }
         }
     }
 
-    private fun validateInput(email: String, password: String): Boolean {
+    private fun validateInputs(email: String, password: String): Boolean {
         if (email.isEmpty()) {
             binding.etUserId.error = "Email is required"
             return false
         }
-//
-//        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-//            binding.etEmail.error = "Please enter a valid email"
-//            return false
-//        }
-
         if (password.isEmpty()) {
             binding.etPassword.error = "Password is required"
             return false
         }
-
-        if (password.length < 6) {
-            binding.etPassword.error = "Password must be at least 6 characters"
-            return false
-        }
-
         return true
     }
 
+    private fun navigateToAdminDashboard() {
+        // Navigate to admin dashboard
+    }
 
-    private fun navigateToHome() {
-
+    private fun navigateToResidentDashboard() {
+        // Navigate to resident dashboard
     }
 
     override fun onDestroyView() {
@@ -160,3 +122,5 @@ class LoginFragment : BaseFragment() {
         _binding = null
     }
 }
+
+

@@ -43,7 +43,7 @@ class RemoteRepositoryImpl(
             } else {
                 val errorBody = response.errorBody()?.string() ?: ""
                 val errorCode = response.code().toString()
-                emit(Resource.Error(Exception(errorCode)))
+                emit(Resource.Error(Exception(errorBody)))
             }
 
         } catch (e: Exception) {

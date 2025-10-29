@@ -5,7 +5,9 @@ import com.example.lostandfound.data.ApiService
 import com.example.lostandfound.data.RemoteRepository
 import com.example.lostandfound.data.RemoteRepositoryImpl
 import com.example.lostandfound.feature.auth.AuthViewModel
-
+import com.example.lostandfound.feature.category.CategoryViewModel
+import com.example.lostandfound.feature.home.DashboardViewModel
+import com.example.lostandfound.feature.item.ClaimViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -27,9 +29,20 @@ val repositoryModule = module {
     }
 }
 
-// ViewModel Module
+// ViewModel Module - Updated with all ViewModels
 val viewModelModule = module {
+    // Authentication ViewModel
     viewModel { AuthViewModel(get()) }
+
+    // Claim ViewModel
+    viewModel { ClaimViewModel(get()) }
+
+    // Category ViewModel
+    viewModel { CategoryViewModel(get()) }
+
+
+    // Dashboard ViewModel
+    viewModel { DashboardViewModel(get()) }
 }
 
 // Combined modules list

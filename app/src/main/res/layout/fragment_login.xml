@@ -5,59 +5,27 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white"
-    tools:context=".fragments.LoginFragment">
+    tools:context=".feature.auth.LoginFragment">
 
-    <!-- Top Bar -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:background="@color/primary_teal"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp">
-
-        <ImageView
-            android:id="@+id/btnBack"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_back"
-            android:contentDescription="@string/back"
-            android:layout_marginEnd="16dp"
-            android:tint="@color/white"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/lost_and_found"
-            android:textSize="20sp"
-            android:textColor="@color/white"
-            android:textStyle="bold"/>
-    </LinearLayout>
 
     <!-- Logo and Title -->
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:padding="32dp">
+        android:padding="10dp"
+        >
+
 
         <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/ic_university_logo"
-            android:contentDescription="@string/university_logo"
-            android:layout_marginEnd="16dp"/>
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/lost_and_found"
-            android:textSize="24sp"
-            android:textColor="@color/primary_teal"
-            android:textStyle="bold"/>
-    </LinearLayout>
+            android:layout_gravity="center"
+            android:src="@drawable/login_main_icon"
+            android:contentDescription="@string/university_logo"/>
+
+    </FrameLayout>
 
     <!-- Login Card -->
     <LinearLayout
@@ -84,8 +52,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:paddingHorizontal="8dp"
             android:background="@drawable/rounded_card_white"
-            android:padding="20dp">
+            android:paddingTop="10dp">
 
             <!-- User ID -->
             <TextView
@@ -101,6 +70,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/rounded_edit_text"
                 android:hint="@string/user_id_hint"
+                android:textColor="@color/black"
                 android:inputType="text"
                 android:layout_marginTop="8dp"/>
 
@@ -159,11 +129,24 @@
                 android:text="@string/log_in"
                 android:textColor="@color/black"
                 android:background="@drawable/rounded_button"
-                android:backgroundTint="@color/white"
+                android:backgroundTint="@null"
                 android:paddingStart="48dp"
                 android:paddingEnd="48dp"
                 android:layout_gravity="center"
                 android:layout_marginTop="24dp"/>
+            <TextView
+                android:id="@+id/tvRegister"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Register"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:layout_gravity="end"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:focusable="true"/>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
