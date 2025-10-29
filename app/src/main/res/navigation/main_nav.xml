@@ -24,7 +24,11 @@
         android:id="@+id/myListFragment"
         android:name="com.example.lostandfound.feature.mylist.MyListFragment"
         android:label="fragment_my_list"
-        tools:layout="@layout/fragment_my_list" />
+        tools:layout="@layout/fragment_my_list" >
+        <action
+            android:id="@+id/action_myListFragment_to_itemDetailFragment"
+            app:destination="@id/itemDetailFragment" />
+    </fragment>
     <fragment
         android:id="@+id/viewFoundItemFragment"
         android:name="com.example.lostandfound.feature.item.ViewFoundItemFragment"
@@ -95,6 +99,12 @@
         <action
             android:id="@+id/action_residentHomeFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_residentHomeFragment_to_myListFragment"
+            app:destination="@id/myListFragment" />
+        <action
+            android:id="@+id/action_residentHomeFragment_to_itemDetailFragment"
+            app:destination="@id/itemDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/addItemFragment"
@@ -118,4 +128,9 @@
         android:name="com.example.lostandfound.feature.report.ReportLostItemFragment"
         android:label="fragment_report_lost_item"
         tools:layout="@layout/fragment_report_lost_item" />
+    <fragment
+        android:id="@+id/itemDetailFragment"
+        android:name="com.example.lostandfound.feature.item.ItemDetailFragment"
+        android:label="fragment_item_detail"
+        tools:layout="@layout/fragment_item_detail" />
 </navigation>
