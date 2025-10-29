@@ -33,8 +33,8 @@ object ApiEndpoints {
     const val MARK_NOTIFICATION_READ = "notifications/{id}/mark-read/"
 
     // Dashboard endpoints
-    const val ADMIN_DASHBOARD = "dashboard/admin/"
-    const val USER_DASHBOARD = "dashboard/user/"
+    const val ADMIN_DASHBOARD = "api/dashboard/admin/"
+    const val USER_DASHBOARD = "api/dashboard/user/"
 
     // Search endpoints
     const val MANUAL_IMAGE_SEARCH = "search/manual-image/"

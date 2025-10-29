@@ -76,6 +76,8 @@ class AuthViewModel(
                         result.data?.tokens?.let { token ->
                             TokenManager.setToken(token.access)
                         }
+
+
                     }
                 },
                 useMock = false

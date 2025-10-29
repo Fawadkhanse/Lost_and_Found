@@ -56,6 +56,7 @@ class LoginFragment : BaseFragment() {
 
         binding.tvForgotPassword.setOnClickListener {
             // Navigate to forgot password screen
+            findNavController().navigate(R.id.action_loginFragment_to_forgotPasswordFragment2)
         }
 
         binding.tvRegister.setOnClickListener {
@@ -81,8 +82,8 @@ class LoginFragment : BaseFragment() {
 
                         // Navigate based on user type
                         when (response.user.userType) {
-                            "admin" -> navigateToAdminDashboard()
-                            "resident" -> navigateToResidentDashboard()
+                            "admin" ->  findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+                            "resident" ->findNavController().navigate(R.id.action_loginFragment_to_residentHomeFragment)
                         }
                     }
                     is Resource.Error -> {
@@ -107,14 +108,6 @@ class LoginFragment : BaseFragment() {
             return false
         }
         return true
-    }
-
-    private fun navigateToAdminDashboard() {
-        // Navigate to admin dashboard
-    }
-
-    private fun navigateToResidentDashboard() {
-        // Navigate to resident dashboard
     }
 
     override fun onDestroyView() {
