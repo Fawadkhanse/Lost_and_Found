@@ -8,6 +8,7 @@ import com.example.lostandfound.feature.auth.AuthViewModel
 import com.example.lostandfound.feature.category.CategoryViewModel
 import com.example.lostandfound.feature.home.DashboardViewModel
 import com.example.lostandfound.feature.item.ClaimViewModel
+import com.example.lostandfound.feature.item.ItemViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -43,6 +44,8 @@ val viewModelModule = module {
 
     // Dashboard ViewModel
     viewModel { DashboardViewModel(get()) }
+
+    viewModel { ItemViewModel(get()) }
 }
 
 // Combined modules list
