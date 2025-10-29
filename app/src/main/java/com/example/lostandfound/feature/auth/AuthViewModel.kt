@@ -1,11 +1,11 @@
 package com.example.lostandfound.feature.auth
 
 import androidx.lifecycle.viewModelScope
-import com.example.lostandfound.data.ApiEndpoints
-import com.example.lostandfound.data.HttpMethod
-import com.example.lostandfound.data.RemoteRepository
+import com.example.lostandfound.data.remote.ApiEndpoints
+import com.example.lostandfound.data.remote.HttpMethod
+import com.example.lostandfound.domain.repository.RemoteRepository
 import com.example.lostandfound.data.Resource
-import com.example.lostandfound.data.TokenManager
+import com.example.lostandfound.data.remote.TokenManager
 import com.example.lostandfound.domain.auth.CurrentUserResponse
 import com.example.lostandfound.domain.auth.LoginRequest
 import com.example.lostandfound.domain.auth.LoginResponse
@@ -14,6 +14,7 @@ import com.example.lostandfound.domain.auth.RegisterResponse
 import com.example.lostandfound.domain.auth.UpdatePasswordResponse
 
 import com.example.lostandfound.feature.base.BaseViewModel
+import com.example.lostandfound.utils.AuthData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -76,8 +77,7 @@ class AuthViewModel(
                         result.data?.tokens?.let { token ->
                             TokenManager.setToken(token.access)
                         }
-
-
+                        AuthData.setAuthResponse(result.data)
                     }
                 },
                 useMock = false

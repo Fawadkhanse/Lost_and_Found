@@ -1,9 +1,9 @@
 package com.example.lostandfound.di
 
-import com.example.lostandfound.data.ApiClient
-import com.example.lostandfound.data.ApiService
-import com.example.lostandfound.data.RemoteRepository
-import com.example.lostandfound.data.RemoteRepositoryImpl
+import com.example.lostandfound.data.remote.ApiClient
+import com.example.lostandfound.data.remote.ApiService
+import com.example.lostandfound.domain.repository.RemoteRepository
+import com.example.lostandfound.data.repo.RemoteRepositoryImpl
 import com.example.lostandfound.feature.auth.AuthViewModel
 import com.example.lostandfound.feature.category.CategoryViewModel
 import com.example.lostandfound.feature.home.DashboardViewModel

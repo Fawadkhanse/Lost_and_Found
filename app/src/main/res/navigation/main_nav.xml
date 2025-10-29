@@ -86,5 +86,13 @@
         <action
             android:id="@+id/action_residentHomeFragment_to_viewItemFragment"
             app:destination="@id/viewItemFragment" />
+        <action
+            android:id="@+id/action_residentHomeFragment_to_addItemFragment"
+            app:destination="@id/addItemFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/addItemFragment"
+        android:name="com.example.lostandfound.feature.item.AddItemFragment"
+        android:label="fragment_add_item"
+        tools:layout="@layout/fragment_add_item" />
 </navigation>

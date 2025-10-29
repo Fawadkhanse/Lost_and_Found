@@ -1,8 +1,6 @@
-package com.example.lostandfound.data
+package com.example.lostandfound.data.remote
 
 
-import com.bumptech.glide.load.model.stream.HttpGlideUrlLoader
-import com.bumptech.glide.load.model.stream.HttpGlideUrlLoader.TIMEOUT
 import com.example.lostandfound.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -16,8 +14,6 @@ import java.util.concurrent.TimeUnit
  * Provides configured Retrofit instance
  */
 object ApiClient {
-
-   // private const val BASE_URL = "https://lost-found-project-1-f795.onrender.com/"
     private const val BASE_URL = "https://lost-found-project-1-f795.onrender.com/api/"
 
         fun createRetrofit(): Retrofit {

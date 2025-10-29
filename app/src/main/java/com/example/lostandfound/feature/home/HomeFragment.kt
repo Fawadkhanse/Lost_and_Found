@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.lostandfound.databinding.FragmentHomeBinding
+import com.example.lostandfound.utils.AuthData
 
 class HomeFragment : Fragment() {
 
@@ -29,7 +30,7 @@ class HomeFragment : Fragment() {
 
     private fun setupViews() {
         // Set welcome text with user ID
-        binding.tvWelcome.text = "Hello CB23145 !"
+        binding.tvWelcome.text = "Hello ${AuthData.fullName}"
     }
 
     private fun setupListeners() {

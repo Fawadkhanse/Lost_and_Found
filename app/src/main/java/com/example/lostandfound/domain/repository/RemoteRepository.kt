@@ -1,7 +1,8 @@
-package com.example.lostandfound.data
+package com.example.lostandfound.domain.repository
 
+import com.example.lostandfound.data.remote.HttpMethod
+import com.example.lostandfound.data.Resource
 import kotlinx.coroutines.flow.Flow
-
 
 interface RemoteRepository {
     suspend fun makeApiRequest(

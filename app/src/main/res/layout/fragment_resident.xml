@@ -280,6 +280,24 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="80dp"
+        android:contentDescription="Add"
+        android:src="@drawable/file_dock_add"
+        app:tint="@android:color/white"
+        app:backgroundTint="@color/primary_teal"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:elevation="6dp"
+        app:maxImageSize="40dp" />
+
+
     <!-- Bottom Navigation -->
     <include
         android:id="@+id/bottomNav"

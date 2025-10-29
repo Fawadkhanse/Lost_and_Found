@@ -1,9 +1,9 @@
 //package com.example.lostandfound.feature.notification
 //
 //import androidx.lifecycle.viewModelScope
-//import com.example.lostandfound.data.ApiEndpoints
-//import com.example.lostandfound.data.HttpMethod
-//import com.example.lostandfound.data.RemoteRepository
+//import com.example.lostandfound.data.remote.ApiEndpoints
+//import com.example.lostandfound.data.remote.HttpMethod
+//import com.example.lostandfound.domain.repository.RemoteRepository
 //import com.example.lostandfound.data.Resource
 //import com.example.lostandfound.domain.auth.UserDashboardResponse
 //

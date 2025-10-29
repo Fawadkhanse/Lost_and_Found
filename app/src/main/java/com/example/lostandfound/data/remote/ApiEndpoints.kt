@@ -1,4 +1,4 @@
-package com.example.lostandfound.data
+package com.example.lostandfound.data.remote
 
 
 object ApiEndpoints {

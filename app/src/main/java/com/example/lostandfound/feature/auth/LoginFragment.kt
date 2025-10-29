@@ -5,13 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 
 import androidx.navigation.fragment.findNavController
 import com.example.lostandfound.R
 import com.example.lostandfound.data.Resource
-import com.example.lostandfound.data.TokenManager
 import com.example.lostandfound.databinding.FragmentLoginBinding
 import com.example.lostandfound.feature.base.BaseFragment
 import kotlinx.coroutines.launch

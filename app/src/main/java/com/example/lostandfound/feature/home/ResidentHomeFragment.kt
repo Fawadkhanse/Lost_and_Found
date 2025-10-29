@@ -15,6 +15,7 @@ import com.example.lostandfound.domain.auth.LostItemResponse
 import com.example.lostandfound.domain.item.FoundItemResponse
 import com.example.lostandfound.feature.base.BaseFragment
 import com.example.lostandfound.feature.item.ItemViewModel
+import com.example.lostandfound.utils.AuthData
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -47,9 +48,13 @@ class ResidentHomeFragment : BaseFragment() {
         setupRecyclerView()
         setupListeners()
         observeViewModels()
+        setView()
         loadData()
     }
 
+    private fun setView() {
+        binding.tvWelcome.text = "Hello "+AuthData.fullName
+    }
     private fun setupRecyclerView() {
         itemsAdapter = ItemsAdapter { item ->
             onItemClicked(item)
@@ -109,6 +114,10 @@ class ResidentHomeFragment : BaseFragment() {
             // Navigate to account/profile
             // findNavController().navigate(R.id.action_residentHomeFragment_to_profileFragment)
             Toast.makeText(requireContext(), "Account", Toast.LENGTH_SHORT).show()
+        }
+        binding.fabAdd.setOnClickListener {
+            // Navigate to add item screen
+             findNavController().navigate(R.id.action_residentHomeFragment_to_addItemFragment)
         }
     }
 

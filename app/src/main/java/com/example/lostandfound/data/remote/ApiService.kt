@@ -1,4 +1,4 @@
-package com.example.lostandfound.data
+package com.example.lostandfound.data.remote
 
 
 import retrofit2.Response
