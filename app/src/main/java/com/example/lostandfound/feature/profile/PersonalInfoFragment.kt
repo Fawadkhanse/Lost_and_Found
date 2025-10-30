@@ -65,6 +65,9 @@ class PersonalInfoFragment : BaseFragment() {
             binding.etUserId.setText("${user.firstName} ${user.lastName}")
             binding.etEmail.setText( user.email)
         }
+        binding.btnUpdateInfo.setOnClickListener {
+
+        }
     }
 
     private fun setupViews() {

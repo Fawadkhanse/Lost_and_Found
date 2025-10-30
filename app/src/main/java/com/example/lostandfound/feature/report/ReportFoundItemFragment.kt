@@ -277,7 +277,8 @@ class ReportFoundItemFragment : BaseFragment() {
         val request = FoundItemRequest(
             title = itemName,
             description = description,
-            category = selectedCategoryId,
+           // category = selectedCategoryId,
+            category = 1,
             foundLocation = location,
             foundDate = selectedDate,
             foundTime = selectedTime,
