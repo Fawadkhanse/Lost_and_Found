@@ -327,7 +327,7 @@ class ItemDetailFragment : BaseFragment() {
                 putString("foundItemTitle", item.title)
                 putString("foundItemImage", item.imageUrl ?: item.itemImage)
             }
-            v
+
             // Navigate to claim form
             Toast.makeText(requireContext(), "Claim form coming soon", Toast.LENGTH_SHORT).show()
         }

@@ -158,7 +158,7 @@ class ResidentHomeFragment : BaseFragment(), NavigationView.OnNavigationItemSele
             // Navigate to messages fragment
             Toast.makeText(requireContext(), "Messages coming soon", Toast.LENGTH_SHORT).show()
             // TODO: Uncomment when messages fragment is ready
-            // navigateTo(R.id.action_residentHomeFragment_to_messagesFragment)
+             navigateTo(R.id.action_residentHomeFragment_to_messagesFragment)
         }
 
         // My Posts
