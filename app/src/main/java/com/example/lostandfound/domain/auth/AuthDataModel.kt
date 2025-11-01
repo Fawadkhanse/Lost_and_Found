@@ -304,18 +304,32 @@ data class CategoryRequest(
     val description: String
 )
 
+data class CategoryListResponse(
+    @SerializedName("count")
+    val count: Int?,
+
+    @SerializedName("next")
+    val next: String? = null,
+
+    @SerializedName("previous")
+    val previous: String? = null,
+
+    @SerializedName("results")
+    val results: List<CategoryResponse>
+)
+
 data class CategoryResponse(
     @SerializedName("id")
-    val id: Int,
+    val id: Int? = null,
 
     @SerializedName("name")
-    val name: String,
+    val name: String? = null,
 
     @SerializedName("description")
-    val description: String,
+    val description: String? = null,
 
     @SerializedName("created_at")
-    val createdAt: String
+    val createdAt: String? = null
 )
 
 // ============================================

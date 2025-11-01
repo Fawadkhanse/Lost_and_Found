@@ -117,7 +117,7 @@ class AddItemFragment : BaseFragment() {
                     }
                     is Resource.Success -> {
                         hideLoading()
-                        categories = resource.data
+                        categories = resource.data.results
                     }
                     is Resource.Error -> {
                         hideLoading()

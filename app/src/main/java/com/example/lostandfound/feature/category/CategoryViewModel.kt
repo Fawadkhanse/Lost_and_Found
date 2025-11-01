@@ -5,6 +5,7 @@ import com.example.lostandfound.data.remote.ApiEndpoints
 import com.example.lostandfound.data.remote.HttpMethod
 import com.example.lostandfound.domain.repository.RemoteRepository
 import com.example.lostandfound.data.Resource
+import com.example.lostandfound.domain.auth.CategoryListResponse
 import com.example.lostandfound.domain.auth.CategoryRequest
 import com.example.lostandfound.domain.auth.CategoryResponse
 import com.example.lostandfound.feature.base.BaseViewModel
@@ -25,8 +26,8 @@ class CategoryViewModel(
     val createCategoryState: StateFlow<Resource<CategoryResponse>> = _createCategoryState.asStateFlow()
 
     // Categories List State
-    private val _categoriesListState = MutableStateFlow<Resource<List<CategoryResponse>>>(Resource.None)
-    val categoriesListState: StateFlow<Resource<List<CategoryResponse>>> = _categoriesListState.asStateFlow()
+    private val _categoriesListState = MutableStateFlow<Resource<CategoryListResponse>>(Resource.None)
+    val categoriesListState: StateFlow<Resource<CategoryListResponse>> = _categoriesListState.asStateFlow()
 
     /**
      * Create a new category (Admin only)
@@ -60,7 +61,7 @@ class CategoryViewModel(
                 requestModel = null,
                 endpoint = ApiEndpoints.CATEGORIES,
                 httpMethod = HttpMethod.GET
-            ).collectAsResource<List<CategoryResponse>>(
+            ).collectAsResource<CategoryListResponse>(
                 onEmit = { result ->
                     _categoriesListState.value = result
                 },

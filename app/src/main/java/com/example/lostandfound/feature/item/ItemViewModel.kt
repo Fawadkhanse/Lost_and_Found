@@ -1,3 +1,4 @@
+// app/src/main/java/com/example/lostandfound/feature/item/ItemViewModel.kt
 package com.example.lostandfound.feature.item
 
 import androidx.lifecycle.viewModelScope
@@ -5,6 +6,7 @@ import com.example.lostandfound.data.remote.ApiEndpoints
 import com.example.lostandfound.data.remote.HttpMethod
 import com.example.lostandfound.domain.repository.RemoteRepository
 import com.example.lostandfound.data.Resource
+import com.example.lostandfound.data.repo.RemoteRepositoryImpl
 import com.example.lostandfound.domain.auth.LostItemRequest
 import com.example.lostandfound.domain.auth.LostItemResponse
 import com.example.lostandfound.domain.auth.LostItemsListResponse
@@ -16,10 +18,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 
-/**
- * ViewModel for managing Lost and Found Items
- */
 class ItemViewModel(
     private val remoteRepository: RemoteRepository
 ) : BaseViewModel() {
@@ -63,6 +67,64 @@ class ItemViewModel(
                 requestModel = request,
                 endpoint = ApiEndpoints.LOST_ITEMS,
                 httpMethod = HttpMethod.POST
+            ).collectAsResource<LostItemResponse>(
+                onEmit = { result ->
+                    _createLostItemState.value = result
+                },
+                useMock = false
+            )
+        }
+    }
+
+    /**
+     * Create a new lost item with multipart image
+     */
+    fun createLostItemWithImage(
+        title: String,
+        description: String,
+        category: Int,
+        lostLocation: String,
+        lostDate: String,
+        lostTime: String,
+        brand: String,
+        color: String,
+        size: String,
+        searchTags: String,
+        colorTags: String,
+        materialTags: String,
+        status: String,
+        isVerified: Boolean,
+        itemImageFile: File?
+    ) {
+        viewModelScope.launch {
+            // Create form data parameters
+            val params = mutableMapOf<String, RequestBody>()
+            params["title"] = createTextPart(title)
+            params["description"] = createTextPart(description)
+            params["category"] = createTextPart(category.toString())
+            params["lost_location"] = createTextPart(lostLocation)
+            params["lost_date"] = createTextPart(lostDate)
+            params["lost_time"] = createTextPart(lostTime)
+            params["brand"] = createTextPart(brand)
+            params["color"] = createTextPart(color)
+            params["size"] = createTextPart(size)
+            params["search_tags"] = createTextPart(searchTags)
+            params["color_tags"] = createTextPart(colorTags)
+            params["material_tags"] = createTextPart(materialTags)
+            params["status"] = createTextPart(status)
+            params["is_verified"] = createTextPart(isVerified.toString())
+
+            // Create image part
+            val imagePart = itemImageFile?.let {
+                val requestFile = it.readBytes().toRequestBody("image/*".toMediaTypeOrNull())
+                MultipartBody.Part.createFormData("item_image", it.name, requestFile)
+            }
+
+            // Make multipart request
+            (remoteRepository as RemoteRepositoryImpl).makeMultipartRequest(
+                params = params,
+                image = imagePart,
+                endpoint = ApiEndpoints.LOST_ITEMS
             ).collectAsResource<LostItemResponse>(
                 onEmit = { result ->
                     _createLostItemState.value = result
@@ -131,6 +193,64 @@ class ItemViewModel(
     }
 
     /**
+     * Create a new found item with multipart image
+     */
+    fun createFoundItemWithImage(
+        title: String,
+        description: String,
+        category: Int,
+        foundLocation: String,
+        foundDate: String,
+        foundTime: String,
+        brand: String,
+        color: String,
+        size: String,
+        searchTags: String,
+        colorTags: String,
+        materialTags: String,
+        storageLocation: String,
+        status: String,
+        itemImageFile: File?
+    ) {
+        viewModelScope.launch {
+            // Create form data parameters
+            val params = mutableMapOf<String, RequestBody>()
+            params["title"] = createTextPart(title)
+            params["description"] = createTextPart(description)
+            params["category"] = createTextPart(category.toString())
+            params["found_location"] = createTextPart(foundLocation)
+            params["found_date"] = createTextPart(foundDate)
+            params["found_time"] = createTextPart(foundTime)
+            params["brand"] = createTextPart(brand)
+            params["color"] = createTextPart(color)
+            params["size"] = createTextPart(size)
+            params["search_tags"] = createTextPart(searchTags)
+            params["color_tags"] = createTextPart(colorTags)
+            params["material_tags"] = createTextPart(materialTags)
+            params["storage_location"] = createTextPart(storageLocation)
+            params["status"] = createTextPart(status)
+
+            // Create image part
+            val imagePart = itemImageFile?.let {
+                val requestFile = it.readBytes().toRequestBody("image/*".toMediaTypeOrNull())
+                MultipartBody.Part.createFormData("item_image", it.name, requestFile)
+            }
+
+            // Make multipart request
+            (remoteRepository as RemoteRepositoryImpl).makeMultipartRequest(
+                params = params,
+                image = imagePart,
+                endpoint = ApiEndpoints.FOUND_ITEMS
+            ).collectAsResource<FoundItemResponse>(
+                onEmit = { result ->
+                    _createFoundItemState.value = result
+                },
+                useMock = false
+            )
+        }
+    }
+
+    /**
      * Get all found items
      */
     fun getAllFoundItems() {
@@ -164,6 +284,14 @@ class ItemViewModel(
                 useMock = false
             )
         }
+    }
+
+    // ============================================
+    // Helper Methods
+    // ============================================
+
+    private fun createTextPart(value: String): RequestBody {
+        return value.toRequestBody("text/plain".toMediaTypeOrNull())
     }
 
     // ============================================

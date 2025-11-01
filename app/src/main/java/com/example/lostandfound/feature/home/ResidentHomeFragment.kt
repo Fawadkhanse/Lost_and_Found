@@ -1,3 +1,4 @@
+// app/src/main/java/com/example/lostandfound/feature/home/ResidentHomeFragment.kt
 package com.example.lostandfound.feature.home
 
 import android.os.Bundle
@@ -6,7 +7,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -138,21 +138,52 @@ class ResidentHomeFragment : BaseFragment(), NavigationView.OnNavigationItemSele
         }
 
         // Bottom navigation
+        setupBottomNavigation()
+
+        // FAB Add button
+        binding.fabAdd.setOnClickListener {
+            navigateTo(R.id.action_residentHomeFragment_to_addItemFragment)
+        }
+    }
+
+    private fun setupBottomNavigation() {
+        // Home - Already on home, do nothing or scroll to top
         binding.bottomNav.navHome.setOnClickListener {
-            // Already on home
+            // Scroll to top of the list
+            binding.rvPosts.smoothScrollToPosition(0)
         }
 
+        // Messages
         binding.bottomNav.navMessage.setOnClickListener {
-            Toast.makeText(requireContext(), "Messages", Toast.LENGTH_SHORT).show()
+            // Navigate to messages fragment
+            Toast.makeText(requireContext(), "Messages coming soon", Toast.LENGTH_SHORT).show()
+            // TODO: Uncomment when messages fragment is ready
+            // navigateTo(R.id.action_residentHomeFragment_to_messagesFragment)
         }
 
+        // My Posts
+        binding.bottomNav.navMyPost.setOnClickListener {
+            // Navigate to my list fragment
+            navigateTo(R.id.action_residentHomeFragment_to_myListFragment)
+        }
+
+        // Account
         binding.bottomNav.navAccount.setOnClickListener {
             // Navigate to profile
-            findNavController().navigate(R.id.action_residentHomeFragment_to_personalInfoFragment)
+            navigateTo(R.id.action_residentHomeFragment_to_personalInfoFragment)
         }
+    }
 
-        binding.fabAdd.setOnClickListener {
-            findNavController().navigate(R.id.action_residentHomeFragment_to_addItemFragment)
+    /**
+     * Navigate to destination with proper back stack handling
+     * Prevents adding duplicate entries to back stack
+     */
+    private fun navigateTo(actionId: Int) {
+        try {
+            findNavController().navigate(actionId)
+        } catch (e: Exception) {
+            // Navigation action not found or already navigated
+            e.printStackTrace()
         }
     }
 
@@ -160,7 +191,7 @@ class ResidentHomeFragment : BaseFragment(), NavigationView.OnNavigationItemSele
         when (item.itemId) {
             R.id.nav_profile -> {
                 // Navigate to profile
-                findNavController().navigate(R.id.action_residentHomeFragment_to_personalInfoFragment)
+                navigateTo(R.id.action_residentHomeFragment_to_personalInfoFragment)
             }
             R.id.nav_logout -> {
                 // Show logout confirmation
@@ -190,8 +221,18 @@ class ResidentHomeFragment : BaseFragment(), NavigationView.OnNavigationItemSele
         authViewModel.logout()
         AuthData.clearAuthData()
 
-        // Navigate to login
-        findNavController().navigate(R.id.action_residentHomeFragment_to_loginFragment)
+        // Navigate to login and clear back stack
+        try {
+            findNavController().navigate(
+                R.id.action_residentHomeFragment_to_loginFragment,
+                null,
+                androidx.navigation.NavOptions.Builder()
+                    .setPopUpTo(R.id.residentHomeFragment, true)
+                    .build()
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         Toast.makeText(requireContext(), "Logged out successfully", Toast.LENGTH_SHORT).show()
     }
@@ -306,6 +347,12 @@ class ResidentHomeFragment : BaseFragment(), NavigationView.OnNavigationItemSele
 
     private fun onItemClicked(item: ItemModel) {
         Toast.makeText(requireContext(), "Clicked: ${item.title}", Toast.LENGTH_SHORT).show()
+        // TODO: Navigate to item detail
+        // val bundle = Bundle().apply {
+        //     putString("itemId", item.id)
+        //     putString("itemType", if (item.isFound) "FOUND" else "LOST")
+        // }
+        // navigateTo(R.id.action_residentHomeFragment_to_itemDetailFragment)
     }
 
     override fun onDestroyView() {

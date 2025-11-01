@@ -1,4 +1,4 @@
-package com.example.lostandfound.feature.messges
+package com.example.lostandfound.feature.chat
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

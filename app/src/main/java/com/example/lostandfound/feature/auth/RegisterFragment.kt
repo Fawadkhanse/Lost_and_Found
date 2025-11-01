@@ -1,17 +1,26 @@
+// app/src/main/java/com/example/lostandfound/feature/auth/RegisterFragment.kt
 package com.example.lostandfound.feature.auth
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
+import com.example.lostandfound.R
 import com.example.lostandfound.data.Resource
 import com.example.lostandfound.databinding.FragmentRegisterBinding
-import com.example.lostandfound.domain.auth.RegisterRequest
 import com.example.lostandfound.feature.base.BaseFragment
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.File
+import java.io.FileOutputStream
 
 class RegisterFragment : BaseFragment() {
 
@@ -19,6 +28,23 @@ class RegisterFragment : BaseFragment() {
     private val binding get() = _binding!!
 
     private val authViewModel: AuthViewModel by viewModel()
+
+    private var selectedImageUri: Uri? = null
+    private var selectedImageFile: File? = null
+
+    // Image picker launcher
+    private val imagePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.data?.let { uri ->
+                selectedImageUri = uri
+                displaySelectedImage(uri)
+                // Convert URI to File
+                selectedImageFile = createFileFromUri(uri)
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,6 +66,11 @@ class RegisterFragment : BaseFragment() {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
+        // Profile photo click to select image
+        binding.ivProfilePhoto.setOnClickListener {
+            openImagePicker()
+        }
+
         binding.btnCreate.setOnClickListener {
             val userId = binding.etUserId.text.toString().trim()
             val password = binding.etPassword.text.toString().trim()
@@ -47,26 +78,52 @@ class RegisterFragment : BaseFragment() {
             val email = binding.etEmail.text.toString().trim()
             val faculty = binding.etFaculty.text.toString().trim()
             val address = binding.etAddress.text.toString().trim()
+
             if (validateInputs(userId, password, phone, email, faculty, address)) {
-                val request = RegisterRequest(
+                authViewModel.registerWithImage(
                     username = userId,
                     email = email,
                     password = password,
                     password2 = password,
-                    firstName = "home",
+                    firstName = "Admin",  // You can add separate fields for these
                     lastName = "Doe",
-                    userType = "resident",
+                   // userType = "resident",
+                    userType = "Admin",
                     phoneNumber = phone,
                     towerNumber = address,
-                    roomNumber = "101",
-                    profileImage = "file.png"
-
-                )
-                authViewModel.register(
-                    request
+                    roomNumber = faculty,
+                    profileImageFile = selectedImageFile
                 )
             }
         }
+    }
+
+    private fun openImagePicker() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        intent.type = "image/*"
+        imagePickerLauncher.launch(intent)
+    }
+
+    private fun displaySelectedImage(uri: Uri) {
+        Glide.with(requireContext())
+            .load(uri)
+            .placeholder(R.drawable.ic_account)
+            .error(R.drawable.ic_account)
+            .circleCrop()
+            .into(binding.ivProfilePhoto)
+    }
+
+    private fun createFileFromUri(uri: Uri): File {
+        val inputStream = requireContext().contentResolver.openInputStream(uri)
+        val file = File(requireContext().cacheDir, "profile_image_${System.currentTimeMillis()}.jpg")
+
+        inputStream?.use { input ->
+            FileOutputStream(file).use { output ->
+                input.copyTo(output)
+            }
+        }
+
+        return file
     }
 
     private fun observeViewModel() {
@@ -85,7 +142,7 @@ class RegisterFragment : BaseFragment() {
                     }
                     is Resource.Error -> {
                         hideLoading()
-                    //    showError()
+                        showError(resource.exception.message)
                     }
                     else -> Unit
                 }
@@ -110,12 +167,20 @@ class RegisterFragment : BaseFragment() {
                 binding.etPassword.error = "Password is required"
                 false
             }
+            password.length < 8 -> {
+                binding.etPassword.error = "Password must be at least 8 characters"
+                false
+            }
             phone.isEmpty() -> {
                 binding.etPhone.error = "Phone number is required"
                 false
             }
             email.isEmpty() -> {
                 binding.etEmail.error = "Email is required"
+                false
+            }
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                binding.etEmail.error = "Invalid email format"
                 false
             }
             faculty.isEmpty() -> {
@@ -131,7 +196,6 @@ class RegisterFragment : BaseFragment() {
     }
 
     private fun navigateToLogin() {
-        // Example navigation logic — adjust if using Navigation Component
         requireActivity().onBackPressedDispatcher.onBackPressed()
     }
 

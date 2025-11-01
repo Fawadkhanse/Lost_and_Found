@@ -85,5 +85,22 @@
     <string name="server_error">Server error occurred</string>
     <string name="poor_internet_connection">Poor internet connection</string>
     <string name="submit">submit</string>
-
+    <!-- Admin Dashboard Strings -->
+    <string name="admin_dashboard">Admin Dashboard</string>
+    <string name="statistics">Statistics</string>
+    <string name="lost_items">Lost Items</string>
+    <string name="found_items">Found Items</string>
+    <string name="total_claims">Total Claims</string>
+    <string name="pending_claims">Pending Claims</string>
+    <string name="total_users">Total Users</string>
+    <string name="recent_activities">Recent Activities</string>
+    <string name="no_recent_activities">No recent activities</string>
+    <string name="post_requests">Post Requests</string>
+    <string name="profile">Profile</string>
+    <string name="pending_requests">Pending Requests</string>
+    <string name="no_pending_requests">No pending requests</string>
+    <string name="pending_lost_items">Pending Lost Items</string>
+    <string name="pending_found_items">Pending Found Items</string>
+    <string name="approve">Approve</string>
+    <string name="reject">Reject</string>
 </resources>

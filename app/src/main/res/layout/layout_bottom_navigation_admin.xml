@@ -1,10 +1,12 @@
-<!-- app/src/main/res/layout/bottom_navigation.xml -->
+<?xml version="1.0" encoding="utf-8"?>
+<!-- app/src/main/res/layout/layout_bottom_navigation_admin.xml -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/bottomNav"
+    android:id="@+id/bottomNavAdmin"
     android:layout_width="match_parent"
-    android:layout_height="56dp"
-    android:background="@color/light_gray"
+    android:layout_height="64dp"
+    android:background="@android:color/white"
+    android:elevation="8dp"
     android:paddingTop="8dp"
     android:paddingBottom="8dp">
 
@@ -17,35 +19,41 @@
         android:focusable="true"
         android:gravity="center"
         android:orientation="vertical"
-        app:layout_constraintEnd_toStartOf="@id/navMessage"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:layout_constraintEnd_toStartOf="@id/navPostRequests"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
+            android:id="@+id/ivHomeIcon"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:contentDescription="@string/home"
-            android:src="@drawable/ic_home" />
+            android:src="@drawable/ic_home"
+            app:tint="@color/primary_teal" />
 
         <TextView
+            android:id="@+id/tvHomeLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="@string/home"
-            android:textColor="@color/dark_gray"
-            android:textSize="12sp" />
+            android:textColor="@color/primary_teal"
+            android:textSize="11sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
-    <!-- Message -->
+    <!-- Post Requests -->
     <LinearLayout
-        android:id="@+id/navMessage"
+        android:id="@+id/navPostRequests"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
         android:orientation="vertical"
-        app:layout_constraintEnd_toStartOf="@id/navMyPost"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:layout_constraintEnd_toStartOf="@id/navProfile"
         app:layout_constraintStart_toEndOf="@id/navHome"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -54,89 +62,70 @@
             android:layout_height="wrap_content">
 
             <ImageView
+                android:id="@+id/ivPostRequestsIcon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:contentDescription="@string/message"
-                android:src="@drawable/ic_message" />
+                android:contentDescription="@string/post_requests"
+                android:src="@drawable/ic_post_requests"
+                app:tint="@color/dark_gray" />
 
+            <!-- Badge for pending requests count -->
             <TextView
-                android:id="@+id/badgeCount"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:id="@+id/tvBadgeCount"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:layout_gravity="end|top"
-                android:layout_marginTop="-4dp"
-                android:layout_marginEnd="-4dp"
-                android:background="@drawable/rounded_button_red"
+                android:layout_marginTop="-6dp"
+                android:layout_marginEnd="-6dp"
+                android:background="@drawable/circle_badge"
                 android:gravity="center"
-                android:text="5"
-                android:textColor="@color/white"
+                android:text="0"
+                android:textColor="@android:color/white"
                 android:textSize="10sp"
-                android:visibility="visible" />
+                android:textStyle="bold"
+                android:visibility="gone" />
         </FrameLayout>
 
         <TextView
+            android:id="@+id/tvPostRequestsLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="@string/message"
+            android:text="@string/post_requests"
             android:textColor="@color/dark_gray"
-            android:textSize="12sp" />
+            android:textSize="11sp" />
     </LinearLayout>
 
-    <!-- My Post -->
+    <!-- Profile -->
     <LinearLayout
-        android:id="@+id/navMyPost"
+        android:id="@+id/navProfile"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
         android:orientation="vertical"
-        app:layout_constraintEnd_toStartOf="@id/navAccount"
-        app:layout_constraintStart_toEndOf="@id/navMessage"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:contentDescription="My Post"
-            android:src="@drawable/ic_logo" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="My Post"
-            android:textColor="@color/dark_gray"
-            android:textSize="12sp" />
-    </LinearLayout>
-
-    <!-- Account (Last) -->
-    <LinearLayout
-        android:id="@+id/navAccount"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
-        android:orientation="vertical"
+        android:background="?attr/selectableItemBackgroundBorderless"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/navMyPost"
+        app:layout_constraintStart_toEndOf="@id/navPostRequests"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
+            android:id="@+id/ivProfileIcon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:contentDescription="@string/account"
-            android:src="@drawable/ic_account" />
+            android:contentDescription="@string/profile"
+            android:src="@drawable/ic_account"
+            app:tint="@color/dark_gray" />
 
         <TextView
+            android:id="@+id/tvProfileLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="@string/account"
+            android:text="@string/profile"
             android:textColor="@color/dark_gray"
-            android:textSize="12sp" />
+            android:textSize="11sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

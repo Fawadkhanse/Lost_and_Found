@@ -1,3 +1,4 @@
+// app/src/main/java/com/example/lostandfound/data/repo/RemoteRepositoryImpl.kt
 package com.example.lostandfound.data.repo
 
 import android.content.Context
@@ -11,8 +12,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
-import kotlin.collections.get
 
 class RemoteRepositoryImpl(
     private val context: Context,
@@ -29,11 +31,9 @@ class RemoteRepositoryImpl(
         isMock: Boolean
     ): Flow<Resource<String>> = flow {
 
-        // Emit loading state
         emit(Resource.Loading)
 
         try {
-            // Make network request using Retrofit
             val response: Response<Any> = when (httpMethod) {
                 HttpMethod.POST -> apiService.post(endpoint, requestModel ?: Any())
                 HttpMethod.GET -> apiService.get(endpoint)
@@ -41,13 +41,11 @@ class RemoteRepositoryImpl(
                 HttpMethod.DELETE -> apiService.delete(endpoint)
             }
 
-            // Handle response
             if (response.isSuccessful) {
                 val body = gson.toJson(response.body() ?: "{}")
-                emit(Resource.Success(body))  // Raw JSON string
+                emit(Resource.Success(body))
             } else {
                 val errorBody = response.errorBody()?.string() ?: ""
-                val errorCode = response.code().toString()
                 emit(Resource.Error(Exception(errorBody)))
             }
 
@@ -58,12 +56,28 @@ class RemoteRepositoryImpl(
         emit(Resource.Error(Exception(e.message ?: "Network error")))
     }.flowOn(Dispatchers.IO)
 
-    private fun parseErrorMessage(errorBody: String): String {
-        return try {
-            val map = gson.fromJson(errorBody, Map::class.java)
-            map["message"]?.toString() ?: "Request failed"
+    // New method for multipart requests
+    override suspend fun makeMultipartRequest(
+        params: Map<String, RequestBody>,
+        image: MultipartBody.Part?,
+        endpoint: String
+    ): Flow<Resource<String>> = flow {
+        emit(Resource.Loading)
+
+        try {
+            val response = apiService.postMultipart(endpoint, params, image)
+
+            if (response.isSuccessful) {
+                val body = gson.toJson(response.body() ?: "{}")
+                emit(Resource.Success(body))
+            } else {
+                val errorBody = response.errorBody()?.string() ?: ""
+                emit(Resource.Error(Exception(errorBody)))
+            }
         } catch (e: Exception) {
-            errorBody.ifBlank { "Request failed" }
+            emit(Resource.Error(Exception(e.message ?: "Unexpected error")))
         }
-    }
+    }.catch { e ->
+        emit(Resource.Error(Exception(e.message ?: "Network error")))
+    }.flowOn(Dispatchers.IO)
 }

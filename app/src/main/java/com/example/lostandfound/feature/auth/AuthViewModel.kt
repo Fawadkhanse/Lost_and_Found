@@ -1,26 +1,26 @@
+// app/src/main/java/com/example/lostandfound/feature/auth/AuthViewModel.kt
 package com.example.lostandfound.feature.auth
 
+import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.example.lostandfound.data.remote.ApiEndpoints
 import com.example.lostandfound.data.remote.HttpMethod
 import com.example.lostandfound.domain.repository.RemoteRepository
 import com.example.lostandfound.data.Resource
 import com.example.lostandfound.data.remote.TokenManager
-import com.example.lostandfound.domain.auth.CurrentUserResponse
-import com.example.lostandfound.domain.auth.LoginRequest
-import com.example.lostandfound.domain.auth.LoginResponse
-import com.example.lostandfound.domain.auth.RegisterRequest
-import com.example.lostandfound.domain.auth.RegisterResponse
-import com.example.lostandfound.domain.auth.UpdatePasswordResponse
-
+import com.example.lostandfound.data.repo.RemoteRepositoryImpl
+import com.example.lostandfound.domain.auth.*
 import com.example.lostandfound.feature.base.BaseViewModel
 import com.example.lostandfound.utils.AuthData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-
-
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 
 class AuthViewModel(
     private val remoteRepository: RemoteRepository
@@ -42,8 +42,6 @@ class AuthViewModel(
     private val _resetPasswordState = MutableStateFlow<Resource<UpdatePasswordResponse>>(Resource.None)
     val resetPasswordState: StateFlow<Resource<UpdatePasswordResponse>> = _resetPasswordState.asStateFlow()
 
-    // Change Password State
-
     // Current User
     private val _currentUser = MutableStateFlow<CurrentUserResponse?>(null)
     val currentUser: StateFlow<CurrentUserResponse?> = _currentUser.asStateFlow()
@@ -51,8 +49,6 @@ class AuthViewModel(
     // Is Logged In
     private val _isLoggedIn = MutableStateFlow(false)
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
-
-    // ===== API Calls =====
 
     /**
      * Login user
@@ -69,11 +65,7 @@ class AuthViewModel(
                 onEmit = { result ->
                     _loginState.value = result
                     if (result is Resource.Success) {
-                        // Update user data and login status
-                      //  _currentUser.value = result.data
                         _isLoggedIn.value = true
-
-                        // Save token to TokenManager
                         result.data.tokens?.let { token ->
                             TokenManager.setToken(token.access)
                         }
@@ -86,27 +78,51 @@ class AuthViewModel(
     }
 
     /**
-     * Register new user
+     * Register new user with multipart image
      */
-    fun register(
-       request: RegisterRequest
+    fun registerWithImage(
+        username: String,
+        email: String,
+        password: String,
+        password2: String,
+        firstName: String,
+        lastName: String,
+        userType: String,
+        phoneNumber: String,
+        towerNumber: String,
+        roomNumber: String,
+        profileImageFile: File?
     ) {
-
         viewModelScope.launch {
-            remoteRepository.makeApiRequest(
-                requestModel = request,
-                endpoint = ApiEndpoints.REGISTER,
-                httpMethod = HttpMethod.POST
+            // Create form data parameters
+            val params = mutableMapOf<String, RequestBody>()
+            params["username"] = createTextPart(username)
+            params["email"] = createTextPart(email)
+            params["password"] = createTextPart(password)
+            params["password2"] = createTextPart(password2)
+            params["first_name"] = createTextPart(firstName)
+            params["last_name"] = createTextPart(lastName)
+            params["user_type"] = createTextPart(userType)
+            params["phone_number"] = createTextPart(phoneNumber)
+            params["tower_number"] = createTextPart(towerNumber)
+            params["room_number"] = createTextPart(roomNumber)
+
+            // Create image part
+            val imagePart = profileImageFile?.let {
+                val requestFile = it.readBytes().toRequestBody("image/*".toMediaTypeOrNull())
+                MultipartBody.Part.createFormData("profile_image", it.name, requestFile)
+            }
+
+            // Make multipart request
+            (remoteRepository as RemoteRepositoryImpl).makeMultipartRequest(
+                params = params,
+                image = imagePart,
+                endpoint = ApiEndpoints.REGISTER
             ).collectAsResource<RegisterResponse>(
                 onEmit = { result ->
                     _registerState.value = result
                     if (result is Resource.Success) {
-                        // Optionally auto-login after registration
-
-
-                    //    _currentUser.value = result.data.data
                         _isLoggedIn.value = true
-
                     }
                 },
                 useMock = false
@@ -114,67 +130,9 @@ class AuthViewModel(
         }
     }
 
-//    /**
-//     * Forgot password - send reset code to email
-//     */
-//    fun forgotPassword(email: String) {
-//        val request = ForgotPasswordRequest(email)
-//
-//        viewModelScope.launch {
-//            remoteRepository.makeApiRequest(
-//                requestModel = request,
-//                endpoint = ApiEndpoints.FORGOT_PASSWORD,
-//                httpMethod = HttpMethod.POST
-//            ).collectAsResource<ForgotPasswordResponse>(
-//                onEmit = { result ->
-//                    _forgotPasswordState.value = result
-//                },
-//                useMock = false
-//            )
-//        }
-//    }
-//
-//    /**
-//     * Reset password with code
-//     */
-//    fun resetPassword(email: String, code: String, newPassword: String) {
-//        val request = ResetPasswordRequest(email, code, newPassword)
-//
-//        viewModelScope.launch {
-//            remoteRepository.makeApiRequest(
-//                requestModel = request,
-//                endpoint = ApiEndpoints.RESET_PASSWORD,
-//                httpMethod = HttpMethod.POST
-//            ).collectAsResource<ResetPasswordResponse>(
-//                onEmit = { result ->
-//                    _resetPasswordState.value = result
-//                },
-//                useMock = false
-//            )
-//        }
-//    }
-//
-//    /**
-//     * Change password (requires authentication)
-//     */
-//    fun changePassword(oldPassword: String, newPassword: String) {
-//        val request = ChangePasswordRequest(oldPassword, newPassword)
-//
-//        viewModelScope.launch {
-//            remoteRepository.makeApiRequest(
-//                requestModel = request,
-//                endpoint = ApiEndpoints.CHANGE_PASSWORD,
-//                httpMethod = HttpMethod.POST
-//            ).collectAsResource<ChangePasswordResponse>(
-//                onEmit = { result ->
-//                    _changePasswordState.value = result
-//                },
-//                useMock = false
-//            )
-//        }
-//    }
-
-    // ===== User Management =====
+    private fun createTextPart(value: String): RequestBody {
+        return value.toRequestBody("text/plain".toMediaTypeOrNull())
+    }
 
     /**
      * Logout user
@@ -221,6 +179,4 @@ class AuthViewModel(
     fun resetResetPasswordState() {
         _resetPasswordState.value = Resource.None
     }
-
-
 }

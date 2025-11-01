@@ -14,10 +14,17 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
 
-// Network Module
+// Network Module - Updated to use context for Chucker
 val networkModule = module {
-    single { ApiClient.createRetrofit() }
-    single { get<Retrofit>().create(ApiService::class.java) }
+    // Provide Retrofit instance with context for Chucker
+    single<Retrofit> {
+        ApiClient.getRetrofit(androidContext())
+    }
+
+    // Provide ApiService
+    single<ApiService> {
+        get<Retrofit>().create(ApiService::class.java)
+    }
 }
 
 // Repository Module
@@ -41,10 +48,10 @@ val viewModelModule = module {
     // Category ViewModel
     viewModel { CategoryViewModel(get()) }
 
-
     // Dashboard ViewModel
     viewModel { DashboardViewModel(get()) }
 
+    // Item ViewModel
     viewModel { ItemViewModel(get()) }
 }
 

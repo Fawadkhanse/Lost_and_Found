@@ -79,4 +79,7 @@ dependencies {
     implementation("io.insert-koin:koin-android:3.5.0")
     implementation("io.insert-koin:koin-androidx-navigation:3.5.0")
 
+    debugImplementation ("com.github.chuckerteam.chucker:library:4.1.0")
+    releaseImplementation ("com.github.chuckerteam.chucker:library-no-op:4.1.0")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 }

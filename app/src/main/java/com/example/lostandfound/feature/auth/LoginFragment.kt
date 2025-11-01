@@ -80,7 +80,7 @@ class LoginFragment : BaseFragment() {
 
                         // Navigate based on user type
                         when (response.user.userType) {
-                            "admin" ->  findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+                            "admin" ->  findNavController().navigate(R.id.action_loginFragment_to_adminHomeFragment)
                             "resident" ->findNavController().navigate(R.id.action_loginFragment_to_residentHomeFragment)
                         }
                     }

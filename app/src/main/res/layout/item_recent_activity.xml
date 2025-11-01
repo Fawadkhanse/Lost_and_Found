@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Activity Icon -->
+        <ImageView
+            android:id="@+id/ivActivityIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="Activity Icon"
+            android:padding="8dp"
+            android:src="@drawable/ic_logo"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/primary_teal" />
+
+        <!-- Activity Title -->
+        <TextView
+            android:id="@+id/tvActivityTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="New claim submitted"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/tvActivityStatus"
+            app:layout_constraintStart_toEndOf="@id/ivActivityIcon"
+            app:layout_constraintTop_toTopOf="@id/ivActivityIcon" />
+
+        <!-- Activity User (optional) -->
+        <TextView
+            android:id="@+id/tvActivityUser"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="by username"
+            android:textColor="@color/dark_gray"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@id/tvActivityStatus"
+            app:layout_constraintStart_toEndOf="@id/ivActivityIcon"
+            app:layout_constraintTop_toBottomOf="@id/tvActivityTitle"
+            tools:visibility="visible" />
+
+        <!-- Activity Date -->
+        <TextView
+            android:id="@+id/tvActivityDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
+            android:text="25 Oct 2025, 23:33"
+            android:textColor="@color/dark_gray"
+            android:textSize="11sp"
+            app:layout_constraintBottom_toBottomOf="@id/ivActivityIcon"
+            app:layout_constraintEnd_toStartOf="@id/tvActivityStatus"
+            app:layout_constraintStart_toEndOf="@id/ivActivityIcon" />
+
+        <!-- Activity Status Badge -->
+        <TextView
+            android:id="@+id/tvActivityStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_button_black"
+            android:backgroundTint="@color/orange"
+            android:paddingStart="12dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="4dp"
+            android:text="PENDING"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
