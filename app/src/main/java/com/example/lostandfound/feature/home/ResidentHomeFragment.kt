@@ -178,14 +178,7 @@ class ResidentHomeFragment : BaseFragment(), NavigationView.OnNavigationItemSele
      * Navigate to destination with proper back stack handling
      * Prevents adding duplicate entries to back stack
      */
-    private fun navigateTo(actionId: Int) {
-        try {
-            findNavController().navigate(actionId)
-        } catch (e: Exception) {
-            // Navigation action not found or already navigated
-            e.printStackTrace()
-        }
-    }
+
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -347,12 +340,12 @@ class ResidentHomeFragment : BaseFragment(), NavigationView.OnNavigationItemSele
 
     private fun onItemClicked(item: ItemModel) {
         Toast.makeText(requireContext(), "Clicked: ${item.title}", Toast.LENGTH_SHORT).show()
-        // TODO: Navigate to item detail
-        // val bundle = Bundle().apply {
-        //     putString("itemId", item.id)
-        //     putString("itemType", if (item.isFound) "FOUND" else "LOST")
-        // }
-        // navigateTo(R.id.action_residentHomeFragment_to_itemDetailFragment)
+
+         val bundle = Bundle().apply {
+             putString("itemId", item.id)
+             putString("itemType", if (item.isFound) "FOUND" else "LOST")
+         }
+         navigateTo(R.id.action_residentHomeFragment_to_itemDetailFragment,bundle)
     }
 
     override fun onDestroyView() {

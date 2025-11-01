@@ -4,17 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
 import com.example.lostandfound.R
+import com.example.lostandfound.data.Resource
 import com.example.lostandfound.databinding.FragmentChatBinding
 import com.example.lostandfound.feature.base.BaseFragment
 import com.example.lostandfound.feature.item.ItemViewModel
 import com.example.lostandfound.feature.notification.NotificationViewModel
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.text.SimpleDateFormat
-import java.util.*
 
 /**
  * ChatFragment - Individual chat/message detail view
@@ -63,30 +62,26 @@ class ChatFragment : BaseFragment() {
         setupViews()
         setupListeners()
         displayMessageContent()
+        markMessageAsRead()
     }
 
     private fun setupViews() {
-        // Set title
         binding.tvChatTitle.text = title ?: "Message"
     }
 
     private fun setupListeners() {
-        // Back button
         binding.btnBack.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
-        // View related item button
         binding.btnViewItem.setOnClickListener {
             viewRelatedItem()
         }
 
-        // View related claim button
         binding.btnViewClaim.setOnClickListener {
             viewRelatedClaim()
         }
 
-        // Reply button (if applicable)
         binding.btnReply.setOnClickListener {
             replyToMessage()
         }
@@ -96,11 +91,17 @@ class ChatFragment : BaseFragment() {
         binding.apply {
             // Display message type badge
             when (type) {
-                "message" -> {
-                    tvTypeBadge.text = "Message"
+                "item_found" -> {
+                    tvTypeBadge.text = "Item Found"
                     tvTypeBadge.setBackgroundResource(R.drawable.rounded_button_black)
                     tvTypeBadge.backgroundTintList =
                         requireContext().getColorStateList(R.color.primary_teal)
+                }
+                "match_found" -> {
+                    tvTypeBadge.text = "Match Found"
+                    tvTypeBadge.setBackgroundResource(R.drawable.rounded_button_black)
+                    tvTypeBadge.backgroundTintList =
+                        requireContext().getColorStateList(R.color.green)
                 }
                 "claim_update" -> {
                     tvTypeBadge.text = "Claim Update"
@@ -108,31 +109,28 @@ class ChatFragment : BaseFragment() {
                     tvTypeBadge.backgroundTintList =
                         requireContext().getColorStateList(R.color.blue)
                 }
-                "item_match" -> {
-                    tvTypeBadge.text = "Item Match"
-                    tvTypeBadge.setBackgroundResource(R.drawable.rounded_button_black)
-                    tvTypeBadge.backgroundTintList =
-                        requireContext().getColorStateList(R.color.green)
-                }
                 "system" -> {
                     tvTypeBadge.text = "System"
                     tvTypeBadge.setBackgroundResource(R.drawable.rounded_button_gray)
-                    // Hide reply button for system messages
                     btnReply.visibility = View.GONE
+                }
+                "message" -> {
+                    tvTypeBadge.text = "Message"
+                    tvTypeBadge.setBackgroundResource(R.drawable.rounded_button_black)
+                    tvTypeBadge.backgroundTintList =
+                        requireContext().getColorStateList(R.color.primary_teal)
                 }
             }
 
             // Display message content
             tvMessageTitle.text = title
             tvMessageContent.text = message
-            tvTimestamp.text = "Just now" // You can pass actual timestamp
+            tvTimestamp.text = "Just now"
 
             // Show/hide action buttons based on related items
             if (lostItemId != null || foundItemId != null) {
                 layoutRelatedItem.visibility = View.VISIBLE
                 btnViewItem.visibility = View.VISIBLE
-
-                // Load item details preview
                 loadItemPreview()
             } else {
                 layoutRelatedItem.visibility = View.GONE
@@ -145,7 +143,7 @@ class ChatFragment : BaseFragment() {
                 btnViewClaim.visibility = View.GONE
             }
 
-            // Hide reply for now (can be implemented with a reply dialog)
+            // Show reply button for messages
             if (type == "message") {
                 btnReply.visibility = View.VISIBLE
             } else {
@@ -156,77 +154,98 @@ class ChatFragment : BaseFragment() {
 
     private fun loadItemPreview() {
         binding.apply {
-            // Show preview card
             cardItemPreview.visibility = View.VISIBLE
-
-            // Set placeholder while loading
             tvItemPreviewTitle.text = "Loading item details..."
             tvItemPreviewDescription.text = ""
 
-            // Load actual item details
             when {
                 lostItemId != null -> {
-                    // Load lost item
                     tvItemPreviewLabel.text = "Related Lost Item"
-                    // You can load item details here using itemViewModel
-                    // For now, just show placeholder
+                    itemViewModel.getLostItemById(lostItemId!!)
+                    observeLostItem()
                 }
                 foundItemId != null -> {
-                    // Load found item
                     tvItemPreviewLabel.text = "Related Found Item"
-                    // You can load item details here using itemViewModel
-                    // For now, just show placeholder
+                    itemViewModel.getFoundItemById(foundItemId!!)
+                    observeFoundItem()
                 }
             }
+        }
+    }
+
+    private fun observeLostItem() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            itemViewModel.lostItemDetailState.collect { resource ->
+                when (resource) {
+                    is Resource.Success -> {
+                        binding.tvItemPreviewTitle.text = resource.data.title
+                        binding.tvItemPreviewDescription.text =
+                            "Lost at ${resource.data.lostLocation}"
+                    }
+                    is Resource.Error -> {
+                        binding.tvItemPreviewTitle.text = "Failed to load item"
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun observeFoundItem() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            itemViewModel.foundItemDetailState.collect { resource ->
+                when (resource) {
+                    is Resource.Success -> {
+                        binding.tvItemPreviewTitle.text = resource.data.title
+                        binding.tvItemPreviewDescription.text =
+                            "Found at ${resource.data.foundLocation}"
+                    }
+                    is Resource.Error -> {
+                        binding.tvItemPreviewTitle.text = "Failed to load item"
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun markMessageAsRead() {
+        messageId?.let {
+            notificationViewModel.markNotificationAsRead(it)
         }
     }
 
     private fun viewRelatedItem() {
         val itemId = lostItemId ?: foundItemId
+        val itemType = if (lostItemId != null) "LOST" else "FOUND"
+
         if (itemId != null) {
             val bundle = Bundle().apply {
                 putString("itemId", itemId)
-                putString("itemType", if (lostItemId != null) "LOST" else "FOUND")
+                putString("itemType", itemType)
             }
 
-            // Navigate to item detail
-            Toast.makeText(
-                requireContext(),
-                "Viewing item: $itemId",
-                Toast.LENGTH_SHORT
-            ).show()
-
-            // TODO: Navigate to item detail fragment
-            // findNavController().navigate(
-            //     R.id.action_chatFragment_to_itemDetailFragment,
-            //     bundle
-            // )
+            try {
+                findNavController().navigate(
+                    R.id.action_chatFragment_to_itemDetailFragment,
+                    bundle
+                )
+            } catch (e: Exception) {
+                showError("Navigation error: ${e.message}")
+            }
         }
     }
 
     private fun viewRelatedClaim() {
         if (claimId != null) {
-            Toast.makeText(
-                requireContext(),
-                "Viewing claim: $claimId",
-                Toast.LENGTH_SHORT
-            ).show()
-
-            // TODO: Navigate to claim detail fragment
-            // val bundle = Bundle().apply {
-            //     putString("claimId", claimId)
-            // }
-            // findNavController().navigate(
-            //     R.id.action_chatFragment_to_claimDetailFragment,
-            //     bundle
-            // )
+            showInfo("Claim details coming soon")
+            // TODO: Navigate to claim detail when available
         }
     }
 
     private fun replyToMessage() {
-        // Show reply dialog or navigate to send message screen
         SendMessageDialogFragment.newInstance(
-            recipientTitle = title ?: "Reply",
+            recipientTitle = "Reply to: $title",
             relatedItemId = lostItemId ?: foundItemId
         ).show(childFragmentManager, "SendMessageDialog")
     }
@@ -234,23 +253,5 @@ class ChatFragment : BaseFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    companion object {
-        fun newInstance(
-            messageId: String,
-            title: String,
-            message: String,
-            type: String
-        ): ChatFragment {
-            return ChatFragment().apply {
-                arguments = Bundle().apply {
-                    putString("messageId", messageId)
-                    putString("title", title)
-                    putString("message", message)
-                    putString("type", type)
-                }
-            }
-        }
     }
 }

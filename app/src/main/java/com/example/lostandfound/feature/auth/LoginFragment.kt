@@ -44,6 +44,8 @@ class LoginFragment : BaseFragment() {
 
     private fun setupViews() {
         binding.btnLogin.setOnClickListener {
+            binding.etUserId.setText("a@a.com")
+            binding.etPassword.setText("12345678p")
             val email = binding.etUserId.text.toString()
             val password = binding.etPassword.text.toString()
 

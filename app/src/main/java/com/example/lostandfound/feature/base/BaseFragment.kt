@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.lostandfound.utils.LoaderDialog
 import com.example.lostandfound.utils.LoadingManager
 
@@ -55,6 +56,23 @@ abstract class BaseFragment : Fragment() {
     protected fun isLoadingShowing(): Boolean {
         return loaderDialog?.isShowing() ?: false
     }
+     fun navigateTo(actionId: Int, bundle: Bundle? = null) {
+        try {
+            findNavController().navigate(actionId,bundle)
+        } catch (e: Exception) {
+            // Navigation action not found or already navigated
+            e.printStackTrace()
+        }
+    }
+     fun navigateTo(actionId: Int) {
+        try {
+            findNavController().navigate(actionId)
+        } catch (e: Exception) {
+            // Navigation action not found or already navigated
+            e.printStackTrace()
+        }
+    }
+
 
     /**
      * Show error toast
