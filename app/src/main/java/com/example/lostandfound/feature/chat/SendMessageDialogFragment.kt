@@ -26,12 +26,14 @@ class SendMessageDialogFragment : BottomSheetDialogFragment() {
 
     private var recipientTitle: String? = null
     private var relatedItemId: String? = null
+     var type: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             recipientTitle = it.getString(ARG_RECIPIENT_TITLE)
             relatedItemId = it.getString(ARG_RELATED_ITEM_ID)
+            type = it.getString(ARG_Type)
         }
     }
 
@@ -119,7 +121,8 @@ class SendMessageDialogFragment : BottomSheetDialogFragment() {
             recipientTitle = recipientTitle ?: "User",
             messageTitle = title,
             messageContent = content,
-            relatedItemId = relatedItemId
+            relatedItemId = relatedItemId,
+            notificationType = type?:"item_found"
         )
     }
 
@@ -159,15 +162,18 @@ class SendMessageDialogFragment : BottomSheetDialogFragment() {
     companion object {
         private const val ARG_RECIPIENT_TITLE = "recipient_title"
         private const val ARG_RELATED_ITEM_ID = "related_item_id"
+        private const val ARG_Type = "type"
 
         fun newInstance(
             recipientTitle: String? = null,
-            relatedItemId: String? = null
+            relatedItemId: String? = null,
+            type: String? = null
         ): SendMessageDialogFragment {
             return SendMessageDialogFragment().apply {
                 arguments = Bundle().apply {
                     recipientTitle?.let { putString(ARG_RECIPIENT_TITLE, it) }
                     relatedItemId?.let { putString(ARG_RELATED_ITEM_ID, it) }
+                    type?.let { putString(ARG_Type, it) }
                 }
             }
         }

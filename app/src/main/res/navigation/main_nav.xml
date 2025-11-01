@@ -134,7 +134,11 @@
         android:id="@+id/itemDetailFragment"
         android:name="com.example.lostandfound.feature.item.ItemDetailFragment"
         android:label="fragment_item_detail"
-        tools:layout="@layout/fragment_item_detail" />
+        tools:layout="@layout/fragment_item_detail" >
+        <action
+            android:id="@+id/action_itemDetailFragment_to_claimFragment"
+            app:destination="@id/claimFragment" />
+    </fragment>
     <fragment
         android:id="@+id/adminHomeFragment"
         android:name="com.example.lostandfound.feature.home.AdminHomeFragment"
@@ -167,4 +171,8 @@
             android:id="@+id/action_messagesFragment_to_chatFragment"
             app:destination="@id/chatFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/claimFragment"
+        android:name="com.example.lostandfound.feature.claim.ClaimFragment"
+        android:label="ClaimFragment" />
 </navigation>

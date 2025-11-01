@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -14,6 +16,7 @@ import com.example.lostandfound.databinding.FragmentItemDetailBinding
 import com.example.lostandfound.domain.auth.LostItemResponse
 import com.example.lostandfound.domain.item.FoundItemResponse
 import com.example.lostandfound.feature.base.BaseFragment
+import com.example.lostandfound.feature.chat.SendMessageDialogFragment
 import com.example.lostandfound.utils.AuthData
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -23,6 +26,7 @@ import java.util.*
 /**
  * ItemDetailFragment - Display detailed information about Lost or Found items
  * Supports viewing item details and claiming found items
+ * Enhanced with contact owner functionality
  */
 class ItemDetailFragment : BaseFragment() {
 
@@ -84,7 +88,7 @@ class ItemDetailFragment : BaseFragment() {
             viewClaims()
         }
 
-        // Contact button
+        // Contact button - Opens message dialog
         binding.btnContact.setOnClickListener {
             contactItemOwner()
         }
@@ -100,7 +104,7 @@ class ItemDetailFragment : BaseFragment() {
             }
         } ?: run {
             showError("Item ID not found")
-           // requireActivity().onBackPressedDispatcher.onBackPressed()
+            // requireActivity().onBackPressedDispatcher.onBackPressed()
         }
     }
 
@@ -305,11 +309,11 @@ class ItemDetailFragment : BaseFragment() {
         }
         binding.tvStatus.setBackgroundResource(R.drawable.rounded_button_black)
         binding.tvStatus.backgroundTintList =
-            androidx.core.content.ContextCompat.getColorStateList(requireContext(), statusColor)
+            ContextCompat.getColorStateList(requireContext(), statusColor)
     }
 
     private fun showClaimDialog() {
-        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        val dialog = AlertDialog.Builder(requireContext())
             .setTitle("Claim This Item")
             .setMessage("Do you want to claim this found item? You'll need to provide proof of ownership.")
             .setPositiveButton("Claim") { _, _ ->
@@ -327,9 +331,8 @@ class ItemDetailFragment : BaseFragment() {
                 putString("foundItemTitle", item.title)
                 putString("foundItemImage", item.imageUrl ?: item.itemImage)
             }
+            navigateTo(R.id.action_itemDetailFragment_to_claimFragment, bundle)
 
-            // Navigate to claim form
-            Toast.makeText(requireContext(), "Claim form coming soon", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -337,8 +340,33 @@ class ItemDetailFragment : BaseFragment() {
         Toast.makeText(requireContext(), "View claims coming soon", Toast.LENGTH_SHORT).show()
     }
 
+    /**
+     * Contact item owner - Opens SendMessageDialogFragment
+     * This allows users to send a message to the item owner
+     */
     private fun contactItemOwner() {
-        Toast.makeText(requireContext(), "Contact feature coming soon", Toast.LENGTH_SHORT).show()
+        // Get item details for the message
+        val itemTitle = when (itemType) {
+            ItemType.LOST -> currentLostItem?.title
+            ItemType.FOUND -> currentFoundItem?.title
+        } ?: "Item"
+
+        val itemId = when (itemType) {
+            ItemType.LOST -> currentLostItem?.id
+            ItemType.FOUND -> currentFoundItem?.id
+        }
+
+        val itemTypeStr = when (itemType) {
+            ItemType.LOST -> "item_lost"
+            ItemType.FOUND -> "item_found"
+        }
+
+        // Open send message dialog
+        SendMessageDialogFragment.newInstance(
+            recipientTitle = "Owner of $itemTypeStr: $itemTitle",
+            relatedItemId = itemId,
+            type = itemTypeStr
+        ).show(childFragmentManager, "SendMessageDialog")
     }
 
     private fun formatDate(dateString: String): String {

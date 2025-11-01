@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Header -->
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/back"
+            android:src="@drawable/ic_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="Claim Found Item"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/btnBack"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btnBack"
+            app:layout_constraintTop_toTopOf="@id/btnBack" />
+
+        <!-- Found Item Section -->
+        <TextView
+            android:id="@+id/tvFoundItemLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Item You're Claiming:"
+            android:textColor="@color/dark_gray"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnBack" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardFoundItem"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:layout_constraintTop_toBottomOf="@id/tvFoundItemLabel">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="12dp">
+
+                <ImageView
+                    android:id="@+id/ivFoundItemImage"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_placeholder" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvFoundItemTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Item Title"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvFoundItemDescription"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:text="Item description..."
+                        android:textColor="@color/dark_gray"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvFoundLocation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Found at: Location"
+                        android:textColor="@color/dark_gray"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/tvFoundDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Found on: Date"
+                        android:textColor="@color/dark_gray"
+                        android:textSize="11sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Claim Description Section -->
+        <TextView
+            android:id="@+id/tvClaimDescriptionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Why is this item yours?"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardFoundItem" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilClaimDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Describe why this item belongs to you"
+            app:boxBackgroundColor="@color/white"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/primary_teal"
+            app:counterEnabled="true"
+            app:counterMaxLength="500"
+            app:layout_constraintTop_toBottomOf="@id/tvClaimDescriptionLabel">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etClaimDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top|start"
+                android:inputType="textMultiLine|textCapSentences"
+                android:maxLength="500"
+                android:minLines="4" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/tvClaimHint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Example: 'This is my phone that I lost in the library on Monday. It has a blue case with my initials on it.'"
+            android:textColor="@color/dark_gray"
+            android:textSize="11sp"
+            android:textStyle="italic"
+            app:layout_constraintTop_toBottomOf="@id/tilClaimDescription" />
+
+        <!-- Proof of Ownership Section -->
+        <TextView
+            android:id="@+id/tvProofLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Proof of Ownership"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvClaimHint" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilProofDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Describe your proof (receipts, unique features, etc.)"
+            app:boxBackgroundColor="@color/white"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/primary_teal"
+            app:counterEnabled="true"
+            app:counterMaxLength="500"
+            app:layout_constraintTop_toBottomOf="@id/tvProofLabel">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etProofDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top|start"
+                android:inputType="textMultiLine|textCapSentences"
+                android:maxLength="500"
+                android:minLines="3" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/tvProofHint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Example: 'I have the original receipt and box. The phone has a scratch on the back camera that I can point out.'"
+            android:textColor="@color/dark_gray"
+            android:textSize="11sp"
+            android:textStyle="italic"
+            app:layout_constraintTop_toBottomOf="@id/tilProofDescription" />
+
+        <!-- Supporting Images Section -->
+        <TextView
+            android:id="@+id/tvSupportingImagesLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Supporting Images (Required)"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvProofHint" />
+
+        <TextView
+            android:id="@+id/tvImagesHint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Upload photos of receipts, original packaging, or any other proof"
+            android:textColor="@color/dark_gray"
+            android:textSize="12sp"
+            app:layout_constraintTop_toBottomOf="@id/tvSupportingImagesLabel" />
+
+        <!-- Proof Image Preview Card -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardProofPreview"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="12dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:layout_constraintTop_toBottomOf="@id/tvImagesHint">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/ivProofPreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_placeholder"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tvNoProofImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
+                    android:text="No proof images added yet\nTap button below to add"
+                    android:textColor="@color/dark_gray"
+                    android:textSize="14sp"
+                    app:drawableTopCompat="@drawable/ic_image" />
+            </FrameLayout>
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/tvProofImageCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="0 image(s) selected"
+            android:textColor="@color/dark_gray"
+            android:textSize="12sp"
+            android:textStyle="italic"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardProofPreview" />
+
+        <!-- Image Buttons -->
+        <LinearLayout
+            android:id="@+id/layoutImageButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            app:layout_constraintTop_toBottomOf="@id/tvProofImageCount">
+
+            <Button
+                android:id="@+id/btnAddProofImage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/primary_teal"
+                android:drawableStart="@drawable/ic_image"
+                android:drawablePadding="8dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:text="Add Image"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btnRemoveProofImage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/red"
+                android:drawableStart="@drawable/ic_delete"
+                android:drawablePadding="8dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:text="Remove"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnAddMultipleImages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/blue"
+            android:drawableStart="@drawable/ic_image"
+            android:drawablePadding="8dp"
+            android:text="Add Multiple Images"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/layoutImageButtons" />
+
+        <!-- Important Notice -->
+<!--        <androidx.cardview.widget.CardView-->
+<!--            android:id="@+id/cardNotice"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="24dp"-->
+<!--            app:cardBackgroundColor="#FFF9E5"-->
+<!--            app:cardCornerRadius="8dp"-->
+<!--            app:cardElevation="0dp"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/btnAddMultipleImages">-->
+
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:padding="12dp">-->
+
+<!--                <ImageView-->
+<!--                    android:layout_width="24dp"-->
+<!--                    android:layout_height="24dp"-->
+<!--                    android:contentDescription="@string/info"-->
+<!--                    android:src="@drawable/ic_info"-->
+<!--                    app:tint="@color/orange" />-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginStart="12dp"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:text="Your claim will be reviewed by an admin. You'll be notified once a decision is made. Please provide accurate information."-->
+<!--                    android:textColor="@color/dark_gray"-->
+<!--                    android:textSize="12sp" />-->
+<!--            </LinearLayout>-->
+<!--        </androidx.cardview.widget.CardView>-->
+
+        <!-- Action Buttons -->
+        <Button
+            android:id="@+id/btnSubmitClaim"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="@color/primary_teal"
+            android:text="Submit Claim"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/btnAddMultipleImages" />
+
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="24dp"
+            android:backgroundTint="@color/light_gray"
+            android:text="Cancel"
+            android:textAllCaps="false"
+            android:textColor="@color/dark_gray"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnSubmitClaim" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

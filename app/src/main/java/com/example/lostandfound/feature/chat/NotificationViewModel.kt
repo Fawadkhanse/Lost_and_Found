@@ -60,7 +60,7 @@ class NotificationViewModel(
         lostItem: String? = null
     ) {
         val request = NotificationRequest(
-            notificationType = notificationType,
+            notificationType = "item_found",
             title = title,
             message = message,
             lostItem = lostItem
@@ -88,12 +88,13 @@ class NotificationViewModel(
         recipientTitle: String,
         messageTitle: String,
         messageContent: String,
-        relatedItemId: String? = null
+        relatedItemId: String? = null,
+        notificationType: String="item_found"
     ) {
         val fullMessage = "$messageTitle\n\n$messageContent"
 
         createNotification(
-            notificationType = "message",
+            notificationType = notificationType,
             title = messageTitle,
             message = fullMessage,
             lostItem = relatedItemId
