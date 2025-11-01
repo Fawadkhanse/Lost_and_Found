@@ -59,7 +59,7 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:padding="12dp"
-                android:src="@drawable/ic_menu"
+                android:src="@drawable/ic_logout"
                 android:contentDescription="Menu"
                 android:clickable="true"
                 android:focusable="true"

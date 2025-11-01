@@ -498,7 +498,17 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvActivitiesHeader" />
-
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/add_person"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:contentDescription="Compose Message"
+                    android:src="@drawable/ic_add_user"
+                    app:backgroundTint="@color/primary_teal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:tint="@color/white" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

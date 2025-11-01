@@ -59,7 +59,7 @@ class AdminHomeFragment : BaseFragment() {
     }
 
     private fun setupRecyclerView() {
-        activitiesAdapter = RecentActivitiesAdapter { activity ->
+        activitiesAdapter = RecentActivitiesAdapter() { activity ->
             onActivityClicked(activity)
         }
 
@@ -120,6 +120,9 @@ class AdminHomeFragment : BaseFragment() {
 
         binding.cardTotalUsers.setOnClickListener {
             navigateToUsersList()
+        }
+        binding.addPerson.setOnClickListener {
+            navigateTo(R.id.action_adminHomeFragment_to_registerFragment)
         }
     }
 

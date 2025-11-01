@@ -111,11 +111,15 @@ class ResidentHomeFragment : BaseFragment(), NavigationView.OnNavigationItemSele
 
         // Menu button - opens drawer
         binding.btnMenu.setOnClickListener {
-            if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
-                binding.drawerLayout.closeDrawer(GravityCompat.END)
-            } else {
-                binding.drawerLayout.openDrawer(GravityCompat.END)
-            }
+            showLogoutConfirmation()
+
+//            if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
+//                binding.drawerLayout.closeDrawer(GravityCompat.END)
+//            } else {
+//                binding.drawerLayout.openDrawer(GravityCompat.END)
+//            }
+
+
         }
 
         // Search

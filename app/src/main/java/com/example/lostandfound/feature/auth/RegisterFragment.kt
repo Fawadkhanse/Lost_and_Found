@@ -87,11 +87,11 @@ class RegisterFragment : BaseFragment() {
                     password2 = password,
                     firstName = "Admin",  // You can add separate fields for these
                     lastName = "Doe",
-                   // userType = "resident",
-                    userType = "Admin",
+                    userType = "resident",
+                   // userType = "Admin",
                     phoneNumber = phone,
                     towerNumber = address,
-                    roomNumber = faculty,
+                    roomNumber = "0",
                     profileImageFile = selectedImageFile
                 )
             }
