@@ -20,4 +20,11 @@
     <color name="text_primary">#212121</color>
     <color name="text_secondary">#757575</color>
     <color name="text_hint">#BDBDBD</color>
+
+    <!-- Light variants -->
+    <color name="light_teal">#E0F2F1</color>
+    <color name="light_red">#FFEBEE</color>
+    <color name="light_blue">#E3F2FD</color>
+    <color name="light_green">#E8F5E9</color>
+    <color name="light_orange">#FFF3E0</color>
 </resources>
