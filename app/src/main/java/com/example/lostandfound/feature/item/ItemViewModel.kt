@@ -7,6 +7,7 @@ import com.example.lostandfound.data.remote.HttpMethod
 import com.example.lostandfound.domain.repository.RemoteRepository
 import com.example.lostandfound.data.Resource
 import com.example.lostandfound.data.repo.RemoteRepositoryImpl
+import com.example.lostandfound.domain.VerificationResponse
 import com.example.lostandfound.domain.auth.LostItemRequest
 import com.example.lostandfound.domain.auth.LostItemResponse
 import com.example.lostandfound.domain.auth.LostItemsListResponse
@@ -53,6 +54,22 @@ class ItemViewModel(
 
     private val _foundItemDetailState = MutableStateFlow<Resource<FoundItemResponse>>(Resource.None)
     val foundItemDetailState: StateFlow<Resource<FoundItemResponse>> = _foundItemDetailState.asStateFlow()
+
+    // ============================================
+    // Verification State Flows
+    // ============================================
+
+    private val _verifyLostItemState = MutableStateFlow<Resource<VerificationResponse>>(Resource.None)
+    val verifyLostItemState: StateFlow<Resource<VerificationResponse>> = _verifyLostItemState.asStateFlow()
+
+    private val _verifyFoundItemState = MutableStateFlow<Resource<VerificationResponse>>(Resource.None)
+    val verifyFoundItemState: StateFlow<Resource<VerificationResponse>> = _verifyFoundItemState.asStateFlow()
+
+    private val _rejectLostItemState = MutableStateFlow<Resource<String>>(Resource.None)
+    val rejectLostItemState: StateFlow<Resource<String>> = _rejectLostItemState.asStateFlow()
+
+    private val _rejectFoundItemState = MutableStateFlow<Resource<String>>(Resource.None)
+    val rejectFoundItemState: StateFlow<Resource<String>> = _rejectFoundItemState.asStateFlow()
 
     // ============================================
     // Lost Item API Methods
@@ -287,6 +304,88 @@ class ItemViewModel(
     }
 
     // ============================================
+    // Admin Verification Methods
+    // ============================================
+
+    /**
+     * Verify/Approve Lost Item (Admin only)
+     * Endpoint: POST /api/admin/verify/lost-item/{id}/
+     */
+    fun verifyLostItem(itemId: String) {
+        viewModelScope.launch {
+            remoteRepository.makeApiRequest(
+                requestModel = null,
+                endpoint = ApiEndpoints.VERIFY_LOST_ITEM.replace("{id}", itemId),
+                httpMethod = HttpMethod.POST
+            ).collectAsResource<VerificationResponse>(
+                onEmit = { result ->
+                    _verifyLostItemState.value = result
+                },
+                useMock = false
+            )
+        }
+    }
+
+    /**
+     * Verify/Approve Found Item (Admin only)
+     * Endpoint: POST /api/admin/verify/found-item/{id}/
+     */
+    fun verifyFoundItem(itemId: String) {
+        viewModelScope.launch {
+            remoteRepository.makeApiRequest(
+                requestModel = null,
+                endpoint = ApiEndpoints.VERIFY_FOUND_ITEM.replace("{id}", itemId),
+                httpMethod = HttpMethod.POST
+            ).collectAsResource<VerificationResponse>(
+                onEmit = { result ->
+                    _verifyFoundItemState.value = result
+                },
+                useMock = false
+            )
+        }
+    }
+
+    /**
+     * Reject Lost Item (Admin only)
+     * This will delete the item or mark it as rejected
+     * Endpoint: DELETE /api/lost-items/{id}/
+     */
+    fun rejectLostItem(itemId: String) {
+        viewModelScope.launch {
+            remoteRepository.makeApiRequest(
+                requestModel = null,
+                endpoint = ApiEndpoints.LOST_ITEM_DETAIL.replace("{id}", itemId),
+                httpMethod = HttpMethod.DELETE
+            ).collectAsResource<String>(
+                onEmit = { result ->
+                    _rejectLostItemState.value = result
+                },
+                useMock = false
+            )
+        }
+    }
+
+    /**
+     * Reject Found Item (Admin only)
+     * This will delete the item or mark it as rejected
+     * Endpoint: DELETE /api/found-items/{id}/
+     */
+    fun rejectFoundItem(itemId: String) {
+        viewModelScope.launch {
+            remoteRepository.makeApiRequest(
+                requestModel = null,
+                endpoint = ApiEndpoints.FOUND_ITEM_DETAIL.replace("{id}", itemId),
+                httpMethod = HttpMethod.DELETE
+            ).collectAsResource<String>(
+                onEmit = { result ->
+                    _rejectFoundItemState.value = result
+                },
+                useMock = false
+            )
+        }
+    }
+
+    // ============================================
     // Helper Methods
     // ============================================
 
@@ -322,6 +421,22 @@ class ItemViewModel(
         _foundItemDetailState.value = Resource.None
     }
 
+    fun resetVerifyLostItemState() {
+        _verifyLostItemState.value = Resource.None
+    }
+
+    fun resetVerifyFoundItemState() {
+        _verifyFoundItemState.value = Resource.None
+    }
+
+    fun resetRejectLostItemState() {
+        _rejectLostItemState.value = Resource.None
+    }
+
+    fun resetRejectFoundItemState() {
+        _rejectFoundItemState.value = Resource.None
+    }
+
     fun resetAllStates() {
         resetCreateLostItemState()
         resetLostItemsListState()
@@ -329,5 +444,9 @@ class ItemViewModel(
         resetCreateFoundItemState()
         resetFoundItemsListState()
         resetFoundItemDetailState()
+        resetVerifyLostItemState()
+        resetVerifyFoundItemState()
+        resetRejectLostItemState()
+        resetRejectFoundItemState()
     }
 }
