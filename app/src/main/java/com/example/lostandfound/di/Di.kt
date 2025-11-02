@@ -10,6 +10,7 @@ import com.example.lostandfound.feature.home.DashboardViewModel
 import com.example.lostandfound.feature.claimitem.ClaimViewModel
 import com.example.lostandfound.feature.item.ItemViewModel
 import com.example.lostandfound.feature.notification.NotificationViewModel
+import com.example.lostandfound.feature.profile.ProfileViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -56,6 +57,7 @@ val viewModelModule = module {
     viewModel { ItemViewModel(get()) }
 
     viewModel { NotificationViewModel(get()) }
+    viewModel {ProfileViewModel(get()) }
 }
 
 // Combined modules list

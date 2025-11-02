@@ -102,34 +102,34 @@ data class LoginResponse(
 
 data class UserDetailInfo(
     @SerializedName("id")
-    val id: String,
+    var id: String,
 
     @SerializedName("username")
-    val username: String,
+    var username: String,
 
     @SerializedName("email")
     val email: String,
 
     @SerializedName("first_name")
-    val firstName: String,
+    var firstName: String,
 
     @SerializedName("last_name")
-    val lastName: String,
+    var lastName: String,
 
     @SerializedName("user_type")
-    val userType: String,
+    var userType: String,
 
     @SerializedName("phone_number")
-    val phoneNumber: String,
+    var phoneNumber: String,
 
     @SerializedName("tower_number")
-    val towerNumber: String,
+    var towerNumber: String,
 
     @SerializedName("room_number")
-    val roomNumber: String,
+    var roomNumber: String,
 
     @SerializedName("profile_image")
-    val profileImage: String?,
+    var profileImage: String?,
 
     @SerializedName("is_staff")
     val isStaff: Boolean,

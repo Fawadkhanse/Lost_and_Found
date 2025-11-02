@@ -1,5 +1,6 @@
 package com.example.lostandfound.utils
 
+import com.example.lostandfound.domain.auth.CurrentUserResponse
 import com.example.lostandfound.domain.auth.LoginResponse
 import com.example.lostandfound.domain.auth.UserDetailInfo
 
@@ -22,5 +23,23 @@ object AuthData {
         email = ""
         phoneNumber = ""
         userDetailInfo = null
+    }
+
+    fun setCurrentUserResponse(data: CurrentUserResponse) {
+        fullName = data.firstName
+        email = data.email
+        phoneNumber = data.phoneNumber
+        userDetailInfo .apply {
+            this?.id = data.id
+            this?.username = data.username
+            email = data.email
+            this?.firstName = data.firstName
+            this?.lastName = data.lastName
+            this?.userType = data.userType
+            this?.phoneNumber = data.phoneNumber
+            this?.towerNumber = data.towerNumber
+            this?.roomNumber = data.roomNumber
+            this?.profileImage = data.profileImage
+        }
     }
 }

@@ -4,7 +4,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!-- Common -->
-    <string name="back">Back</string>
+
     <string name="home">Home</string>
     <string name="message">Message</string>
     <string name="account">Account</string>
@@ -14,11 +14,9 @@
     <string name="login">Login</string>
     <string name="log_in">Log In</string>
     <string name="enter_user_id">Enter User ID</string>
-    <string name="user_id">User ID</string>
-    <string name="user_id_hint">CB12345</string>
+
     <string name="enter_password">Enter Password</string>
-    <string name="password">Password</string>
-    <string name="password_hint">********</string>
+
     <string name="forgot_password">Forgot Password?</string>
     <string name="user_type">User Type</string>
     <string name="university_logo">University Logo</string>
@@ -26,7 +24,7 @@
     <!-- Forgot Password -->
     <string name="forgot_password_title">Forgot Password</string>
     <string name="email">Email</string>
-    <string name="reset">Reset</string>
+
 
     <!-- Home -->
     <string name="found">Found</string>
@@ -39,15 +37,11 @@
     <string name="electronics">Electronics</string>
 
     <!-- Account -->
-    <string name="profile_photo">Profile Photo</string>
-    <string name="phone_number">Phone Number</string>
-    <string name="ten_digit_number">10-digit number</string>
-    <string name="email_user">Email</string>
-    <string name="email_format">user@gmail.com</string>
+
     <string name="faculty">Faculty</string>
     <string name="address">Address</string>
     <string name="create">Create</string>
-    <string name="update_info">Update Info</string>
+
 
     <!-- View Item -->
     <string name="view_item">View Item</string>
@@ -103,4 +97,105 @@
     <string name="pending_found_items">Pending Found Items</string>
     <string name="approve">Approve</string>
     <string name="reject">Reject</string>
+
+    <!-- Profile Screen Strings -->
+    <string name="my_profile">My Profile</string>
+    <string name="personal_information">Personal Information</string>
+    <string name="security">Security</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Profile Photo Strings -->
+    <string name="profile_photo">Profile Photo</string>
+    <string name="change_photo">Change Photo</string>
+    <string name="tap_to_change_photo">Tap to change photo</string>
+    <string name="select_photo">Select Photo</string>
+
+    <!-- User Info Labels -->
+    <string name="full_name">Full Name</string>
+    <string name="user_id">User ID</string>
+    <string name="user_id_hint">Enter user ID</string>
+    <string name="email_user">Email</string>
+    <string name="email_format">email@example.com</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="ten_digit_number">10-digit number</string>
+    <string name="tower_number">Tower Number</string>
+    <string name="room_number">Room Number</string>
+
+    <!-- Password Strings -->
+    <string name="password">Password</string>
+    <string name="password_hint">Enter password</string>
+    <string name="current_password">Current Password</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_new_password">Confirm New Password</string>
+    <string name="change_password">Change Password</string>
+    <string name="leave_blank_to_keep_current">Leave blank to keep current password</string>
+
+    <!-- Action Buttons -->
+    <string name="update_info">Update Info</string>
+    <string name="logout">Logout</string>
+    <string name="back">Back</string>
+    <string name="reset">Reset</string>
+
+    <!-- Validation Messages -->
+    <string name="email_required">Email is required</string>
+    <string name="phone_required">Phone number is required</string>
+    <string name="password_min_length">Password must be at least 8 characters</string>
+    <string name="passwords_dont_match">Passwords do not match</string>
+    <string name="invalid_email">Invalid email format</string>
+    <string name="invalid_phone">Invalid phone number</string>
+    <string name="current_password_required">Current password is required</string>
+    <string name="new_password_required">New password is required</string>
+    <string name="password_must_differ">New password must be different from current password</string>
+
+    <!-- Success Messages -->
+    <string name="profile_updated">Profile updated successfully!</string>
+    <string name="password_updated">Password updated successfully!</string>
+    <string name="logged_out">Logged out successfully</string>
+    <string name="photo_updated">Profile photo updated</string>
+
+    <!-- Error Messages -->
+    <string name="load_profile_failed">Failed to load profile</string>
+    <string name="update_profile_failed">Failed to update profile</string>
+    <string name="update_password_failed">Failed to update password</string>
+    <string name="photo_upload_failed">Failed to upload photo</string>
+
+    <!-- Confirmation Dialogs -->
+    <string name="confirm_logout_title">Logout</string>
+    <string name="confirm_logout_message">Are you sure you want to logout?</string>
+    <string name="confirm_update_title">Update Profile</string>
+    <string name="confirm_update_message">Are you sure you want to update your profile information?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <!-- User Type -->
+    <string name="admin">Admin</string>
+    <string name="resident">Resident</string>
+
+    <!-- Account Info -->
+    <string name="account_id">Account ID: %s</string>
+    <string name="member_since">Member since: %s</string>
+    <string name="app_version">Version 1.0.0</string>
+
+    <!-- Password Requirements -->
+    <string name="password_requirements">Password Requirements:\n• Minimum 8 characters\n• New password must be different from current</string>
+
+    <!-- Loading Messages -->
+    <string name="loading_profile">Loading profile…</string>
+    <string name="updating_profile">Updating profile…</string>
+    <string name="updating_password">Updating password…</string>
+    <string name="uploading_photo">Uploading photo…</string>
+
+    <!-- Additional Strings -->
+    <string name="profile_picture_hint">Tap to select a new profile picture</string>
+    <string name="edit_mode_enabled">Edit mode enabled</string>
+    <string name="changes_saved">Changes saved successfully</string>
+    <string name="no_changes_made">No changes were made</string>
+    <string name="discard_changes">Discard changes?</string>
+    <string name="unsaved_changes">You have unsaved changes. Do you want to discard them?</string>
+    <string name="discard">Discard</string>
+    <string name="keep_editing">Keep Editing</string>
+
+
 </resources>

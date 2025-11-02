@@ -8,8 +8,8 @@ object ApiEndpoints {
 
     // Profile endpoints
     const val PROFILE = "profile/"
-    const val UPDATE_PASSWORD = "profile/password/"
-    const val CURRENT_USER = "me/"
+    const val UPDATE_PASSWORD = "api/profile/password/"
+    const val CURRENT_USER = "api/me/"
     const val ALL_USERS = "users/"
 
     // Category endpoints
@@ -42,4 +42,5 @@ object ApiEndpoints {
     // Admin Verification endpoints
     const val VERIFY_LOST_ITEM = "admin/verify/lost-item/{id}/"
     const val VERIFY_FOUND_ITEM = "admin/verify/found-item/{id}/"
+
 }
