@@ -20,9 +20,16 @@
     <string name="forgot_password">Forgot Password?</string>
     <string name="user_type">User Type</string>
     <string name="university_logo">University Logo</string>
+    <string name="dont_have_account">Don\'t have an account?</string>
+    <string name="register_now">Register Now</string>
+
+    <!-- Password Visibility -->
+    <string name="toggle_password_visibility">Toggle password visibility</string>
+    <string name="show_password">Show password</string>
+    <string name="hide_password">Hide password</string>
 
     <!-- Forgot Password -->
-    <string name="forgot_password_title">Forgot Password</string>
+
     <string name="email">Email</string>
 
 
@@ -197,5 +204,29 @@
     <string name="discard">Discard</string>
     <string name="keep_editing">Keep Editing</string>
 
+        <!-- Forgot Password Strings -->
+        <string name="forgot_password_title">Forgot Password</string>
+        <string name="password_reset_requested">Password Reset Requested</string>
+        <string name="password_reset_message">Password reset instructions would be sent to %s.\n\nNote: Since this is a demo, please contact your administrator to reset your password.</string>
+        <string name="sending_reset_email">Sending reset email…</string>
+        <string name="reset_email_sent">Reset email sent successfully!</string>
+        <string name="reset_email_error">Failed to send reset email: %s</string>
+
+        <!-- Reset Password Strings -->
+        <string name="reset_password_title">Reset Password</string>
+        <string name="reset_password_subtitle">Enter your email and new password</string>
+        <string name="reset_password">Reset Password</string>
+            <string name="resetting_password">Resetting password…</string>
+        <string name="password_reset_success">Password Reset Successful</string>
+        <string name="password_reset_success_message">Your password has been reset successfully. You can now login with your new password.</string>
+        <string name="password_reset_error">Failed to reset password: %s</string>
+        <string name="invalid_reset_token">Invalid or expired reset token</string>
+        <string name="login_now">Login Now</string>
+
+        <!-- Validation Strings -->
+        <string name="confirm_password_required">Please confirm your password</string>
+
+        <!-- Common Strings -->
+        <string name="ok">OK</string>
 
 </resources>

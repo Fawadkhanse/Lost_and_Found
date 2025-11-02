@@ -724,3 +724,54 @@ data class ErrorResponse(
     @SerializedName("message")
     val message: String? = null
 )
+
+/**
+ * Request model for forgot password
+ */
+data class ForgotPasswordRequest(
+    @SerializedName("email")
+    val email: String
+)
+
+/**
+ * Response model for forgot password
+ */
+data class ForgotPasswordResponse(
+    @SerializedName("message")
+    val message: String,
+
+    @SerializedName("detail")
+    val detail: String? = null
+)
+
+/**
+ * Request model for reset password (when user has reset token)
+ */
+data class ResetPasswordRequest(
+    @SerializedName("email")
+    val email: String,
+
+    @SerializedName("token")
+    val token: String,
+
+    @SerializedName("new_password")
+    val newPassword: String,
+
+    @SerializedName("confirm_password")
+    val confirmPassword: String
+)
+
+/**
+ * Response model for reset password
+ */
+data class ResetPasswordResponse(
+    @SerializedName("message")
+    val message: String,
+
+    @SerializedName("detail")
+    val detail: String? = null
+)
+
+
+
+

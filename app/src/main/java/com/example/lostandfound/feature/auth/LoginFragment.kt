@@ -1,12 +1,12 @@
 package com.example.lostandfound.feature.auth
 
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
-
 import androidx.navigation.fragment.findNavController
 import com.example.lostandfound.R
 import com.example.lostandfound.data.Resource
@@ -16,8 +16,13 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
- * LoginFragment - Example implementation
- * Demonstrates how to use ViewModel with single API call pattern
+ * LoginFragment - Enhanced with Show/Hide Password functionality
+ * Features:
+ * - Email/password login
+ * - Show/hide password toggle
+ * - Input validation
+ * - Error handling
+ * - Navigation to dashboard based on user type
  */
 class LoginFragment : BaseFragment() {
 
@@ -25,6 +30,9 @@ class LoginFragment : BaseFragment() {
     private val binding get() = _binding!!
 
     private val authViewModel: AuthViewModel by viewModel()
+
+    // Track password visibility state
+    private var isPasswordVisible = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,13 +51,11 @@ class LoginFragment : BaseFragment() {
     }
 
     private fun setupViews() {
+        // Login button
         binding.btnLogin.setOnClickListener {
-            binding.etUserId.setText("b@b.com")
-            binding.etPassword.setText("12345678p")
-
-//            binding.etUserId.setText("shamsurrehman@example.com")
-//            binding.etPassword.setText("fazal@123")
-
+            // For testing - pre-fill credentials
+            // binding.etUserId.setText("b@b.com")
+            // binding.etPassword.setText("12345678p")
 
             val email = binding.etUserId.text.toString()
             val password = binding.etPassword.text.toString()
@@ -59,14 +65,43 @@ class LoginFragment : BaseFragment() {
             }
         }
 
+        // Show/Hide Password Toggle
+        binding.ivPasswordToggle.setOnClickListener {
+            togglePasswordVisibility()
+        }
+
+        // Forgot Password
         binding.tvForgotPassword.setOnClickListener {
-            // Navigate to forgot password screen
             findNavController().navigate(R.id.action_loginFragment_to_forgotPasswordFragment2)
         }
 
-        binding.tvRegister.setOnClickListener {
-           findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+        // Register
+//        binding.tvRegister.setOnClickListener {
+//            findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+//        }
+    }
+
+    /**
+     * Toggle password visibility
+     * Changes between showing plain text and password dots
+     */
+    private fun togglePasswordVisibility() {
+        if (isPasswordVisible) {
+            // Hide password
+            binding.etPassword.inputType =
+                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            binding.ivPasswordToggle.setImageResource(R.drawable.ic_eye_off)
+            isPasswordVisible = false
+        } else {
+            // Show password
+            binding.etPassword.inputType =
+                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            binding.ivPasswordToggle.setImageResource(R.drawable.ic_eye)
+            isPasswordVisible = true
         }
+
+        // Move cursor to end of text
+        binding.etPassword.setSelection(binding.etPassword.text?.length ?: 0)
     }
 
     private fun observeViewModel() {
@@ -87,8 +122,8 @@ class LoginFragment : BaseFragment() {
 
                         // Navigate based on user type
                         when (response.user.userType) {
-                            "admin" ->  findNavController().navigate(R.id.action_loginFragment_to_adminHomeFragment)
-                            "resident" ->findNavController().navigate(R.id.action_loginFragment_to_residentHomeFragment)
+                            "admin" -> findNavController().navigate(R.id.action_loginFragment_to_adminHomeFragment)
+                            "resident" -> findNavController().navigate(R.id.action_loginFragment_to_residentHomeFragment)
                         }
                     }
                     is Resource.Error -> {
@@ -120,5 +155,3 @@ class LoginFragment : BaseFragment() {
         _binding = null
     }
 }
-
-

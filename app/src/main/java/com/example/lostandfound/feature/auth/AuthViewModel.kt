@@ -135,6 +135,131 @@ class AuthViewModel(
     }
 
     /**
+     * Forgot Password - Send reset email
+     * Note: Based on the API documentation provided, there is no specific "forgot password" endpoint.
+     * The API only has an "update password" endpoint (PUT /api/profile/password/) which requires
+     * the old password - meaning the user must be logged in.
+     *
+     * In a production environment, this would typically:
+     * 1. Verify the email exists in the system
+     * 2. Generate a password reset token
+     * 3. Send an email with a reset link
+     * 4. User clicks link and is taken to reset password page
+     *
+     * For now, this is a mock implementation. When the backend adds a forgot password endpoint,
+     * update this method with the actual API call.
+     */
+    fun forgotPassword(email: String) {
+        viewModelScope.launch {
+            // Mock implementation - simulates sending reset email
+            _forgotPasswordState.value = Resource.Loading
+
+            try {
+                // Simulate API delay
+                kotlinx.coroutines.delay(1500)
+
+                // Mock success response
+                _forgotPasswordState.value = Resource.Success(
+                    UpdatePasswordResponse(
+                        detail = "If an account exists with email $email, password reset instructions have been sent."
+                    )
+                )
+            } catch (e: Exception) {
+                _forgotPasswordState.value = Resource.Error(e)
+            }
+
+            /*
+            When backend endpoint is available, replace above code with:
+
+            val request = ForgotPasswordRequest(email)
+
+            remoteRepository.makeApiRequest(
+                requestModel = request,
+                endpoint = ApiEndpoints.FORGOT_PASSWORD, // Add this to ApiEndpoints
+                httpMethod = HttpMethod.POST
+            ).collectAsResource<ForgotPasswordResponse>(
+                onEmit = { result ->
+                    _forgotPasswordState.value = result.map {
+                        UpdatePasswordResponse(detail = it.message)
+                    }
+                },
+                useMock = false
+            )
+            */
+        }
+    }
+
+    /**
+     * Reset Password with token
+     * Note: This endpoint is not available in the current API documentation.
+     * The API only provides an update password endpoint that requires authentication.
+     *
+     * This is a placeholder for when the backend implements a proper password reset flow.
+     * When implemented, this would:
+     * 1. Validate the reset token
+     * 2. Update the user's password
+     * 3. Optionally log the user in automatically
+     */
+    fun resetPassword(
+        email: String,
+        token: String,
+        newPassword: String,
+        confirmPassword: String
+    ) {
+        viewModelScope.launch {
+            // Mock implementation
+            _resetPasswordState.value = Resource.Loading
+
+            try {
+                // Validate passwords match
+                if (newPassword != confirmPassword) {
+                    throw Exception("Passwords do not match")
+                }
+
+                if (newPassword.length < 8) {
+                    throw Exception("Password must be at least 8 characters")
+                }
+
+                // Simulate API delay
+                kotlinx.coroutines.delay(1500)
+
+                // Mock success response
+                _resetPasswordState.value = Resource.Success(
+                    UpdatePasswordResponse(
+                        detail = "Your password has been reset successfully. You can now login with your new password."
+                    )
+                )
+            } catch (e: Exception) {
+                _resetPasswordState.value = Resource.Error(e)
+            }
+
+            /*
+            When backend endpoint is available, replace above code with:
+
+            val request = ResetPasswordRequest(
+                email = email,
+                token = token,
+                newPassword = newPassword,
+                confirmPassword = confirmPassword
+            )
+
+            remoteRepository.makeApiRequest(
+                requestModel = request,
+                endpoint = ApiEndpoints.RESET_PASSWORD, // Add this to ApiEndpoints
+                httpMethod = HttpMethod.POST
+            ).collectAsResource<ResetPasswordResponse>(
+                onEmit = { result ->
+                    _resetPasswordState.value = result.map {
+                        UpdatePasswordResponse(detail = it.message)
+                    }
+                },
+                useMock = false
+            )
+            */
+        }
+    }
+
+    /**
      * Logout user
      */
     fun logout() {

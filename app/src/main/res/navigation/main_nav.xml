@@ -61,7 +61,11 @@
         android:id="@+id/forgotPasswordFragment"
         android:name="com.example.lostandfound.feature.auth.ForgotPasswordFragment"
         android:label="fragment_forgot_password"
-        tools:layout="@layout/fragment_forgot_password" />
+        tools:layout="@layout/fragment_forgot_password" >
+        <action
+            android:id="@+id/action_forgotPasswordFragment_to_resetPasswordFragment"
+            app:destination="@id/resetPasswordFragment" />
+    </fragment>
     <fragment
         android:id="@+id/personalInfoFragment"
         android:name="com.example.lostandfound.feature.profile.PersonalInfoFragment"
@@ -171,4 +175,9 @@
         android:id="@+id/claimFragment"
         android:name="com.example.lostandfound.feature.claimitem.ClaimFragment"
         android:label="ClaimFragment" />
+    <fragment
+        android:id="@+id/resetPasswordFragment"
+        android:name="com.example.lostandfound.feature.auth.ResetPasswordFragment"
+        android:label="fragment_reset_password"
+        tools:layout="@layout/fragment_reset_password" />
 </navigation>
