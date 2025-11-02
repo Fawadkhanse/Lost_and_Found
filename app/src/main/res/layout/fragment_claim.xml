@@ -338,6 +338,7 @@
             android:backgroundTint="@color/blue"
             android:drawableStart="@drawable/ic_image"
             android:drawablePadding="8dp"
+            android:visibility="gone"
             android:text="Add Multiple Images"
             android:textAllCaps="false"
             android:textColor="@color/white"

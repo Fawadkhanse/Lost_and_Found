@@ -154,7 +154,7 @@
             android:id="@+id/action_adminHomeFragment_to_personalInfoFragment"
             app:destination="@id/personalInfoFragment" />
         <action
-            android:id="@+id/action_adminHomeFragment_to_registerFragment"
+            android:id="@+id/action_adminHomeFragment_to_registerFragment2"
             app:destination="@id/registerFragment" />
     </fragment>
     <fragment

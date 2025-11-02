@@ -36,7 +36,8 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:contentDescription="Refresh"
-            android:src="@drawable/ic_menu"
+            android:src="@drawable/ic_logout"
+            app:tint="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -498,21 +499,22 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvActivitiesHeader" />
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/add_person"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
-                    android:contentDescription="Compose Message"
-                    android:src="@drawable/ic_add_user"
-                    app:backgroundTint="@color/primary_teal"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:tint="@color/white" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_person"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:contentDescription="Compose Message"
+        android:src="@drawable/ic_add_user"
+        android:layout_marginEnd="10dp"
+        app:backgroundTint="@color/primary_teal"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavAdmin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/white" />
     <!-- Bottom Navigation (Admin) -->
     <include
         android:id="@+id/bottomNavAdmin"

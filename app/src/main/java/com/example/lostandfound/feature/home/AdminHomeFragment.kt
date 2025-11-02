@@ -54,7 +54,8 @@ class AdminHomeFragment : BaseFragment() {
 
         // Setup swipe to refresh
         binding.swipeRefresh.setOnRefreshListener {
-            loadDashboardData()
+            navigateTo(R.id.action_adminHomeFragment_to_loginFragment)
+           // loadDashboardData()
         }
     }
 
@@ -122,7 +123,7 @@ class AdminHomeFragment : BaseFragment() {
             navigateToUsersList()
         }
         binding.addPerson.setOnClickListener {
-            navigateTo(R.id.action_adminHomeFragment_to_registerFragment)
+            navigateTo(R.id.action_adminHomeFragment_to_registerFragment2)
         }
     }
 
