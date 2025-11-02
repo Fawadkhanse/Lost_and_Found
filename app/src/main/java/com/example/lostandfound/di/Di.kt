@@ -7,7 +7,7 @@ import com.example.lostandfound.data.repo.RemoteRepositoryImpl
 import com.example.lostandfound.feature.auth.AuthViewModel
 import com.example.lostandfound.feature.category.CategoryViewModel
 import com.example.lostandfound.feature.home.DashboardViewModel
-import com.example.lostandfound.feature.item.ClaimViewModel
+import com.example.lostandfound.feature.claimitem.ClaimViewModel
 import com.example.lostandfound.feature.item.ItemViewModel
 import com.example.lostandfound.feature.notification.NotificationViewModel
 import org.koin.android.ext.koin.androidContext

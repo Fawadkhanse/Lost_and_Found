@@ -14,7 +14,7 @@ import com.example.lostandfound.data.Resource
 import com.example.lostandfound.databinding.FragmentMyListBinding
 import com.example.lostandfound.feature.base.BaseFragment
 import com.example.lostandfound.feature.item.AddItemFragment
-import com.example.lostandfound.feature.item.ClaimViewModel
+import com.example.lostandfound.feature.claimitem.ClaimViewModel
 import com.example.lostandfound.feature.item.ItemViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel

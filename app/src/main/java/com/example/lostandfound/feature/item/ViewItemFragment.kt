@@ -13,6 +13,7 @@ import com.example.lostandfound.data.Resource
 import com.example.lostandfound.databinding.FragmentViewItemBinding
 import com.example.lostandfound.domain.auth.LostItemResponse
 import com.example.lostandfound.feature.base.BaseFragment
+import com.example.lostandfound.feature.claimitem.ClaimViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

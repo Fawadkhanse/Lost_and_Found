@@ -1,4 +1,4 @@
-package com.example.lostandfound.feature.home
+package com.example.lostandfound.feature.home.admin
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,6 +12,8 @@ import com.example.lostandfound.data.Resource
 import com.example.lostandfound.databinding.FragmentAdminHomeBinding
 import com.example.lostandfound.domain.auth.ActivityItem
 import com.example.lostandfound.feature.base.BaseFragment
+import com.example.lostandfound.feature.home.DashboardViewModel
+import com.example.lostandfound.feature.home.admin.RecentActivitiesAdapter
 import com.example.lostandfound.utils.AdminBottomNavigationHelper
 import com.example.lostandfound.utils.AuthData
 import kotlinx.coroutines.launch

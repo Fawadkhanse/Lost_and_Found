@@ -17,6 +17,7 @@ import com.example.lostandfound.domain.auth.LostItemResponse
 import com.example.lostandfound.domain.item.FoundItemResponse
 import com.example.lostandfound.feature.base.BaseFragment
 import com.example.lostandfound.feature.chat.SendMessageDialogFragment
+import com.example.lostandfound.feature.claimitem.ClaimViewModel
 import com.example.lostandfound.utils.AuthData
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel

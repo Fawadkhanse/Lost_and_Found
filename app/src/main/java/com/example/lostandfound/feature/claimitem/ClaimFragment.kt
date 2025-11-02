@@ -1,4 +1,4 @@
-package com.example.lostandfound.feature.claim
+package com.example.lostandfound.feature.claimitem
 
 import android.app.Activity
 import android.content.Intent
@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -16,7 +17,7 @@ import com.example.lostandfound.R
 import com.example.lostandfound.data.Resource
 import com.example.lostandfound.databinding.FragmentClaimBinding
 import com.example.lostandfound.feature.base.BaseFragment
-import com.example.lostandfound.feature.item.ClaimViewModel
+import com.example.lostandfound.feature.claimitem.ClaimViewModel
 import com.example.lostandfound.feature.item.ItemViewModel
 import com.example.lostandfound.utils.ImageUtils
 import kotlinx.coroutines.Dispatchers
@@ -437,7 +438,7 @@ class ClaimFragment : BaseFragment() {
     }
 
     private fun showCancelConfirmation() {
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        AlertDialog.Builder(requireContext())
             .setTitle("Cancel Claim")
             .setMessage("Are you sure you want to cancel? All entered information will be lost.")
             .setPositiveButton("Yes, Cancel") { _, _ ->

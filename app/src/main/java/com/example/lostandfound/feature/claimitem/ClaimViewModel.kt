@@ -1,13 +1,13 @@
-package com.example.lostandfound.feature.item
+package com.example.lostandfound.feature.claimitem
 
 import androidx.lifecycle.viewModelScope
+import com.example.lostandfound.data.Resource
 import com.example.lostandfound.data.remote.ApiEndpoints
 import com.example.lostandfound.data.remote.HttpMethod
-import com.example.lostandfound.domain.repository.RemoteRepository
-import com.example.lostandfound.data.Resource
 import com.example.lostandfound.domain.auth.ClaimRequest
 import com.example.lostandfound.domain.auth.ClaimResponse
 import com.example.lostandfound.domain.auth.ClaimsListResponse
+import com.example.lostandfound.domain.repository.RemoteRepository
 import com.example.lostandfound.feature.base.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

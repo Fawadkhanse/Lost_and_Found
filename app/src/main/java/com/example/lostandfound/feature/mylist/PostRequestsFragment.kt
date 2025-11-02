@@ -10,6 +10,7 @@ import com.example.lostandfound.R
 import com.example.lostandfound.data.Resource
 import com.example.lostandfound.databinding.FragmentPostRequestsBinding
 import com.example.lostandfound.feature.base.BaseFragment
+import com.example.lostandfound.feature.claimitem.ClaimViewModel
 import com.example.lostandfound.feature.item.ItemViewModel
 import com.example.lostandfound.utils.AdminBottomNavigationHelper
 import kotlinx.coroutines.launch
@@ -25,6 +26,7 @@ class PostRequestsFragment : BaseFragment() {
     private val binding get() = _binding!!
 
     private val itemViewModel: ItemViewModel by viewModel()
+    private val claimViewModel: ClaimViewModel by viewModel()
     private lateinit var bottomNavHelper: AdminBottomNavigationHelper
 
     private lateinit var lostItemsAdapter: PostRequestsAdapter
@@ -264,6 +266,7 @@ class PostRequestsFragment : BaseFragment() {
 
     private fun rejectPost(itemId: String, isLostItem: Boolean) {
         showInfo("Rejecting post: $itemId")
+
         // TODO: Implement rejection logic
     }
 
