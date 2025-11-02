@@ -226,7 +226,51 @@
         <!-- Validation Strings -->
         <string name="confirm_password_required">Please confirm your password</string>
 
-        <!-- Common Strings -->
-        <string name="ok">OK</string>
+
+    <!-- Error Dialog Strings -->
+    <string name="error_icon">Error icon</string>
+    <string name="error_occurred">Error Occurred</string>
+    <string name="error_default_message">Something went wrong. Please try again.</string>
+
+    <string name="retry">Retry</string>
+    <string name="ok">OK</string>
+
+
+    <!-- Network Error Strings -->
+    <string name="no_internet_title">No Internet Connection</string>
+    <string name="no_internet_message">Please check your internet connection and try again.</string>
+
+    <!-- Server Error Strings -->
+    <string name="server_error_title">Server Error</string>
+    <string name="server_error_message">Something went wrong on our end. Please try again later.</string>
+
+    <!-- Auth Error Strings -->
+    <string name="auth_error_title">Authentication Required</string>
+    <string name="auth_error_message">Your session has expired. Please log in again.</string>
+
+    <!-- Timeout Error Strings -->
+    <string name="timeout_error_title">Request Timeout</string>
+    <string name="timeout_error_message">The request took too long. Please check your connection and try again.</string>
+
+    <!-- Validation Error Strings -->
+    <string name="validation_error_title">Validation Error</string>
+    <string name="validation_error_message">Please check your input and try again.</string>
+
+    <!-- Bad Request Strings -->
+    <string name="bad_request_title">Invalid Request</string>
+    <string name="bad_request_message">The request was invalid. Please check your input.</string>
+
+    <!-- Not Found Strings -->
+    <string name="not_found_title">Not Found</string>
+    <string name="not_found_message">The requested resource was not found.</string>
+
+    <!-- Conflict Error Strings -->
+    <string name="conflict_title">Conflict</string>
+    <string name="conflict_message">A conflict occurred. The resource may already exist.</string>
+
+    <!-- Parse Error Strings -->
+    <string name="parse_error_title">Data Error</string>
+    <string name="parse_error_message">Failed to process server response. Please try again.</string>
+
 
 </resources>
