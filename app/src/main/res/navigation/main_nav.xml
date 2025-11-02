@@ -159,7 +159,7 @@
     </fragment>
     <fragment
         android:id="@+id/postRequestsFragment"
-        android:name="com.example.lostandfound.feature.admin.PostRequestsFragment"
+        android:name="com.example.lostandfound.feature.mylist.PostRequestsFragment"
         android:label="fragment_post_requests"
         tools:layout="@layout/fragment_post_requests" />
     <fragment

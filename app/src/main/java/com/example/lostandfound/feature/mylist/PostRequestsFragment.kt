@@ -1,9 +1,12 @@
-package com.example.lostandfound.feature.admin
+package com.example.lostandfound.feature.mylist
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.lostandfound.R
@@ -18,7 +21,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * Post Requests Fragment - Admin view for verifying pending posts
- * Shows lost and found items that need admin verification
+ * Shows lost items, found items, and claims that need admin verification
+ * Enhanced with claim approval/rejection and admin notes
  */
 class PostRequestsFragment : BaseFragment() {
 
@@ -31,6 +35,13 @@ class PostRequestsFragment : BaseFragment() {
 
     private lateinit var lostItemsAdapter: PostRequestsAdapter
     private lateinit var foundItemsAdapter: PostRequestsAdapter
+    private lateinit var claimsAdapter: ClaimsAdapter
+
+    private var currentTab = TabType.LOST_ITEMS
+
+    enum class TabType {
+        LOST_ITEMS, FOUND_ITEMS, CLAIMS
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -83,6 +94,19 @@ class PostRequestsFragment : BaseFragment() {
             adapter = foundItemsAdapter
             setHasFixedSize(true)
         }
+
+        // Claims RecyclerView
+        claimsAdapter = ClaimsAdapter(
+            onApprove = { claimId -> showApproveClaimDialog(claimId) },
+            onReject = { claimId -> showRejectClaimDialog(claimId) },
+            onView = { claimId -> viewClaimDetail(claimId) }
+        )
+
+        binding.rvPendingClaims.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = claimsAdapter
+            setHasFixedSize(true)
+        }
     }
 
     private fun setupBottomNavigation() {
@@ -103,13 +127,17 @@ class PostRequestsFragment : BaseFragment() {
     }
 
     private fun setupListeners() {
-        // Tab switching between Lost and Found
+        // Tab switching between Lost, Found, and Claims
         binding.btnLostItems.setOnClickListener {
-            selectTab(true)
+            selectTab(TabType.LOST_ITEMS)
         }
 
         binding.btnFoundItems.setOnClickListener {
-            selectTab(false)
+            selectTab(TabType.FOUND_ITEMS)
+        }
+
+        binding.btnClaims.setOnClickListener {
+            selectTab(TabType.CLAIMS)
         }
     }
 
@@ -145,12 +173,13 @@ class PostRequestsFragment : BaseFragment() {
                         }
 
                         lostItemsAdapter.submitList(items)
+                        updateBadgeCount()
                         updateEmptyState()
                     }
                     is Resource.Error -> {
                         hideLoading()
                         binding.swipeRefresh.isRefreshing = false
-                        showError("Failed to load: ${resource.exception.message}")
+                        showError("Failed to load lost items: ${resource.exception.message}")
                     }
                     Resource.None -> {
                         hideLoading()
@@ -191,12 +220,13 @@ class PostRequestsFragment : BaseFragment() {
                         }
 
                         foundItemsAdapter.submitList(items)
+                        updateBadgeCount()
                         updateEmptyState()
                     }
                     is Resource.Error -> {
                         hideLoading()
                         binding.swipeRefresh.isRefreshing = false
-                        showError("Failed to load: ${resource.exception.message}")
+                        showError("Failed to load found items: ${resource.exception.message}")
                     }
                     Resource.None -> {
                         hideLoading()
@@ -205,37 +235,215 @@ class PostRequestsFragment : BaseFragment() {
                 }
             }
         }
+
+        // Observe Claims
+        viewLifecycleOwner.lifecycleScope.launch {
+            claimViewModel.claimsListState.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        showLoading("Loading pending claims...")
+                        binding.swipeRefresh.isRefreshing = true
+                    }
+                    is Resource.Success -> {
+                        hideLoading()
+                        binding.swipeRefresh.isRefreshing = false
+
+                        // Filter only pending claims
+                        val pendingClaims = resource.data.results.filter {
+                            it.status.equals("pending", ignoreCase = true)
+                        }
+
+                        // Convert to ClaimItem
+                        val items = pendingClaims.map { claim ->
+                            ClaimItem(
+                                id = claim.id,
+                                foundItemTitle = claim.foundItemTitle,
+                                foundItemImage = claim.foundItemImage,
+                                claimDescription = claim.claimDescription,
+                                proofOfOwnership = claim.proofOfOwnership,
+                                userEmail = claim.userEmail,
+                                status = claim.status,
+                                createdAt = claim.createdAt,
+                                adminNotes = claim.adminNotes
+                            )
+                        }
+
+                        claimsAdapter.submitList(items)
+                        updateBadgeCount()
+                        updateEmptyState()
+                    }
+                    is Resource.Error -> {
+                        hideLoading()
+                        binding.swipeRefresh.isRefreshing = false
+                        showError("Failed to load claims: ${resource.exception.message}")
+                    }
+                    Resource.None -> {
+                        hideLoading()
+                        binding.swipeRefresh.isRefreshing = false
+                    }
+                }
+            }
+        }
+
+        // Observe Verify Lost Item
+        viewLifecycleOwner.lifecycleScope.launch {
+            itemViewModel.verifyLostItemState.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> showLoading("Approving lost item...")
+                    is Resource.Success -> {
+                        hideLoading()
+                        showSuccess("Lost item approved successfully!")
+                        itemViewModel.resetVerifyLostItemState()
+                        loadPendingPosts()
+                    }
+                    is Resource.Error -> {
+                        hideLoading()
+                        showError("Failed to approve: ${resource.exception.message}")
+                        itemViewModel.resetVerifyLostItemState()
+                    }
+                    Resource.None -> hideLoading()
+                }
+            }
+        }
+
+        // Observe Verify Found Item
+        viewLifecycleOwner.lifecycleScope.launch {
+            itemViewModel.verifyFoundItemState.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> showLoading("Approving found item...")
+                    is Resource.Success -> {
+                        hideLoading()
+                        showSuccess("Found item approved successfully!")
+                        itemViewModel.resetVerifyFoundItemState()
+                        loadPendingPosts()
+                    }
+                    is Resource.Error -> {
+                        hideLoading()
+                        showError("Failed to approve: ${resource.exception.message}")
+                        itemViewModel.resetVerifyFoundItemState()
+                    }
+                    Resource.None -> hideLoading()
+                }
+            }
+        }
+
+        // Observe Reject Lost Item
+        viewLifecycleOwner.lifecycleScope.launch {
+            itemViewModel.rejectLostItemState.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> showLoading("Rejecting lost item...")
+                    is Resource.Success -> {
+                        hideLoading()
+                        showSuccess("Lost item rejected successfully!")
+                        itemViewModel.resetRejectLostItemState()
+                        loadPendingPosts()
+                    }
+                    is Resource.Error -> {
+                        hideLoading()
+                        showError("Failed to reject: ${resource.exception.message}")
+                        itemViewModel.resetRejectLostItemState()
+                    }
+                    Resource.None -> hideLoading()
+                }
+            }
+        }
+
+        // Observe Reject Found Item
+        viewLifecycleOwner.lifecycleScope.launch {
+            itemViewModel.rejectFoundItemState.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> showLoading("Rejecting found item...")
+                    is Resource.Success -> {
+                        hideLoading()
+                        showSuccess("Found item rejected successfully!")
+                        itemViewModel.resetRejectFoundItemState()
+                        loadPendingPosts()
+                    }
+                    is Resource.Error -> {
+                        hideLoading()
+                        showError("Failed to reject: ${resource.exception.message}")
+                        itemViewModel.resetRejectFoundItemState()
+                    }
+                    Resource.None -> hideLoading()
+                }
+            }
+        }
+
+        // Observe Update Claim
+        viewLifecycleOwner.lifecycleScope.launch {
+            claimViewModel.updateClaimState.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> showLoading("Updating claim...")
+                    is Resource.Success -> {
+                        hideLoading()
+                        showSuccess("Claim updated successfully!")
+                        claimViewModel.resetUpdateState()
+                        loadPendingPosts()
+                    }
+                    is Resource.Error -> {
+                        hideLoading()
+                        showError("Failed to update claim: ${resource.exception.message}")
+                        claimViewModel.resetUpdateState()
+                    }
+                    Resource.None -> hideLoading()
+                }
+            }
+        }
     }
 
     private fun loadPendingPosts() {
         itemViewModel.getAllLostItems()
         itemViewModel.getAllFoundItems()
+        claimViewModel.getAllClaims()
     }
 
-    private fun selectTab(isLostItems: Boolean) {
-        if (isLostItems) {
-            // Show lost items
-            binding.layoutLostItems.visibility = View.VISIBLE
-            binding.layoutFoundItems.visibility = View.GONE
+    private fun selectTab(tab: TabType) {
+        currentTab = tab
 
-            // Update button styles
-            binding.btnLostItems.setBackgroundResource(R.drawable.rounded_button_black)
-            binding.btnLostItems.backgroundTintList =
-                requireContext().getColorStateList(R.color.primary_teal)
-            binding.btnFoundItems.setBackgroundResource(R.drawable.rounded_button_gray)
-            binding.btnFoundItems.backgroundTintList = null
-        } else {
-            // Show found items
-            binding.layoutLostItems.visibility = View.GONE
-            binding.layoutFoundItems.visibility = View.VISIBLE
+        // Hide all layouts
+        binding.layoutLostItems.visibility = View.GONE
+        binding.layoutFoundItems.visibility = View.GONE
+        binding.layoutClaims.visibility = View.GONE
 
-            // Update button styles
-            binding.btnFoundItems.setBackgroundResource(R.drawable.rounded_button_black)
-            binding.btnFoundItems.backgroundTintList =
-                requireContext().getColorStateList(R.color.primary_teal)
-            binding.btnLostItems.setBackgroundResource(R.drawable.rounded_button_gray)
-            binding.btnLostItems.backgroundTintList = null
+        // Reset all button styles
+        binding.btnLostItems.setBackgroundResource(R.drawable.rounded_button_gray)
+        binding.btnLostItems.backgroundTintList = null
+        binding.btnFoundItems.setBackgroundResource(R.drawable.rounded_button_gray)
+        binding.btnFoundItems.backgroundTintList = null
+        binding.btnClaims.setBackgroundResource(R.drawable.rounded_button_gray)
+        binding.btnClaims.backgroundTintList = null
+
+        when (tab) {
+            TabType.LOST_ITEMS -> {
+                binding.layoutLostItems.visibility = View.VISIBLE
+                binding.btnLostItems.setBackgroundResource(R.drawable.rounded_button_black)
+                binding.btnLostItems.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.primary_teal)
+            }
+            TabType.FOUND_ITEMS -> {
+                binding.layoutFoundItems.visibility = View.VISIBLE
+                binding.btnFoundItems.setBackgroundResource(R.drawable.rounded_button_black)
+                binding.btnFoundItems.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.primary_teal)
+            }
+            TabType.CLAIMS -> {
+                binding.layoutClaims.visibility = View.VISIBLE
+                binding.btnClaims.setBackgroundResource(R.drawable.rounded_button_black)
+                binding.btnClaims.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.primary_teal)
+            }
         }
+
+        updateEmptyState()
+    }
+
+    private fun updateBadgeCount() {
+        val lostCount = lostItemsAdapter.currentList.size
+        val foundCount = foundItemsAdapter.currentList.size
+        val claimsCount = claimsAdapter.currentList.size
+        val totalCount = lostCount + foundCount + claimsCount
+
+        bottomNavHelper.updateBadgeCount(totalCount)
     }
 
     private fun updateEmptyState() {
@@ -256,23 +464,192 @@ class PostRequestsFragment : BaseFragment() {
             binding.tvNoFoundItems.visibility = View.GONE
             binding.rvPendingFoundItems.visibility = View.VISIBLE
         }
+
+        // Claims empty state
+        if (claimsAdapter.currentList.isEmpty()) {
+            binding.tvNoClaims.visibility = View.VISIBLE
+            binding.rvPendingClaims.visibility = View.GONE
+        } else {
+            binding.tvNoClaims.visibility = View.GONE
+            binding.rvPendingClaims.visibility = View.VISIBLE
+        }
     }
 
+    // ============================================
+    // Lost/Found Items Actions
+    // ============================================
+
     private fun approvePost(itemId: String, isLostItem: Boolean) {
-        showInfo("Approving post: $itemId")
-        // TODO: Implement API call to verify/approve post
-        // Call API endpoint: VERIFY_LOST_ITEM or VERIFY_FOUND_ITEM
+        AlertDialog.Builder(requireContext())
+            .setTitle("Approve Post")
+            .setMessage("Are you sure you want to approve this ${if (isLostItem) "lost" else "found"} item?")
+            .setPositiveButton("Approve") { _, _ ->
+                if (isLostItem) {
+                    itemViewModel.verifyLostItem(itemId)
+                } else {
+                    itemViewModel.verifyFoundItem(itemId)
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun rejectPost(itemId: String, isLostItem: Boolean) {
-        showInfo("Rejecting post: $itemId")
-
-        // TODO: Implement rejection logic
+        AlertDialog.Builder(requireContext())
+            .setTitle("Reject Post")
+            .setMessage("Are you sure you want to reject this ${if (isLostItem) "lost" else "found"} item? This will delete the post.")
+            .setPositiveButton("Reject") { _, _ ->
+                if (isLostItem) {
+                    itemViewModel.rejectLostItem(itemId)
+                } else {
+                    itemViewModel.rejectFoundItem(itemId)
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun viewPostDetail(itemId: String, isLostItem: Boolean) {
-        showInfo("Viewing post detail: $itemId")
-        // TODO: Navigate to item detail fragment
+        // Navigate to item detail
+        val bundle = Bundle().apply {
+            putString("itemId", itemId)
+            putString("itemType", if (isLostItem) "LOST" else "FOUND")
+        }
+     //   navigateTo(R.id.action_postRequestsFragment_to_itemDetailFragment, bundle)
+    }
+
+    // ============================================
+    // Claims Actions
+    // ============================================
+
+    private fun showApproveClaimDialog(claimId: String) {
+        // Get claim details
+        val claim = claimsAdapter.currentList.find { it.id == claimId } ?: return
+
+        // Create dialog with admin notes input
+        val dialogView = layoutInflater.inflate(R.layout.dialog_admin_notes, null)
+        val etAdminNotes = dialogView.findViewById<EditText>(R.id.etAdminNotes)
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Approve Claim")
+            .setMessage("Approving claim for: ${claim.foundItemTitle}\nUser: ${claim.userEmail}")
+            .setView(dialogView)
+            .setPositiveButton("Approve") { _, _ ->
+                val adminNotes = etAdminNotes.text.toString().trim()
+                approveClaim(claimId, claim, adminNotes)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showRejectClaimDialog(claimId: String) {
+        // Get claim details
+        val claim = claimsAdapter.currentList.find { it.id == claimId } ?: return
+
+        // Create dialog with admin notes input
+        val dialogView = layoutInflater.inflate(R.layout.dialog_admin_notes, null)
+        val etAdminNotes = dialogView.findViewById<EditText>(R.id.etAdminNotes)
+        etAdminNotes.hint = "Reason for rejection (required)"
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Reject Claim")
+            .setMessage("Rejecting claim for: ${claim.foundItemTitle}\nUser: ${claim.userEmail}")
+            .setView(dialogView)
+            .setPositiveButton("Reject") { _, _ ->
+                val adminNotes = etAdminNotes.text.toString().trim()
+                if (adminNotes.isEmpty()) {
+                    showError("Please provide a reason for rejection")
+                    return@setPositiveButton
+                }
+                rejectClaim(claimId, claim, adminNotes)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun approveClaim(claimId: String, claim: ClaimItem, adminNotes: String) {
+        // First, get the full claim details to get the foundItem ID
+        viewLifecycleOwner.lifecycleScope.launch {
+            claimViewModel.getClaimById(claimId)
+
+            // Wait for the claim detail to load
+            claimViewModel.claimDetailState.collect { resource ->
+                when (resource) {
+                    is Resource.Success -> {
+                        val fullClaim = resource.data
+
+                        // Now update the claim with proper foundItem ID
+                        claimViewModel.updateClaim(
+                            id = claimId,
+                            foundItem = fullClaim.foundItem, // Proper found item ID
+                            claimDescription = fullClaim.claimDescription,
+                            proofOfOwnership = fullClaim.proofOfOwnership,
+                            supportingImages = fullClaim.supportingImages,
+                            status = "approved",
+                            adminNotes = adminNotes.ifEmpty { "Claim approved by admin" }
+                        )
+
+                        // Reset detail state to avoid re-triggering
+                        claimViewModel.resetDetailState()
+                    }
+                    is Resource.Error -> {
+                        showError("Failed to fetch claim details: ${resource.exception.message}")
+                        claimViewModel.resetDetailState()
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun rejectClaim(claimId: String, claim: ClaimItem, adminNotes: String) {
+        // First, get the full claim details to get the foundItem ID
+        viewLifecycleOwner.lifecycleScope.launch {
+            claimViewModel.getClaimById(claimId)
+
+            // Wait for the claim detail to load
+            claimViewModel.claimDetailState.collect { resource ->
+                when (resource) {
+                    is Resource.Success -> {
+                        val fullClaim = resource.data
+
+                        // Now update the claim with proper foundItem ID
+                        claimViewModel.updateClaim(
+                            id = claimId,
+                            foundItem = fullClaim.foundItem, // Proper found item ID
+                            claimDescription = fullClaim.claimDescription,
+                            proofOfOwnership = fullClaim.proofOfOwnership,
+                            supportingImages = fullClaim.supportingImages,
+                            status = "rejected",
+                            adminNotes = adminNotes
+                        )
+
+                        // Reset detail state to avoid re-triggering
+                        claimViewModel.resetDetailState()
+                    }
+                    is Resource.Error -> {
+                        showError("Failed to fetch claim details: ${resource.exception.message}")
+                        claimViewModel.resetDetailState()
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun viewClaimDetail(claimId: String) {
+        // Get the claim
+        val claim = claimsAdapter.currentList.find { it.id == claimId } ?: return
+
+        // Show claim details in a dialog
+        val dialogView = layoutInflater.inflate(R.layout.dialog_claim_detail, null)
+        // TODO: Populate dialog with claim details
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Claim Details")
+            .setView(dialogView)
+            .setPositiveButton("Close", null)
+            .show()
     }
 
     private fun navigateToHome() {
@@ -280,7 +657,7 @@ class PostRequestsFragment : BaseFragment() {
     }
 
     private fun navigateToProfile() {
-        showInfo("Navigate to Profile")
+      //  navigateTo(R.id.action_postRequestsFragment_to_personalInfoFragment)
     }
 
     override fun onResume() {
@@ -309,4 +686,19 @@ data class PostRequestItem(
     val imageUrl: String?,
     val user: String,
     val isVerified: Boolean
+)
+
+/**
+ * Data class for claim items
+ */
+data class ClaimItem(
+    val id: String,
+    val foundItemTitle: String,
+    val foundItemImage: String?,
+    val claimDescription: String,
+    val proofOfOwnership: String,
+    val userEmail: String,
+    val status: String,
+    val createdAt: String,
+    val adminNotes: String?
 )
