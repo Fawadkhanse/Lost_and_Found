@@ -16,7 +16,8 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
- * MessagesFragment - Displays list of all messages/notifications
+ * MessagesFragment - FIXED VERSION
+ * Displays list of all messages/notifications
  * Shows notifications grouped and sorted by date
  */
 class MessagesFragment : BaseFragment() {
@@ -26,6 +27,8 @@ class MessagesFragment : BaseFragment() {
 
     private val notificationViewModel: NotificationViewModel by viewModel()
     private lateinit var messagesAdapter: MessagesAdapter
+
+    private var currentFilter = "all"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,13 +44,17 @@ class MessagesFragment : BaseFragment() {
         setupRecyclerView()
         setupListeners()
         observeViewModel()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Refresh messages when returning to this fragment
         loadMessages()
     }
 
     private fun setupRecyclerView() {
         messagesAdapter = MessagesAdapter(
             onItemClick = { notification ->
-             ///   notificationViewModel.markNotificationAsRead(notification.id)
                 navigateToChat(notification)
             },
             onDeleteClick = { notification ->
@@ -96,11 +103,6 @@ class MessagesFragment : BaseFragment() {
                 .show(childFragmentManager, "SendMessageDialog")
         }
     }
-    private fun markMessageAsRead(messageId: String) {
-        messageId?.let {
-            notificationViewModel.markNotificationAsRead(it)
-        }
-    }
 
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -115,10 +117,20 @@ class MessagesFragment : BaseFragment() {
                         binding.progressBar.visibility = View.GONE
 
                         val notifications = resource.data.results
-                        messagesAdapter.submitList(notifications)
+
+                        // Apply current filter
+                        val filteredNotifications = when (currentFilter) {
+                            "unread" -> notifications.filter { !it.isRead }
+                            "system" -> notifications.filter { it.notificationType == "system" }
+                            "message" -> notifications.filter { it.notificationType == "message" }
+                            else -> notifications
+                        }
+
+                        // Submit to adapter with new list to trigger DiffUtil
+                        messagesAdapter.submitList(filteredNotifications.toList())
 
                         // Update empty state
-                        if (notifications.isEmpty()) {
+                        if (filteredNotifications.isEmpty()) {
                             binding.tvNoMessages.visibility = View.VISIBLE
                             binding.rvMessages.visibility = View.GONE
                         } else {
@@ -156,6 +168,8 @@ class MessagesFragment : BaseFragment() {
     }
 
     private fun filterMessages(filter: String) {
+        currentFilter = filter
+
         // Update button states
         resetFilterButtons()
 
@@ -164,35 +178,45 @@ class MessagesFragment : BaseFragment() {
                 binding.btnAll.setBackgroundResource(R.drawable.rounded_button_black)
                 binding.btnAll.backgroundTintList =
                     requireContext().getColorStateList(R.color.primary_teal)
-
-                val currentState = notificationViewModel.notificationsListState.value
-                if (currentState is Resource.Success) {
-                    messagesAdapter.submitList(currentState.data.results)
-                }
             }
             "unread" -> {
                 binding.btnUnread.setBackgroundResource(R.drawable.rounded_button_black)
                 binding.btnUnread.backgroundTintList =
                     requireContext().getColorStateList(R.color.primary_teal)
-
-                val unreadMessages = notificationViewModel.getUnreadNotifications()
-                messagesAdapter.submitList(unreadMessages)
             }
             "system" -> {
                 binding.btnSystem.setBackgroundResource(R.drawable.rounded_button_black)
                 binding.btnSystem.backgroundTintList =
                     requireContext().getColorStateList(R.color.primary_teal)
-
-                val systemMessages = notificationViewModel.filterNotificationsByType("system")
-                messagesAdapter.submitList(systemMessages)
             }
             "message" -> {
                 binding.btnMessages.setBackgroundResource(R.drawable.rounded_button_black)
                 binding.btnMessages.backgroundTintList =
                     requireContext().getColorStateList(R.color.primary_teal)
+            }
+        }
 
-                val userMessages = notificationViewModel.filterNotificationsByType("message")
-                messagesAdapter.submitList(userMessages)
+        // Reload to apply filter
+        val currentState = notificationViewModel.notificationsListState.value
+        if (currentState is Resource.Success) {
+            val notifications = currentState.data.results
+
+            val filteredNotifications = when (filter) {
+                "unread" -> notifications.filter { !it.isRead }
+                "system" -> notifications.filter { it.notificationType == "system" }
+                "message" -> notifications.filter { it.notificationType == "message" }
+                else -> notifications
+            }
+
+            messagesAdapter.submitList(filteredNotifications.toList())
+
+            // Update empty state
+            if (filteredNotifications.isEmpty()) {
+                binding.tvNoMessages.visibility = View.VISIBLE
+                binding.rvMessages.visibility = View.GONE
+            } else {
+                binding.tvNoMessages.visibility = View.GONE
+                binding.rvMessages.visibility = View.VISIBLE
             }
         }
     }
@@ -221,6 +245,9 @@ class MessagesFragment : BaseFragment() {
     }
 
     private fun navigateToChat(notification: com.example.lostandfound.domain.auth.NotificationResponse) {
+        // Mark as read before navigating
+        notificationViewModel.markNotificationAsRead(notification.id)
+
         val bundle = Bundle().apply {
             putString("messageId", notification.id)
             putString("title", notification.title)
@@ -247,12 +274,6 @@ class MessagesFragment : BaseFragment() {
             }
             .setNegativeButton("Cancel", null)
             .show()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        // Refresh messages when returning to this fragment
-        loadMessages()
     }
 
     override fun onDestroyView() {

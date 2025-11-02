@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
- * Resident Home Fragment
+ * Resident Home Fragment - FIXED VERSION
  * Displays lost and found items on the home screen with bottom navigation
  */
 class ResidentHomeFragment : BaseFragment() {
@@ -36,6 +36,11 @@ class ResidentHomeFragment : BaseFragment() {
 
     private lateinit var itemsAdapter: ItemsAdapter
     private val allItems = mutableListOf<ItemModel>()
+
+    // Track loading states
+    private var isLostItemsLoaded = false
+    private var isFoundItemsLoaded = false
+    private var hasLoadedOnce = false
 
     private var currentSelectedNavItem: BottomNavItem = BottomNavItem.HOME
 
@@ -59,8 +64,16 @@ class ResidentHomeFragment : BaseFragment() {
         setupListeners()
         observeViewModels()
         setView()
-        loadData()
         highlightBottomNavItem(BottomNavItem.HOME)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Re-highlight home when returning to this fragment
+        highlightBottomNavItem(BottomNavItem.HOME)
+
+        // Reload data when returning to fragment
+        loadData()
     }
 
     /**
@@ -185,7 +198,6 @@ class ResidentHomeFragment : BaseFragment() {
         when (item) {
             BottomNavItem.HOME -> {
                 binding.bottomNav.navHome.alpha = 1.0f
-                // Note: You'll need to add IDs to the ImageView and TextView in layout_bottom_navigation.xml
             }
             BottomNavItem.MESSAGES -> {
                 binding.bottomNav.navMessage.alpha = 1.0f
@@ -250,20 +262,39 @@ class ResidentHomeFragment : BaseFragment() {
             itemViewModel.lostItemsListState.collect { resource ->
                 when (resource) {
                     is Resource.Loading -> {
-                        showLoading("Loading lost items...")
+                        if (!hasLoadedOnce) {
+                            showLoading("Loading lost items...")
+                        }
                     }
                     is Resource.Success -> {
-                        hideLoading()
+                        isLostItemsLoaded = true
+
+                        // Remove old lost items
+                        allItems.removeAll { !it.isFound }
+
+                        // Add new lost items
                         val lostItems = resource.data.results.map { it.toItemModel(false) }
                         allItems.addAll(lostItems)
-                        updateRecyclerView()
+
+                        // Update UI if both lists are loaded
+                        if (isFoundItemsLoaded) {
+                            updateRecyclerView()
+                            hideLoading()
+                            hasLoadedOnce = true
+                        }
                     }
                     is Resource.Error -> {
+                        isLostItemsLoaded = true
                         hideLoading()
                         showError("Failed to load lost items: ${resource.exception.message}")
+
+                        // Still update UI if found items loaded
+                        if (isFoundItemsLoaded) {
+                            updateRecyclerView()
+                        }
                     }
                     Resource.None -> {
-                        hideLoading()
+                        // Initial state - do nothing
                     }
                 }
             }
@@ -274,20 +305,39 @@ class ResidentHomeFragment : BaseFragment() {
             itemViewModel.foundItemsListState.collect { resource ->
                 when (resource) {
                     is Resource.Loading -> {
-                        showLoading("Loading found items...")
+                        if (!hasLoadedOnce) {
+                            showLoading("Loading found items...")
+                        }
                     }
                     is Resource.Success -> {
-                        hideLoading()
+                        isFoundItemsLoaded = true
+
+                        // Remove old found items
+                        allItems.removeAll { it.isFound }
+
+                        // Add new found items
                         val foundItems = resource.data.results.map { it.toItemModel(true) }
                         allItems.addAll(foundItems)
-                        updateRecyclerView()
+
+                        // Update UI if both lists are loaded
+                        if (isLostItemsLoaded) {
+                            updateRecyclerView()
+                            hideLoading()
+                            hasLoadedOnce = true
+                        }
                     }
                     is Resource.Error -> {
+                        isFoundItemsLoaded = true
                         hideLoading()
                         showError("Failed to load found items: ${resource.exception.message}")
+
+                        // Still update UI if lost items loaded
+                        if (isLostItemsLoaded) {
+                            updateRecyclerView()
+                        }
                     }
                     Resource.None -> {
-                        hideLoading()
+                        // Initial state - do nothing
                     }
                 }
             }
@@ -310,8 +360,9 @@ class ResidentHomeFragment : BaseFragment() {
     }
 
     private fun loadData() {
-        // Clear existing items
-        allItems.clear()
+        // Reset loading states
+        isLostItemsLoaded = false
+        isFoundItemsLoaded = false
 
         // Load both lost and found items
         itemViewModel.getAllLostItems()
@@ -329,7 +380,9 @@ class ResidentHomeFragment : BaseFragment() {
     private fun updateRecyclerView() {
         // Sort items by date (newest first)
         val sortedItems = allItems.sortedByDescending { it.date }
-        itemsAdapter.submitList(sortedItems)
+
+        // Submit list to adapter
+        itemsAdapter.submitList(sortedItems.toList()) // Create new list to trigger DiffUtil
 
         // Update UI state
         if (sortedItems.isEmpty()) {
@@ -348,7 +401,7 @@ class ResidentHomeFragment : BaseFragment() {
 
     private fun filterByCategory(category: String) {
         val filteredItems = allItems.filter { it.categoryName.equals(category, ignoreCase = true) }
-        itemsAdapter.submitList(filteredItems)
+        itemsAdapter.submitList(filteredItems.toList())
         showInfo("Filtered by $category")
     }
 
@@ -358,12 +411,6 @@ class ResidentHomeFragment : BaseFragment() {
             putString("itemType", if (item.isFound) "FOUND" else "LOST")
         }
         navigateTo(R.id.action_residentHomeFragment_to_itemDetailFragment, bundle)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        // Re-highlight home when returning to this fragment
-        highlightBottomNavItem(BottomNavItem.HOME)
     }
 
     override fun onDestroyView() {
