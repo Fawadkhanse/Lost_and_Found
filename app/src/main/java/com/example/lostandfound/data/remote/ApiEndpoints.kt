@@ -30,7 +30,7 @@ object ApiEndpoints {
     // Notification endpoints
     const val NOTIFICATIONS = "notifications/"
     const val NOTIFICATION_DETAIL = "notifications/{id}/"
-    const val MARK_NOTIFICATION_READ = "notifications/{id}/mark-read/"
+    const val MARK_NOTIFICATION_READ = "api/notifications/{id}/mark-read/"
 
     // Dashboard endpoints
     const val ADMIN_DASHBOARD = "dashboard/admin/"

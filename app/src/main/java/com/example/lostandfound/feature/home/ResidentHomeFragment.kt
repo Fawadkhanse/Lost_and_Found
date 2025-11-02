@@ -3,15 +3,12 @@ package com.example.lostandfound.feature.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.view.GravityCompat
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
 import com.example.lostandfound.R
 import com.example.lostandfound.data.Resource
 import com.example.lostandfound.databinding.FragmentResidentBinding
@@ -21,15 +18,14 @@ import com.example.lostandfound.feature.auth.AuthViewModel
 import com.example.lostandfound.feature.base.BaseFragment
 import com.example.lostandfound.feature.item.ItemViewModel
 import com.example.lostandfound.utils.AuthData
-import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
- * Resident Home Fragment with Navigation Drawer
- * Displays lost and found items on the home screen
+ * Resident Home Fragment
+ * Displays lost and found items on the home screen with bottom navigation
  */
-class ResidentHomeFragment : BaseFragment(), NavigationView.OnNavigationItemSelectedListener {
+class ResidentHomeFragment : BaseFragment() {
 
     private var _binding: FragmentResidentBinding? = null
     private val binding get() = _binding!!
@@ -40,6 +36,12 @@ class ResidentHomeFragment : BaseFragment(), NavigationView.OnNavigationItemSele
 
     private lateinit var itemsAdapter: ItemsAdapter
     private val allItems = mutableListOf<ItemModel>()
+
+    private var currentSelectedNavItem: BottomNavItem = BottomNavItem.HOME
+
+    enum class BottomNavItem {
+        HOME, MESSAGES, MY_POSTS, ACCOUNT
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,43 +54,42 @@ class ResidentHomeFragment : BaseFragment(), NavigationView.OnNavigationItemSele
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupNavigationDrawer()
+        setupBackPressHandler()
         setupRecyclerView()
         setupListeners()
         observeViewModels()
         setView()
         loadData()
+        highlightBottomNavItem(BottomNavItem.HOME)
     }
 
-    private fun setupNavigationDrawer() {
-        // Set up navigation item selected listener
-        binding.navigationView.setNavigationItemSelectedListener(this)
-
-        // Update navigation header with user info
-        val headerView = binding.navigationView.getHeaderView(0)
-        val tvUserName = headerView.findViewById<android.widget.TextView>(R.id.tvUserName)
-        val tvUserEmail = headerView.findViewById<android.widget.TextView>(R.id.tvUserEmail)
-        val ivProfileImage = headerView.findViewById<android.widget.ImageView>(R.id.ivProfileImage)
-
-        // Set user data
-        AuthData.userDetailInfo?.let { user ->
-            tvUserName.text = "${user.firstName} ${user.lastName}"
-            tvUserEmail.text = user.email
-
-            // Load profile image if available
-            if (!user.profileImage.isNullOrEmpty()) {
-                Glide.with(requireContext())
-                    .load(user.profileImage)
-                    .placeholder(R.drawable.ic_account)
-                    .error(R.drawable.ic_account)
-                    .circleCrop()
-                    .into(ivProfileImage)
+    /**
+     * Handle back press - show exit confirmation
+     */
+    private fun setupBackPressHandler() {
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    showExitConfirmation()
+                }
             }
-        }
+        )
+    }
+
+    private fun showExitConfirmation() {
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Exit App")
+            .setMessage("Are you sure you want to exit?")
+            .setPositiveButton("Yes") { _, _ ->
+                requireActivity().finish()
+            }
+            .setNegativeButton("No", null)
+            .show()
     }
 
     private fun setView() {
-        binding.tvWelcome.text = "Hello " + AuthData.fullName
+        binding.tvWelcome.text = "Hello ${AuthData.fullName}"
     }
 
     private fun setupRecyclerView() {
@@ -104,27 +105,19 @@ class ResidentHomeFragment : BaseFragment(), NavigationView.OnNavigationItemSele
     }
 
     private fun setupListeners() {
-        // Back button
+        // Back button - show exit confirmation instead of navigating back
         binding.btnBack.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
+            showExitConfirmation()
         }
 
-        // Menu button - opens drawer
+        // Menu button - show logout option
         binding.btnMenu.setOnClickListener {
             showLogoutConfirmation()
-
-//            if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
-//                binding.drawerLayout.closeDrawer(GravityCompat.END)
-//            } else {
-//                binding.drawerLayout.openDrawer(GravityCompat.END)
-//            }
-
-
         }
 
         // Search
         binding.etSearch.setOnClickListener {
-            Toast.makeText(requireContext(), "Search clicked", Toast.LENGTH_SHORT).show()
+            showInfo("Search feature coming soon")
         }
 
         // Load more button
@@ -132,7 +125,7 @@ class ResidentHomeFragment : BaseFragment(), NavigationView.OnNavigationItemSele
             loadMoreItems()
         }
 
-        // Category buttons
+        // Category filters
         binding.btnClothes.setOnClickListener {
             filterByCategory("Clothes")
         }
@@ -151,52 +144,69 @@ class ResidentHomeFragment : BaseFragment(), NavigationView.OnNavigationItemSele
     }
 
     private fun setupBottomNavigation() {
-        // Home - Already on home, do nothing or scroll to top
+        // Home - Scroll to top if already on home
         binding.bottomNav.navHome.setOnClickListener {
-            // Scroll to top of the list
-            binding.rvPosts.smoothScrollToPosition(0)
+            if (currentSelectedNavItem == BottomNavItem.HOME) {
+                // Already on home, scroll to top
+                binding.rvPosts.smoothScrollToPosition(0)
+            }
+            highlightBottomNavItem(BottomNavItem.HOME)
         }
 
         // Messages
         binding.bottomNav.navMessage.setOnClickListener {
-            // Navigate to messages fragment
-            Toast.makeText(requireContext(), "Messages coming soon", Toast.LENGTH_SHORT).show()
-            // TODO: Uncomment when messages fragment is ready
-             navigateTo(R.id.action_residentHomeFragment_to_messagesFragment)
+            highlightBottomNavItem(BottomNavItem.MESSAGES)
+            navigateTo(R.id.action_residentHomeFragment_to_messagesFragment)
         }
 
         // My Posts
         binding.bottomNav.navMyPost.setOnClickListener {
-            // Navigate to my list fragment
+            highlightBottomNavItem(BottomNavItem.MY_POSTS)
             navigateTo(R.id.action_residentHomeFragment_to_myListFragment)
         }
 
         // Account
         binding.bottomNav.navAccount.setOnClickListener {
-            // Navigate to profile
+            highlightBottomNavItem(BottomNavItem.ACCOUNT)
             navigateTo(R.id.action_residentHomeFragment_to_personalInfoFragment)
         }
     }
 
     /**
-     * Navigate to destination with proper back stack handling
-     * Prevents adding duplicate entries to back stack
+     * Highlight selected bottom navigation item
      */
+    private fun highlightBottomNavItem(item: BottomNavItem) {
+        currentSelectedNavItem = item
 
+        // Reset all items to default state
+        resetBottomNavItems()
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.nav_profile -> {
-                // Navigate to profile
-                navigateTo(R.id.action_residentHomeFragment_to_personalInfoFragment)
+        // Highlight selected item
+        when (item) {
+            BottomNavItem.HOME -> {
+                binding.bottomNav.navHome.alpha = 1.0f
+                // Note: You'll need to add IDs to the ImageView and TextView in layout_bottom_navigation.xml
             }
-            R.id.nav_logout -> {
-                // Show logout confirmation
-                showLogoutConfirmation()
+            BottomNavItem.MESSAGES -> {
+                binding.bottomNav.navMessage.alpha = 1.0f
+            }
+            BottomNavItem.MY_POSTS -> {
+                binding.bottomNav.navMyPost.alpha = 1.0f
+            }
+            BottomNavItem.ACCOUNT -> {
+                binding.bottomNav.navAccount.alpha = 1.0f
             }
         }
-        binding.drawerLayout.closeDrawer(GravityCompat.END)
-        return true
+    }
+
+    /**
+     * Reset all bottom navigation items to default state
+     */
+    private fun resetBottomNavItems() {
+        binding.bottomNav.navHome.alpha = 0.6f
+        binding.bottomNav.navMessage.alpha = 0.6f
+        binding.bottomNav.navMyPost.alpha = 0.6f
+        binding.bottomNav.navAccount.alpha = 0.6f
     }
 
     private fun showLogoutConfirmation() {
@@ -231,7 +241,7 @@ class ResidentHomeFragment : BaseFragment(), NavigationView.OnNavigationItemSele
             e.printStackTrace()
         }
 
-        Toast.makeText(requireContext(), "Logged out successfully", Toast.LENGTH_SHORT).show()
+        showSuccess("Logged out successfully")
     }
 
     private fun observeViewModels() {
@@ -312,7 +322,7 @@ class ResidentHomeFragment : BaseFragment(), NavigationView.OnNavigationItemSele
     }
 
     private fun loadMoreItems() {
-        Toast.makeText(requireContext(), "Loading more items...", Toast.LENGTH_SHORT).show()
+        showInfo("Loading more items...")
         loadData()
     }
 
@@ -339,17 +349,21 @@ class ResidentHomeFragment : BaseFragment(), NavigationView.OnNavigationItemSele
     private fun filterByCategory(category: String) {
         val filteredItems = allItems.filter { it.categoryName.equals(category, ignoreCase = true) }
         itemsAdapter.submitList(filteredItems)
-        Toast.makeText(requireContext(), "Filtered by $category", Toast.LENGTH_SHORT).show()
+        showInfo("Filtered by $category")
     }
 
     private fun onItemClicked(item: ItemModel) {
-        Toast.makeText(requireContext(), "Clicked: ${item.title}", Toast.LENGTH_SHORT).show()
+        val bundle = Bundle().apply {
+            putString("itemId", item.id)
+            putString("itemType", if (item.isFound) "FOUND" else "LOST")
+        }
+        navigateTo(R.id.action_residentHomeFragment_to_itemDetailFragment, bundle)
+    }
 
-         val bundle = Bundle().apply {
-             putString("itemId", item.id)
-             putString("itemType", if (item.isFound) "FOUND" else "LOST")
-         }
-         navigateTo(R.id.action_residentHomeFragment_to_itemDetailFragment,bundle)
+    override fun onResume() {
+        super.onResume()
+        // Re-highlight home when returning to this fragment
+        highlightBottomNavItem(BottomNavItem.HOME)
     }
 
     override fun onDestroyView() {

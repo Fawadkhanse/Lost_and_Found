@@ -47,6 +47,7 @@ class MessagesFragment : BaseFragment() {
     private fun setupRecyclerView() {
         messagesAdapter = MessagesAdapter(
             onItemClick = { notification ->
+             ///   notificationViewModel.markNotificationAsRead(notification.id)
                 navigateToChat(notification)
             },
             onDeleteClick = { notification ->
@@ -93,6 +94,11 @@ class MessagesFragment : BaseFragment() {
         binding.fabCompose.setOnClickListener {
             SendMessageDialogFragment.newInstance()
                 .show(childFragmentManager, "SendMessageDialog")
+        }
+    }
+    private fun markMessageAsRead(messageId: String) {
+        messageId?.let {
+            notificationViewModel.markNotificationAsRead(it)
         }
     }
 
@@ -225,7 +231,7 @@ class MessagesFragment : BaseFragment() {
             putString("claimId", notification.claim)
         }
 
-        findNavController().navigate(
+        navigateTo(
             R.id.action_messagesFragment_to_chatFragment,
             bundle
         )

@@ -74,7 +74,7 @@ class MessagesAdapter(
                     "system" -> {
                         tvTypeBadge.text = "System"
                         tvTypeBadge.setBackgroundResource(R.drawable.rounded_button_gray)
-                        ivTypeIcon.setImageResource(R.drawable.ic_logo)
+                        ivTypeIcon.setImageResource(R.drawable.ic_notif)
                     }
                     "message" -> {
                         tvTypeBadge.text = "Message"
@@ -86,7 +86,7 @@ class MessagesAdapter(
                     else -> {
                         tvTypeBadge.text = "Notification"
                         tvTypeBadge.setBackgroundResource(R.drawable.rounded_button_gray)
-                        ivTypeIcon.setImageResource(R.drawable.ic_logo)
+                        ivTypeIcon.setImageResource(R.drawable.ic_notif)
                     }
                 }
 

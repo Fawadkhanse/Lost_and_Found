@@ -192,6 +192,7 @@
         android:layout_margin="16dp"
         android:contentDescription="Compose Message"
         android:src="@drawable/ic_message"
+        android:visibility="gone"
         app:backgroundTint="@color/primary_teal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
