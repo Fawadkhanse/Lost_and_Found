@@ -60,11 +60,7 @@ class AddItemFragment : BaseFragment() {
         binding.tvWelcome.text = "Hello ${AuthData.fullName}"
 
         // Back button
-        binding.btnBack.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
-
-        // Item type buttons (Lost or Found)
+              // Item type buttons (Lost or Found)
         binding.btnLost.setOnClickListener {
             selectItemType(ItemType.LOST)
         }

@@ -466,7 +466,7 @@ data class LostItemResponse(
 
     @SerializedName("material_tags_list")
     val materialTagsList: List<String>
-)
+): java.io.Serializable
 
 // ============================================
 // Found Item Data Classes

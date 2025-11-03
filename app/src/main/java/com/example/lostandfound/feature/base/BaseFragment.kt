@@ -2,6 +2,7 @@ package com.example.lostandfound.feature.base
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.lostandfound.utils.LoaderDialog
@@ -199,28 +200,32 @@ abstract class BaseFragment : Fragment() {
      * Show success toast
      */
     protected fun showSuccess(message: String) {
-        ApiErrorDialog.showCustom(
-            context = requireContext(),
-            title = "Success",
-            isCancelable = true,
-            message = message ?: "Succes",
-            showRetry = false
 
-        )
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+
+//        ApiErrorDialog.showCustom(
+//            context = requireContext(),
+//            title = "Success",
+//            isCancelable = true,
+//            message = message ?: "Succes",
+//            showRetry = false
+//
+//        )
     }
 
     /**
      * Show info toast
      */
     protected fun showInfo(message: String) {
-        ApiErrorDialog.showCustom(
-            context = requireContext(),
-            title = "Info",
-            isCancelable = true,
-            message = message ?: "Succes",
-            showRetry = false
-
-        )
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+//        ApiErrorDialog.showCustom(
+//            context = requireContext(),
+//            title = "Info",
+//            isCancelable = true,
+//            message = message ?: "Succes",
+//            showRetry = false
+//
+//        )
     }
 
     override fun onDestroyView() {

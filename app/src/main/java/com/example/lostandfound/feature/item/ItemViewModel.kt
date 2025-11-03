@@ -75,23 +75,6 @@ class ItemViewModel(
     // Lost Item API Methods
     // ============================================
 
-    /**
-     * Create a new lost item
-     */
-    fun createLostItem(request: LostItemRequest) {
-        viewModelScope.launch {
-            remoteRepository.makeApiRequest(
-                requestModel = request,
-                endpoint = ApiEndpoints.LOST_ITEMS,
-                httpMethod = HttpMethod.POST
-            ).collectAsResource<LostItemResponse>(
-                onEmit = { result ->
-                    _createLostItemState.value = result
-                },
-                useMock = false
-            )
-        }
-    }
 
     /**
      * Create a new lost item with multipart image
@@ -350,11 +333,11 @@ class ItemViewModel(
      * This will delete the item or mark it as rejected
      * Endpoint: DELETE /api/lost-items/{id}/
      */
-    fun rejectLostItem(itemId: String) {
+    fun deleteLostItem(itemId: String) {
         viewModelScope.launch {
             remoteRepository.makeApiRequest(
                 requestModel = null,
-                endpoint = ApiEndpoints.LOST_ITEM_DETAIL.replace("{id}", itemId),
+                endpoint = ApiEndpoints.LOST_ITEM_DELETE.replace("{id}", itemId),
                 httpMethod = HttpMethod.DELETE
             ).collectAsResource<String>(
                 onEmit = { result ->
@@ -370,11 +353,11 @@ class ItemViewModel(
      * This will delete the item or mark it as rejected
      * Endpoint: DELETE /api/found-items/{id}/
      */
-    fun rejectFoundItem(itemId: String) {
+    fun deleteFoundItem(itemId: String) {
         viewModelScope.launch {
             remoteRepository.makeApiRequest(
                 requestModel = null,
-                endpoint = ApiEndpoints.FOUND_ITEM_DETAIL.replace("{id}", itemId),
+                endpoint = ApiEndpoints.FOUND_ITEM_DELETE.replace("{id}", itemId),
                 httpMethod = HttpMethod.DELETE
             ).collectAsResource<String>(
                 onEmit = { result ->

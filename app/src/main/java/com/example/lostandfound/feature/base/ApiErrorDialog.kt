@@ -52,12 +52,15 @@ object ApiErrorDialog {
      */
     fun showCustom(
         context: Context,
+        okButtonText: String = "OK",
+        cancelButtonText: String = "Cancel",
         title: String = "Error",
         message: String,
         isCancelable: Boolean= false,
         showRetry: Boolean = true,
+        onOkAction: () -> Unit = {},
+        onAction: ((retry: Boolean) -> Unit)? = null,
 
-        onAction: ((retry: Boolean) -> Unit)? = null
     ) {
         val errorInfo = ErrorInfo(
             title = title,
@@ -65,12 +68,15 @@ object ApiErrorDialog {
             iconRes = R.drawable.ic_error,
             showRetry = showRetry,
             errorType = ErrorType.CUSTOM,
-            isCancelable = isCancelable
+            isCancelable = isCancelable,
+            primaryButtonText = okButtonText,
+            secondaryButtonText = cancelButtonText
         )
         showErrorDialog(
             context = context,
             errorInfo = errorInfo,
-            onAction = onAction
+            onAction = onAction,
+            onOkAction =onOkAction
         )
     }
 
@@ -331,7 +337,8 @@ object ApiErrorDialog {
     private fun showErrorDialog(
         context: Context,
         errorInfo: ErrorInfo,
-        onAction: ((retry: Boolean) -> Unit)?
+        onAction: ((retry: Boolean) -> Unit)?,
+        onOkAction: () -> Unit = {}
     ) {
         val dialog = Dialog(context)
         dialog.setCancelable(errorInfo.isCancelable)
@@ -362,9 +369,16 @@ object ApiErrorDialog {
 
         // Configure buttons
         if (errorInfo.showRetry) {
-            // Two-button layout
             btnPrimary.text = errorInfo.primaryButtonText
             btnSecondary.visibility = View.VISIBLE
+            btnSecondary.setOnClickListener {
+                onAction?.invoke(true)
+                dialog.dismiss()
+            }
+            btnPrimary.setOnClickListener {
+                onOkAction.invoke()
+                dialog.dismiss()
+            }
         } else {
             // Single-button layout
             btnPrimary.text = errorInfo.primaryButtonText
@@ -374,6 +388,7 @@ object ApiErrorDialog {
                 width = LinearLayout.LayoutParams.MATCH_PARENT
             }
             btnPrimary.setOnClickListener {
+                onOkAction.invoke()
                 dialog.dismiss()
             }
         }

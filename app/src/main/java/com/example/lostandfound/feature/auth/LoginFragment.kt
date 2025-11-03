@@ -12,6 +12,7 @@ import com.example.lostandfound.R
 import com.example.lostandfound.data.Resource
 import com.example.lostandfound.databinding.FragmentLoginBinding
 import com.example.lostandfound.feature.base.BaseFragment
+import com.example.lostandfound.utils.AuthData
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -114,11 +115,12 @@ class LoginFragment : BaseFragment() {
                     is Resource.Success -> {
                         hideLoading()
                         val response = resource.data
-                        Toast.makeText(
-                            requireContext(),
-                            response.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        AuthData.setAuthResponse(resource.data)
+//                        Toast.makeText(
+//                            requireContext(),
+//                            response.message,
+//                            Toast.LENGTH_SHORT
+//                        ).show()
 
                         // Navigate based on user type
                         when (response.user.userType) {

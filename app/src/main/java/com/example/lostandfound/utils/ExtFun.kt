@@ -1,5 +1,6 @@
 package com.example.lostandfound.utils
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
@@ -8,6 +9,9 @@ import android.os.Build
 import android.provider.Settings
 import android.telephony.TelephonyManager
 import android.util.Log
+import androidx.annotation.RequiresPermission
+import androidx.fragment.app.Fragment
+import com.example.lostandfound.MainActivity
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
@@ -81,6 +85,7 @@ fun Any.checkIfArray(): Boolean {
     return this is Array<*>
 }
 
+@RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
 fun Context.isInternetOn(): Boolean {
     val connectivityManager =
         getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -102,4 +107,38 @@ inline fun <reified T> String.toPojoOrNull(): T? {
     } catch (e: Exception) {
         null
     }
+}
+
+
+
+/**
+ * Extension functions for fragments to interact with MainActivity
+ */
+
+/**
+ * Get MainActivity instance from fragment
+ */
+fun Fragment.getMainActivity(): MainActivity? {
+    return activity as? MainActivity
+}
+
+/**
+ * Update message badge count from fragment
+ */
+fun Fragment.updateMessageBadge(count: Int) {
+    getMainActivity()?.updateMessageBadge(count)
+}
+
+/**
+ * Update admin pending requests badge from fragment
+ */
+fun Fragment.updateAdminBadge(count: Int) {
+    getMainActivity()?.updateAdminBadge(count)
+}
+
+/**
+ * Check if fragment has MainActivity
+ */
+fun Fragment.hasMainActivity(): Boolean {
+    return getMainActivity() != null
 }

@@ -64,13 +64,13 @@ class ResidentHomeFragment : BaseFragment() {
         setupListeners()
         observeViewModels()
         setView()
-        highlightBottomNavItem(BottomNavItem.HOME)
+    //    highlightBottomNavItem(BottomNavItem.HOME)
     }
 
     override fun onResume() {
         super.onResume()
         // Re-highlight home when returning to this fragment
-        highlightBottomNavItem(BottomNavItem.HOME)
+       // highlightBottomNavItem(BottomNavItem.HOME)
 
         // Reload data when returning to fragment
         loadData()
@@ -113,20 +113,20 @@ class ResidentHomeFragment : BaseFragment() {
         binding.rvPosts.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = itemsAdapter
-            setHasFixedSize(true)
+          //  setHasFixedSize(true)
         }
     }
 
     private fun setupListeners() {
         // Back button - show exit confirmation instead of navigating back
-        binding.btnBack.setOnClickListener {
-            showExitConfirmation()
-        }
-
-        // Menu button - show logout option
-        binding.btnMenu.setOnClickListener {
-            showLogoutConfirmation()
-        }
+//        binding.btnBack.setOnClickListener {
+//            showExitConfirmation()
+//        }
+//
+//        // Menu button - show logout option
+//        binding.btnMenu.setOnClickListener {
+//            showLogoutConfirmation()
+//        }
 
         // Search
         binding.etSearch.setOnClickListener {
@@ -148,7 +148,7 @@ class ResidentHomeFragment : BaseFragment() {
         }
 
         // Bottom navigation
-        setupBottomNavigation()
+       // setupBottomNavigation()
 
         // FAB Add button
         binding.fabAdd.setOnClickListener {
@@ -156,70 +156,70 @@ class ResidentHomeFragment : BaseFragment() {
         }
     }
 
-    private fun setupBottomNavigation() {
-        // Home - Scroll to top if already on home
-        binding.bottomNav.navHome.setOnClickListener {
-            if (currentSelectedNavItem == BottomNavItem.HOME) {
-                // Already on home, scroll to top
-                binding.rvPosts.smoothScrollToPosition(0)
-            }
-            highlightBottomNavItem(BottomNavItem.HOME)
-        }
-
-        // Messages
-        binding.bottomNav.navMessage.setOnClickListener {
-            highlightBottomNavItem(BottomNavItem.MESSAGES)
-            navigateTo(R.id.action_residentHomeFragment_to_messagesFragment)
-        }
-
-        // My Posts
-        binding.bottomNav.navMyPost.setOnClickListener {
-            highlightBottomNavItem(BottomNavItem.MY_POSTS)
-            navigateTo(R.id.action_residentHomeFragment_to_myListFragment)
-        }
-
-        // Account
-        binding.bottomNav.navAccount.setOnClickListener {
-            highlightBottomNavItem(BottomNavItem.ACCOUNT)
-            navigateTo(R.id.action_residentHomeFragment_to_personalInfoFragment)
-        }
-    }
+//    private fun setupBottomNavigation() {
+//        // Home - Scroll to top if already on home
+//        binding.bottomNav.navHome.setOnClickListener {
+//            if (currentSelectedNavItem == BottomNavItem.HOME) {
+//                // Already on home, scroll to top
+//                binding.rvPosts.smoothScrollToPosition(0)
+//            }
+//            highlightBottomNavItem(BottomNavItem.HOME)
+//        }
+//
+//        // Messages
+//        binding.bottomNav.navMessage.setOnClickListener {
+//            highlightBottomNavItem(BottomNavItem.MESSAGES)
+//            navigateTo(R.id.action_residentHomeFragment_to_messagesFragment)
+//        }
+//
+//        // My Posts
+//        binding.bottomNav.navMyPost.setOnClickListener {
+//            highlightBottomNavItem(BottomNavItem.MY_POSTS)
+//            navigateTo(R.id.action_residentHomeFragment_to_myListFragment)
+//        }
+//
+//        // Account
+//        binding.bottomNav.navAccount.setOnClickListener {
+//            highlightBottomNavItem(BottomNavItem.ACCOUNT)
+//            navigateTo(R.id.action_residentHomeFragment_to_personalInfoFragment)
+//        }
+//    }
 
     /**
      * Highlight selected bottom navigation item
      */
-    private fun highlightBottomNavItem(item: BottomNavItem) {
-        currentSelectedNavItem = item
-
-        // Reset all items to default state
-        resetBottomNavItems()
-
-        // Highlight selected item
-        when (item) {
-            BottomNavItem.HOME -> {
-                binding.bottomNav.navHome.alpha = 1.0f
-            }
-            BottomNavItem.MESSAGES -> {
-                binding.bottomNav.navMessage.alpha = 1.0f
-            }
-            BottomNavItem.MY_POSTS -> {
-                binding.bottomNav.navMyPost.alpha = 1.0f
-            }
-            BottomNavItem.ACCOUNT -> {
-                binding.bottomNav.navAccount.alpha = 1.0f
-            }
-        }
-    }
+//    private fun highlightBottomNavItem(item: BottomNavItem) {
+//        currentSelectedNavItem = item
+//
+//        // Reset all items to default state
+//        resetBottomNavItems()
+//
+//        // Highlight selected item
+//        when (item) {
+//            BottomNavItem.HOME -> {
+//                binding.bottomNav.navHome.alpha = 1.0f
+//            }
+//            BottomNavItem.MESSAGES -> {
+//                binding.bottomNav.navMessage.alpha = 1.0f
+//            }
+//            BottomNavItem.MY_POSTS -> {
+//                binding.bottomNav.navMyPost.alpha = 1.0f
+//            }
+//            BottomNavItem.ACCOUNT -> {
+//                binding.bottomNav.navAccount.alpha = 1.0f
+//            }
+//        }
+//    }
 
     /**
      * Reset all bottom navigation items to default state
-     */
-    private fun resetBottomNavItems() {
-        binding.bottomNav.navHome.alpha = 0.6f
-        binding.bottomNav.navMessage.alpha = 0.6f
-        binding.bottomNav.navMyPost.alpha = 0.6f
-        binding.bottomNav.navAccount.alpha = 0.6f
-    }
+//     */
+//    private fun resetBottomNavItems() {
+//        binding.bottomNav.navHome.alpha = 0.6f
+//        binding.bottomNav.navMessage.alpha = 0.6f
+//        binding.bottomNav.navMyPost.alpha = 0.6f
+//        binding.bottomNav.navAccount.alpha = 0.6f
+//    }
 
     private fun showLogoutConfirmation() {
         androidx.appcompat.app.AlertDialog.Builder(requireContext())

@@ -79,7 +79,7 @@ class PostRequestsFragment : BaseFragment() {
         binding.rvPendingLostItems.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = lostItemsAdapter
-            setHasFixedSize(true)
+           // setHasFixedSize(true)
         }
 
         // Found Items RecyclerView
@@ -92,7 +92,7 @@ class PostRequestsFragment : BaseFragment() {
         binding.rvPendingFoundItems.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = foundItemsAdapter
-            setHasFixedSize(true)
+           // setHasFixedSize(true)
         }
 
         // Claims RecyclerView
@@ -105,7 +105,7 @@ class PostRequestsFragment : BaseFragment() {
         binding.rvPendingClaims.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = claimsAdapter
-            setHasFixedSize(true)
+           // setHasFixedSize(true)
         }
     }
 
@@ -500,9 +500,9 @@ class PostRequestsFragment : BaseFragment() {
             .setMessage("Are you sure you want to reject this ${if (isLostItem) "lost" else "found"} item? This will delete the post.")
             .setPositiveButton("Reject") { _, _ ->
                 if (isLostItem) {
-                    itemViewModel.rejectLostItem(itemId)
+                    itemViewModel.deleteLostItem(itemId)
                 } else {
-                    itemViewModel.rejectFoundItem(itemId)
+                    itemViewModel.deleteFoundItem(itemId)
                 }
             }
             .setNegativeButton("Cancel", null)

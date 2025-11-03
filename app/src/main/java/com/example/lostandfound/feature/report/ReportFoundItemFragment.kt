@@ -13,13 +13,26 @@ import com.bumptech.glide.Glide
 import com.example.lostandfound.R
 import com.example.lostandfound.data.Resource
 import com.example.lostandfound.databinding.FragmentReportFoundItemBinding
+import com.example.lostandfound.domain.auth.LostItemResponse
+import com.example.lostandfound.domain.item.FoundItemResponse
 import kotlinx.coroutines.launch
 
 class ReportFoundItemFragment : BaseReportItemFragment() {
 
     private var _binding: FragmentReportFoundItemBinding? = null
     private val binding get() = _binding!!
+    var isEditMode = false
+    var itemId = ""
+    var currentFountItem: FoundItemResponse? = null
 
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            isEditMode = it.getBoolean("isEditMode", false)
+            currentFountItem = it.getSerializable("item") as? FoundItemResponse
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -33,14 +46,18 @@ class ReportFoundItemFragment : BaseReportItemFragment() {
         super.onViewCreated(view, savedInstanceState)
         setupViews()
         observeViewModel()
+        loadData()
+    }
+
+    private fun loadData() {
+        if (isEditMode) {
+            binding.btnSubmit.text ="Update"
+            itemViewModel.getFoundItemById(itemId)
+
+        }
     }
 
     private fun setupViews() {
-        // Back button
-        binding.btnBack.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
-
         // Attach image
         binding.cardScanItem.setOnClickListener {
             openImagePicker()
@@ -62,7 +79,6 @@ class ReportFoundItemFragment : BaseReportItemFragment() {
 
         // Location finder
         binding.btnFindLocation.setOnClickListener {
-            Toast.makeText(requireContext(), "Location picker coming soon", Toast.LENGTH_SHORT).show()
         }
 
         // Submit button

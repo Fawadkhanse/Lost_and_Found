@@ -65,15 +65,15 @@ class MessagesFragment : BaseFragment() {
         binding.rvMessages.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = messagesAdapter
-            setHasFixedSize(true)
+           // setHasFixedSize(true)
         }
     }
 
     private fun setupListeners() {
         // Back button
-        binding.btnBack.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
+//        binding.btnBack.setOnClickListener {
+//            requireActivity().onBackPressedDispatcher.onBackPressed()
+//        }
 
         // Refresh
         binding.swipeRefresh.setOnRefreshListener {
@@ -236,12 +236,12 @@ class MessagesFragment : BaseFragment() {
     }
 
     private fun updateUnreadBadge(count: Int) {
-        if (count > 0) {
-            binding.tvUnreadBadge.visibility = View.VISIBLE
-            binding.tvUnreadBadge.text = if (count > 99) "99+" else count.toString()
-        } else {
-            binding.tvUnreadBadge.visibility = View.GONE
-        }
+//        if (count > 0) {
+//            binding.tvUnreadBadge.visibility = View.VISIBLE
+//            binding.tvUnreadBadge.text = if (count > 99) "99+" else count.toString()
+//        } else {
+//            binding.tvUnreadBadge.visibility = View.GONE
+//        }
     }
 
     private fun navigateToChat(notification: com.example.lostandfound.domain.auth.NotificationResponse) {

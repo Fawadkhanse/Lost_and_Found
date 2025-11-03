@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_myListFragment_to_itemDetailFragment"
             app:destination="@id/itemDetailFragment" />
+        <action
+            android:id="@+id/action_myListFragment_to_viewItemFragment"
+            app:destination="@id/viewItemFragment" />
     </fragment>
     <fragment
         android:id="@+id/viewFoundItemFragment"
@@ -138,6 +141,12 @@
         <action
             android:id="@+id/action_itemDetailFragment_to_claimFragment"
             app:destination="@id/claimFragment" />
+        <action
+            android:id="@+id/action_itemDetailFragment_to_reportLostItemFragment"
+            app:destination="@id/reportLostItemFragment" />
+        <action
+            android:id="@+id/action_itemDetailFragment_to_reportFoundItemFragment"
+            app:destination="@id/reportFoundItemFragment" />
     </fragment>
     <fragment
         android:id="@+id/adminHomeFragment"

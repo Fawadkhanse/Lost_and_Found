@@ -76,14 +76,14 @@ class MyListFragment : BaseFragment() {
         binding.rvItems.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = myListAdapter
-            setHasFixedSize(true)
+           // setHasFixedSize(true)
         }
     }
 
     private fun setupListeners() {
-        binding.btnBack.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
+//        binding.btnBack.setOnClickListener {
+//            requireActivity().onBackPressedDispatcher.onBackPressed()
+//        }
 
         binding.btnClaims.setOnClickListener {
             selectTab(Tab.CLAIMS)

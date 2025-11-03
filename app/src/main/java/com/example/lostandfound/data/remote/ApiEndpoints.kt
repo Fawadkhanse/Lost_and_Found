@@ -18,10 +18,12 @@ object ApiEndpoints {
     // Lost Item endpoints
     const val LOST_ITEMS = "lost-items/"
     const val LOST_ITEM_DETAIL = "lost-items/{id}/"
+    const val LOST_ITEM_DELETE = "lost-items/{id}/"
 
     // Found Item endpoints
     const val FOUND_ITEMS = "found-items/"
     const val FOUND_ITEM_DETAIL = "found-items/{id}/"
+    const val FOUND_ITEM_DELETE = "found-items/{id}/"
 
     // Claim endpoints
     const val CLAIMS = "claims/"

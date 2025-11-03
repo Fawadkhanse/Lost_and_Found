@@ -113,9 +113,7 @@ class ViewItemFragment : BaseFragment() {
     }
 
     private fun setupListeners() {
-        binding.btnBack.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
+
 
         binding.cardScanItem.setOnClickListener {
             // TODO: Implement image picker
@@ -131,22 +129,9 @@ class ViewItemFragment : BaseFragment() {
         }
 
         // Bottom navigation
-        setupBottomNavigation()
+
     }
 
-    private fun setupBottomNavigation() {
-        binding.bottomNav.navHome.setOnClickListener {
-            findNavController().navigate(R.id.residentHomeFragment)
-        }
-
-        binding.bottomNav.navMessage.setOnClickListener {
-            Toast.makeText(requireContext(), "Messages", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.bottomNav.navAccount.setOnClickListener {
-            Toast.makeText(requireContext(), "Account", Toast.LENGTH_SHORT).show()
-        }
-    }
 
     private fun markItemAsFound() {
         // TODO: Implement update item status API

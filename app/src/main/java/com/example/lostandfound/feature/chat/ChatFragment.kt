@@ -66,13 +66,13 @@ class ChatFragment : BaseFragment() {
     }
 
     private fun setupViews() {
-        binding.tvChatTitle.text = title ?: "Message"
+      //  binding.tvChatTitle.text = title ?: "Message"
     }
 
     private fun setupListeners() {
-        binding.btnBack.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
+//        binding.btnBack.setOnClickListener {
+//            requireActivity().onBackPressedDispatcher.onBackPressed()
+//        }
 
         binding.btnViewItem.setOnClickListener {
             viewRelatedItem()

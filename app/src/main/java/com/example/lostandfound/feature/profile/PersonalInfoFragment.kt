@@ -85,19 +85,16 @@ class PersonalInfoFragment : BaseFragment() {
     }
 
     private fun setupListeners() {
-        // Back button
-        binding.btnBack.setOnClickListener {
-            if (isEditMode && hasUnsavedChanges()) {
-                showDiscardChangesDialog()
-            } else {
-                requireActivity().onBackPressedDispatcher.onBackPressed()
-            }
-        }
+//        // Back button
+//        binding.btnBack.setOnClickListener {
+//            if (isEditMode && hasUnsavedChanges()) {
+//                showDiscardChangesDialog()
+//            } else {
+//                requireActivity().onBackPressedDispatcher.onBackPressed()
+//            }
+//        }
 
-        // Top bar logout button
-        binding.btnLogout.setOnClickListener {
-            showLogoutConfirmation()
-        }
+
 
         // Profile photo click - only in edit mode
         binding.cardProfilePhoto.setOnClickListener {

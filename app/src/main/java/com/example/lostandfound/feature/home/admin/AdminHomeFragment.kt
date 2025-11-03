@@ -29,7 +29,7 @@ class AdminHomeFragment : BaseFragment() {
 
     private val dashboardViewModel: DashboardViewModel by viewModel()
     private lateinit var activitiesAdapter: RecentActivitiesAdapter
-    private lateinit var bottomNavHelper: AdminBottomNavigationHelper
+    //private lateinit var bottomNavHelper: AdminBottomNavigationHelper
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,8 +42,8 @@ class AdminHomeFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupViews()
         setupRecyclerView()
+        setupViews()
         setupBottomNavigation()
         setupListeners()
         observeViewModel()
@@ -69,36 +69,36 @@ class AdminHomeFragment : BaseFragment() {
         binding.rvRecentActivities.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = activitiesAdapter
-            setHasFixedSize(true)
+        //    setHasFixedSize(true)
         }
     }
 
     private fun setupBottomNavigation() {
-        bottomNavHelper = AdminBottomNavigationHelper(binding.bottomNavAdmin)
-
-        bottomNavHelper.setOnTabSelectedListener { tab ->
-            when (tab) {
-                AdminBottomNavigationHelper.Tab.HOME -> {
-                    // Already on home
-                }
-                AdminBottomNavigationHelper.Tab.POST_REQUESTS -> {
-                    navigateToPostRequests()
-                }
-                AdminBottomNavigationHelper.Tab.PROFILE -> {
-                    navigateToProfile()
-                }
-            }
-        }
+//        bottomNavHelper = AdminBottomNavigationHelper(binding.bottomNavAdmin)
+//
+//        bottomNavHelper.setOnTabSelectedListener { tab ->
+//            when (tab) {
+//                AdminBottomNavigationHelper.Tab.HOME -> {
+//                    // Already on home
+//                }
+//                AdminBottomNavigationHelper.Tab.POST_REQUESTS -> {
+//                    navigateToPostRequests()
+//                }
+//                AdminBottomNavigationHelper.Tab.PROFILE -> {
+//                    navigateToProfile()
+//                }
+//            }
+//        }
 
         // Set Home as selected
-        bottomNavHelper.selectTab(AdminBottomNavigationHelper.Tab.HOME)
+      //  bottomNavHelper.selectTab(AdminBottomNavigationHelper.Tab.HOME)
     }
 
     private fun setupListeners() {
         // Refresh button
-        binding.btnRefresh.setOnClickListener {
-            loadDashboardData()
-        }
+//        binding.btnRefresh.setOnClickListener {
+//            loadDashboardData()
+//        }
 
         // Statistics Cards Click Listeners
         binding.cardLostItems.setOnClickListener {
@@ -157,7 +157,7 @@ class AdminHomeFragment : BaseFragment() {
                         binding.tvClaimedItems.text = "Claimed: ${data.claimedItems}"
 
                         // Update badge count for pending claims
-                        bottomNavHelper.updateBadgeCount(data.pendingClaims)
+                      //  bottomNavHelper.updateBadgeCount(data.pendingClaims)
 
                         // Update recent activities
                         activitiesAdapter.submitList(data.recentActivities)
@@ -193,25 +193,25 @@ class AdminHomeFragment : BaseFragment() {
         when (activity.type) {
             "claim" -> {
                 // Navigate to claim detail
-                showInfo("Viewing claim: ${activity.title}")
+              //  showInfo("Viewing claim: ${activity.title}")
                 // findNavController().navigate(R.id.action_adminHomeFragment_to_claimDetailFragment,
                 //     Bundle().apply { putString("claimId", activity.id) })
             }
             "found_item" -> {
                 // Navigate to found item detail
-                showInfo("Viewing found item: ${activity.title}")
+            //    showInfo("Viewing found item: ${activity.title}")
                 // findNavController().navigate(R.id.action_adminHomeFragment_to_itemDetailFragment,
                 //     Bundle().apply { putString("itemId", activity.id) })
             }
             "lost_item" -> {
                 // Navigate to lost item detail
-                showInfo("Viewing lost item: ${activity.title}")
+                //showInfo("Viewing lost item: ${activity.title}")
                 // findNavController().navigate(R.id.action_adminHomeFragment_to_itemDetailFragment,
                 //     Bundle().apply { putString("itemId", activity.id) })
             }
             "user_registration" -> {
                 // Show user details or navigate to user profile
-                showInfo("User registered: ${activity.title}")
+              //  showInfo("User registered: ${activity.title}")
             }
             else -> {
                 showInfo("Activity: ${activity.title}")
@@ -264,9 +264,9 @@ class AdminHomeFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         // Ensure Home tab is selected when returning to this fragment
-        if (::bottomNavHelper.isInitialized) {
-            bottomNavHelper.selectTab(AdminBottomNavigationHelper.Tab.HOME)
-        }
+//        if (::bottomNavHelper.isInitialized) {
+//            bottomNavHelper.selectTab(AdminBottomNavigationHelper.Tab.HOME)
+//        }
     }
 
     override fun onDestroyView() {

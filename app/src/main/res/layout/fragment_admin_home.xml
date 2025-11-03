@@ -7,52 +7,16 @@
     android:background="@color/light_gray"
     tools:context=".feature.home.admin.AdminHomeFragment">
 
-    <!-- Top Bar -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/topBar"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:background="@color/primary_teal"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/admin_dashboard"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/btnRefresh"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:contentDescription="Refresh"
-            android:src="@drawable/ic_logout"
-            app:tint="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-        />
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- SwipeRefreshLayout -->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefresh"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavAdmin"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topBar">
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -143,6 +107,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Verified: 0"
+                                android:visibility="gone"
                                 android:textColor="@color/white"
                                 android:textSize="10sp"
                                 app:layout_constraintBottom_toBottomOf="parent"
@@ -201,6 +166,7 @@
                                 android:id="@+id/tvVerifiedFoundItems"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:visibility="gone"
                                 android:text="Verified: 0"
                                 android:textColor="@color/white"
                                 android:textSize="10sp"
@@ -273,6 +239,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Claimed: 0"
+                                android:visibility="gone"
                                 android:textColor="@color/white"
                                 android:textSize="10sp"
                                 app:layout_constraintBottom_toBottomOf="parent"
@@ -321,6 +288,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
                                 android:text="0"
+                                android:visibility="gone"
                                 android:textColor="@color/white"
                                 android:textSize="24sp"
                                 android:textStyle="bold"
@@ -393,6 +361,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Returned: 0"
+                                android:visibility="gone"
                                 android:textColor="@color/white"
                                 android:textSize="10sp"
                                 app:layout_constraintBottom_toBottomOf="parent"
@@ -442,6 +411,7 @@
                                 android:layout_marginTop="8dp"
                                 android:text="0"
                                 android:textColor="@color/white"
+                                android:visibility="gone"
                                 android:textSize="24sp"
                                 android:textStyle="bold"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -512,17 +482,9 @@
         android:src="@drawable/ic_add_user"
         android:layout_marginEnd="10dp"
         app:backgroundTint="@color/primary_teal"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavAdmin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@color/white" />
-    <!-- Bottom Navigation (Admin) -->
-    <include
-        android:id="@+id/bottomNavAdmin"
-        layout="@layout/layout_bottom_navigation_admin"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:tint="@color/white" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,43 +7,6 @@
     android:background="@color/white"
     tools:context=".feature.item.ItemDetailFragment">
 
-    <!-- Top Bar -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/topBar"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:background="@color/primary_teal"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/btnBack"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:contentDescription="@string/back"
-            android:src="@drawable/ic_back"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/white" />
-
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Item Details"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
     <!-- Scrollable Content -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
@@ -52,7 +15,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topBar">
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -490,7 +453,7 @@
                     android:layout_width="0dp"
                     android:layout_height="56dp"
                     android:background="@drawable/rounded_button_black"
-                    android:backgroundTint="@color/primary_teal"
+                    app:backgroundTint="@color/primary_teal"
                     android:text="Claim This Item"
                     android:textColor="@color/white"
                     android:textSize="16sp"
@@ -506,7 +469,6 @@
                     android:layout_width="0dp"
                     android:layout_height="56dp"
                     android:background="@drawable/rounded_button_black"
-                    android:backgroundTint="@color/blue"
                     android:text="View Claims"
                     android:textColor="@color/white"
                     android:textSize="16sp"
@@ -522,6 +484,7 @@
                     android:layout_width="0dp"
                     android:layout_height="56dp"
                     android:layout_marginTop="12dp"
+                    android:visibility="gone"
                     android:background="@drawable/rounded_button_gray"
                     android:drawableStart="@drawable/ic_message"
                     android:drawablePadding="8dp"
@@ -533,6 +496,45 @@
                     app:layout_constraintTop_toBottomOf="@id/btnViewClaims" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+            <!-- Buttons Container -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layoutActions">
+
+                <!-- Edit Button -->
+                <Button
+                    android:id="@+id/btnEdit"
+                    android:layout_width="120dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/rounded_button_black"
+                    android:text="@string/edit"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toStartOf="@id/btnDelete"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Delete Button -->
+                <Button
+                    android:id="@+id/btnDelete"
+                    android:layout_width="120dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@drawable/rounded_button_red"
+                    android:text="@string/delete"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/btnEdit"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

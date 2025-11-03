@@ -1,6 +1,7 @@
 package com.example.lostandfound.domain.item
 
 import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
 
 data class FoundItemRequest(
     @SerializedName("title")
@@ -138,4 +139,4 @@ data class FoundItemResponse(
 
     @SerializedName("material_tags_list")
     val materialTagsList: List<String>
-)
+): java.io.Serializable

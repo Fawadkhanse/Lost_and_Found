@@ -59,9 +59,9 @@ class ViewLostItemFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        binding.btnBack.setOnClickListener {
-            requireActivity().onBackPressed()
-        }
+//        binding.btnBack.setOnClickListener {
+//            requireActivity().onBackPressed()
+//        }
 
         binding.btnEdit.setOnClickListener {
             enableEditing()
@@ -72,18 +72,18 @@ class ViewLostItemFragment : Fragment() {
             deleteItem()
         }
 
-        // Bottom navigation
-        binding.bottomBar.navHome.setOnClickListener {
-            // Navigate to home
-        }
-
-        binding.bottomBar.navMessage.setOnClickListener {
-            // Navigate to messages
-        }
-
-        binding.bottomBar.navAccount.setOnClickListener {
-            // Navigate to account
-        }
+//        // Bottom navigation
+//        binding.bottomBar.navHome.setOnClickListener {
+//            // Navigate to home
+//        }
+//
+//        binding.bottomBar.navMessage.setOnClickListener {
+//            // Navigate to messages
+//        }
+//
+//        binding.bottomBar.navAccount.setOnClickListener {
+//            // Navigate to account
+//        }
     }
 
     private fun enableEditing() {

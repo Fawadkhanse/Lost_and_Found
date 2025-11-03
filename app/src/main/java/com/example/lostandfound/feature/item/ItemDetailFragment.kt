@@ -15,6 +15,7 @@ import com.example.lostandfound.data.Resource
 import com.example.lostandfound.databinding.FragmentItemDetailBinding
 import com.example.lostandfound.domain.auth.LostItemResponse
 import com.example.lostandfound.domain.item.FoundItemResponse
+import com.example.lostandfound.feature.base.ApiErrorDialog
 import com.example.lostandfound.feature.base.BaseFragment
 import com.example.lostandfound.feature.chat.SendMessageDialogFragment
 import com.example.lostandfound.feature.claimitem.ClaimViewModel
@@ -74,11 +75,6 @@ class ItemDetailFragment : BaseFragment() {
     }
 
     private fun setupListeners() {
-        // Back button
-        binding.btnBack.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
-
         // Claim button (for found items)
         binding.btnClaimItem.setOnClickListener {
             showClaimDialog()
@@ -92,6 +88,40 @@ class ItemDetailFragment : BaseFragment() {
         // Contact button - Opens message dialog
         binding.btnContact.setOnClickListener {
             contactItemOwner()
+        }
+        binding.btnEdit.setOnClickListener {
+            if (itemType == ItemType.LOST) {
+                navigateTo(R.id.action_addItemFragment_to_reportLostItemFragment, Bundle().apply {
+                    putBoolean("isEditMode", true)
+                    putSerializable("item", currentLostItem)
+                })
+            } else {
+                navigateTo(
+                    R.id.action_itemDetailFragment_to_reportFoundItemFragment,
+                    Bundle().apply {
+                        putBoolean("isEditMode", true)
+                        putSerializable("item", currentFoundItem)
+                    })
+            }
+
+        }
+
+        binding.btnDelete.setOnClickListener {
+            ApiErrorDialog.showCustom(
+                context = requireContext(),
+                title = "Error",
+                isCancelable = true,
+                message = "Are you sure you want to delete this item?",
+                showRetry = true,
+                onAction = {},
+                onOkAction = {
+                    if (itemType==ItemType.LOST){
+                        itemViewModel.deleteLostItem(itemId?:"")
+                    }else{
+                        itemViewModel.deleteFoundItem(itemId?:"")
+                    }
+                }
+            )
         }
 
     }
@@ -173,7 +203,7 @@ class ItemDetailFragment : BaseFragment() {
     private fun displayLostItemData(item: LostItemResponse) {
         binding.apply {
             // Set title
-            tvTitle.text = "Lost Item Details"
+
 
             // Item information
             tvItemName.text = item.title
@@ -230,14 +260,14 @@ class ItemDetailFragment : BaseFragment() {
             } else {
                 View.GONE
             }
-            btnContact.visibility = View.VISIBLE
+            btnContact.visibility = View.GONE
         }
     }
 
     private fun displayFoundItemData(item: FoundItemResponse) {
         binding.apply {
             // Set title
-            tvTitle.text = "Found Item Details"
+            //tvTitle.text = "Found Item Details"
 
             // Item information
             tvItemName.text = item.title
@@ -296,7 +326,7 @@ class ItemDetailFragment : BaseFragment() {
             // Button visibility for found items
             btnClaimItem.visibility = if (item.status == "found") View.VISIBLE else View.GONE
             btnViewClaims.visibility = View.GONE
-            btnContact.visibility = View.VISIBLE
+            btnContact.visibility = View.GONE
         }
     }
 
