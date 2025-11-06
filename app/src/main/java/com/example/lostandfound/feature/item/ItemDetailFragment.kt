@@ -72,12 +72,8 @@ class ItemDetailFragment : BaseFragment() {
         setupListeners()
         observeViewModels()
         loadItemData()
-        setView()
     }
 
-    private fun setView() {
-
-    }
 
     private fun setupListeners() {
         // Claim button (for found items)
