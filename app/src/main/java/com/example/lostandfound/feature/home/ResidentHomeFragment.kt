@@ -85,8 +85,9 @@ class ResidentHomeFragment : BaseFragment() {
         setupListeners()
         observeViewModels()
         setView()
-        loadCategories()
-
+        if (categories.isEmpty()){
+            loadCategories()
+        }
         // First load: Call search method with "All" category
         if (!hasLoadedOnce) {
             performInitialSearch()
