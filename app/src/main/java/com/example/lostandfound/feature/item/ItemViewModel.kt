@@ -175,24 +175,6 @@ class ItemViewModel(
     // ============================================
 
     /**
-     * Create a new found item
-     */
-    fun createFoundItem(request: FoundItemRequest) {
-        viewModelScope.launch {
-            remoteRepository.makeApiRequest(
-                requestModel = request,
-                endpoint = ApiEndpoints.FOUND_ITEMS,
-                httpMethod = HttpMethod.POST
-            ).collectAsResource<FoundItemResponse>(
-                onEmit = { result ->
-                    _createFoundItemState.value = result
-                },
-                useMock = false
-            )
-        }
-    }
-
-    /**
      * Create a new found item with multipart image
      */
     fun createFoundItemWithImage(

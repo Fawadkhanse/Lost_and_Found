@@ -6,22 +6,28 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.lostandfound.R
 import com.example.lostandfound.data.Resource
 import com.example.lostandfound.databinding.FragmentPersonalInfoBinding
+import com.example.lostandfound.domain.auth.CurrentUserResponse
 import com.example.lostandfound.feature.auth.AuthViewModel
 import com.example.lostandfound.feature.base.BaseFragment
 import com.example.lostandfound.utils.AuthData
+import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -166,6 +172,7 @@ class PersonalInfoFragment : BaseFragment() {
                         showLoading("Updating password...")
                     }
                     is Resource.Success -> {
+
                         hideLoading()
                         showSuccess("Password updated successfully!")
                         profileViewModel.resetUpdatePasswordState()
@@ -174,6 +181,34 @@ class PersonalInfoFragment : BaseFragment() {
                         hideLoading()
                         showError("Failed to update password: ${resource.exception.message}")
                         profileViewModel.resetUpdatePasswordState()
+                    }
+                    Resource.None -> {
+                        hideLoading()
+                    }
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            profileViewModel.updateProfileState.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        showLoading("Updating password...")
+                    }
+                    is Resource.Success -> {
+                        hideLoading()
+                        binding.btnUpdateInfo.text = getString(R.string.edit_profile)
+                        binding.btnUpdateInfo.setCompoundDrawablesWithIntrinsicBounds(
+                            null, null, null, null
+                        )
+                        showSuccessAlert("Password updated successfully!")
+                        profileViewModel.resetUpdateProfileState()
+                        setEditMode(false)
+                    }
+                    is Resource.Error -> {
+                        hideLoading()
+                        showError("Failed to update password: ${resource.exception.message}")
+                        profileViewModel.resetUpdateProfileState()
                     }
                     Resource.None -> {
                         hideLoading()
@@ -221,7 +256,7 @@ class PersonalInfoFragment : BaseFragment() {
         }
     }
 
-    private fun displayUserProfile(user: com.example.lostandfound.domain.auth.CurrentUserResponse) {
+    private fun displayUserProfile(user: CurrentUserResponse) {
         binding.apply {
             // Display profile image
             displayProfileImage(user.profileImageUrl ?: user.profileImage)
@@ -299,8 +334,8 @@ class PersonalInfoFragment : BaseFragment() {
 
             // User ID, Tower, Room are always disabled (read-only)
             etUserId.isEnabled = false
-            etTowerNumber.isEnabled = false
-            etRoomNumber.isEnabled = false
+            etTowerNumber.isEnabled = enabled
+            etRoomNumber.isEnabled = enabled
 
             // Show/hide camera icon
             ivCameraIcon.visibility = if (enabled) View.VISIBLE else View.GONE
@@ -342,7 +377,7 @@ class PersonalInfoFragment : BaseFragment() {
                 binding.etEmail.requestFocus()
                 false
             }
-            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+            !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
                 binding.tilEmail.error = getString(R.string.invalid_email)
                 binding.etEmail.requestFocus()
                 false
@@ -362,24 +397,55 @@ class PersonalInfoFragment : BaseFragment() {
     }
 
     private fun performProfileUpdate(phone: String, email: String) {
-        // Note: Based on API docs, there's no direct profile update endpoint
-        // Only password update is available
+        // Get the full name and split it into first and last name
+        val fullName = binding.etUserId.text.toString().trim()
+        val nameParts = fullName.split(" ", limit = 2)
+        val firstName = nameParts.getOrNull(0) ?: ""
+        val lastName = nameParts.getOrNull(1) ?: ""
 
-        showInfo("Profile update feature coming soon. Only password can be changed currently.")
+        // Get other fields from AuthData (these are read-only in this fragment)
+        val username = AuthData.userDetailInfo?.username ?: ""
+        val userType = AuthData.userDetailInfo?.userType ?: "resident"
+        val towerNumber = binding.etTowerNumber.text.toString().trim()
+        val roomNumber = binding.etRoomNumber.text.toString().trim()
 
-        // Reset to read-only mode
-        setEditMode(false)
-        binding.btnUpdateInfo.text = getString(R.string.edit_profile)
-        binding.btnUpdateInfo.setCompoundDrawablesWithIntrinsicBounds(
-            R.drawable.ic_edit, 0, 0, 0
+        // Create file from selected image URI if available
+        val profileImageFile = selectedImageUri?.let { uri ->
+            createFileFromUri(uri)
+        }
+
+        // Call the update profile method
+        profileViewModel.updateProfile(
+            username = username,
+            firstName = firstName,
+            email = email,
+            phoneNumber = phone,
+            profileImageFile = profileImageFile,
+            lastName = lastName,
+            userType = userType,
+            towerNumber = towerNumber,
+            roomNumber = roomNumber,
         )
     }
 
+    // Add this helper method to create file from URI
+    private fun createFileFromUri(uri: Uri): File {
+        val inputStream = requireContext().contentResolver.openInputStream(uri)
+        val file = File(requireContext().cacheDir, "profile_${System.currentTimeMillis()}.jpg")
+
+        inputStream?.use { input ->
+            FileOutputStream(file).use { output ->
+                input.copyTo(output)
+            }
+        }
+
+        return file
+    }
     private fun showChangePasswordDialog(newPassword: String? = null) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_change_password, null)
-        val etOldPassword = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etOldPassword)
-        val etNewPassword = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etNewPassword)
-        val etConfirmPassword = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etConfirmPassword)
+        val etOldPassword = dialogView.findViewById<TextInputEditText>(R.id.etOldPassword)
+        val etNewPassword = dialogView.findViewById<TextInputEditText>(R.id.etNewPassword)
+        val etConfirmPassword = dialogView.findViewById<TextInputEditText>(R.id.etConfirmPassword)
 
         // Pre-fill new password if provided
         newPassword?.let {
@@ -454,7 +520,7 @@ class PersonalInfoFragment : BaseFragment() {
             findNavController().navigate(
                 R.id.action_personalInfoFragment_to_loginFragment,
                 null,
-                androidx.navigation.NavOptions.Builder()
+                NavOptions.Builder()
                     .setPopUpTo(R.id.personalInfoFragment, true)
                     .build()
             )

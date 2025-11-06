@@ -8,7 +8,10 @@ object ApiEndpoints {
 
     // Profile endpoints
     const val PROFILE = "profile/"
+    const val UPDATE_PROFILE = "api/profile/me/"
     const val UPDATE_PASSWORD = "api/profile/password/"
+    const val FORGOT_PASSWORD = "api/profile/forgot_password/"
+
     const val CURRENT_USER = "api/me/"
     const val ALL_USERS = "users/"
 
@@ -40,6 +43,7 @@ object ApiEndpoints {
 
     // Search endpoints
     const val MANUAL_IMAGE_SEARCH = "search/manual-image/"
+    const val IMAGE_BASED_SEARCH = "image-based-search/"
 
     // Admin Verification endpoints
     const val VERIFY_LOST_ITEM = "admin/verify/lost-item/{id}/"

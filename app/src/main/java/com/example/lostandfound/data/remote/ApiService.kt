@@ -40,4 +40,12 @@ interface ApiService {
         @Part image: MultipartBody.Part?
     ): Response<Any>
 
+    @Multipart
+    @PUT
+    suspend fun putMultipart(
+        @Url url: String,
+        @PartMap params: Map<String, @JvmSuppressWildcards RequestBody>,
+        @Part image: MultipartBody.Part?
+    ): Response<Any>
+
 }

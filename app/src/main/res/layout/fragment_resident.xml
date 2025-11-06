@@ -27,7 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="16dp">
+                android:paddingBottom="80dp">
 
                 <!-- Welcome Section -->
                 <TextView
@@ -41,7 +41,7 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
-                <!-- Search Bar -->
+                <!-- Search Bar with Image and Text Search -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -50,23 +50,34 @@
                     android:layout_marginEnd="24dp"
                     app:cardBackgroundColor="#F0F0F0"
                     app:cardCornerRadius="24dp"
-                    app:cardElevation="0dp">
+                    app:cardElevation="2dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp">
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp">
 
-                        <!-- Search Icon -->
+                        <!-- Image Search Icon -->
                         <ImageView
-                            android:layout_width="24dp"
+                            android:id="@+id/imageSearch"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:padding="4dp"
+                            android:src="@drawable/ic_image"
+                            android:contentDescription="Search by image"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            app:tint="@color/primary_teal" />
+
+                        <!-- Vertical Divider -->
+                        <View
+                            android:layout_width="1dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ic_search"
-                            android:contentDescription="Search"
-                            app:tint="@android:color/darker_gray" />
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:background="@android:color/darker_gray" />
 
                         <!-- Search EditText -->
                         <EditText
@@ -75,15 +86,171 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:background="@android:color/transparent"
-                            android:hint="Search"
+                            android:hint="Search items..."
                             android:imeOptions="actionSearch"
                             android:inputType="text"
-                            android:paddingStart="12dp"
-                            android:paddingEnd="12dp"
+                            android:maxLines="1"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"
                             android:textColor="@android:color/black"
                             android:textColorHint="@android:color/darker_gray"
                             android:textSize="14sp" />
+
+                        <!-- Text Search Icon -->
+                        <ImageView
+                            android:id="@+id/textSearch"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:padding="4dp"
+                            android:src="@drawable/ic_search"
+                            android:contentDescription="Search by text"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            app:tint="@color/primary_teal" />
+
                     </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <!-- Filter Toggle Button -->
+                <TextView
+                    android:id="@+id/btnToggleFilters"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="12dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:text="Show Filters ▼"
+                    android:textColor="@color/primary_teal"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <!-- Advanced Filter Panel (Collapsible) -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/filterPanel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:visibility="gone"
+                    app:cardBackgroundColor="#F8F8F8"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <!-- Filter Title -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Search Filters"
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <!-- Item Type Selection (Lost/Found) -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="Item Type:"
+                            android:textColor="@android:color/black"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/chipLost"
+                                android:layout_width="0dp"
+                                android:layout_height="40dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/rounded_button_gray"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:gravity="center"
+                                android:text="Lost Items"
+                                android:textColor="@android:color/black"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/chipFound"
+                                android:layout_width="0dp"
+                                android:layout_height="40dp"
+                                android:layout_marginStart="8dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/rounded_button_gray"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:gravity="center"
+                                android:text="Found Items"
+                                android:textColor="@android:color/black"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Category Selection -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="Category:"
+                            android:textColor="@android:color/black"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <Spinner
+                            android:id="@+id/spinnerCategory"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/rounded_button_gray"
+                            android:padding="12dp"
+                            android:spinnerMode="dropdown" />
+
+                        <!-- Filter Action Buttons -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:orientation="horizontal">
+
+                            <Button
+                                android:id="@+id/btnClearFilters"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:layout_weight="1"
+                                android:backgroundTint="@android:color/darker_gray"
+                                android:text="Clear"
+                                android:textColor="@android:color/white" />
+
+                            <Button
+                                android:id="@+id/btnApplyFilters"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_weight="1"
+                                android:backgroundTint="@color/primary_teal"
+                                android:text="Apply"
+                                android:textColor="@android:color/white" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
                 </androidx.cardview.widget.CardView>
 
                 <!-- New Post Header -->
@@ -92,7 +259,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="24dp"
-                    android:visibility="gone"
                     android:layout_marginEnd="16dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
@@ -101,7 +267,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="New Post"
+                        android:text="All Items"
                         android:textColor="@android:color/black"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -110,112 +276,41 @@
                         android:id="@+id/tvLoadMore"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
                         android:clickable="true"
                         android:focusable="true"
                         android:padding="8dp"
+                        android:visibility="gone"
                         android:text="load more"
                         android:textColor="@color/primary_teal"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
-
-                <!-- Posts RecyclerView (Horizontal for Featured Posts) -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvFeaturedPosts"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:clipToPadding="false"
-                    android:visibility="gone"
-                    android:orientation="horizontal"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:itemCount="2"
-                    tools:listitem="@layout/item_post_featured" />
 
                 <!-- Categories Header -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="24dp"
-                    android:text="Categories"
+                    android:layout_marginTop="16dp"
+                    android:text="Quick Categories"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <!-- Categories (Horizontal ScrollView) -->
-                <HorizontalScrollView
+                <!-- Categories RecyclerView (Horizontal) -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvCategories"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:scrollbars="none">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp">
-
-                        <!-- Clothes Category -->
-                        <LinearLayout
-                            android:id="@+id/btnClothes"
-                            android:layout_width="120dp"
-                            android:layout_height="100dp"
-                            android:layout_marginEnd="16dp"
-                            android:background="@drawable/rounded_button_gray"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-
-                            <ImageView
-                                android:layout_width="48dp"
-                                android:layout_height="48dp"
-                                android:src="@drawable/ic_clothes"
-                                android:contentDescription="Clothes"
-                                app:tint="@android:color/black" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Clothes"
-                                android:textColor="@android:color/black"
-                                android:textSize="12sp" />
-                        </LinearLayout>
-
-                        <!-- Electronics Category -->
-                        <LinearLayout
-                            android:id="@+id/btnElectronics"
-                            android:layout_width="120dp"
-                            android:layout_height="100dp"
-                            android:background="@drawable/rounded_button_gray"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-
-                            <ImageView
-                                android:layout_width="48dp"
-                                android:layout_height="48dp"
-                                android:src="@drawable/ic_electronics"
-                                android:contentDescription="Electronics"
-                                app:tint="@android:color/black" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Electronics"
-                                android:textColor="@android:color/black"
-                                android:textSize="12sp" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </HorizontalScrollView>
+                    android:clipToPadding="false"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="5"
+                    tools:listitem="@layout/item_category" />
 
                 <!-- All Posts RecyclerView (Vertical) -->
                 <androidx.recyclerview.widget.RecyclerView
@@ -238,30 +333,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="24dp"
-            android:layout_marginBottom="80dp"
-            android:contentDescription="Add"
+            android:layout_marginBottom="24dp"
+            android:contentDescription="Add new item"
             android:src="@drawable/file_dock_add"
             app:tint="@android:color/white"
             app:backgroundTint="@color/primary_teal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
             app:elevation="6dp"
             app:maxImageSize="40dp" />
 
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!-- Navigation Drawer -->
-<!--    <com.google.android.material.navigation.NavigationView-->
-<!--        android:id="@+id/navigationView"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:layout_gravity="end"-->
-<!--        android:fitsSystemWindows="true"-->
-<!--        app:headerLayout="@layout/nav_header"-->
-<!--        app:menu="@menu/drawer_menu" />-->
 
 </androidx.drawerlayout.widget.DrawerLayout>

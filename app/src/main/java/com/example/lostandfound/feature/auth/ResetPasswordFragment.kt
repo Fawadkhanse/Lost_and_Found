@@ -132,14 +132,11 @@ class ResetPasswordFragment : BaseFragment() {
         newPassword: String,
         confirmPassword: String
     ) {
-        if (resetToken.isNullOrEmpty()) {
-            showError(getString(R.string.invalid_reset_token))
-            return
-        }
+
 
         authViewModel.resetPassword(
             email = email,
-            token = resetToken!!,
+            token = resetToken?:"",
             newPassword = newPassword,
             confirmPassword = confirmPassword
         )

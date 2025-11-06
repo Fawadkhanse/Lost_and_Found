@@ -72,6 +72,11 @@ class ItemDetailFragment : BaseFragment() {
         setupListeners()
         observeViewModels()
         loadItemData()
+        setView()
+    }
+
+    private fun setView() {
+
     }
 
     private fun setupListeners() {
@@ -203,7 +208,13 @@ class ItemDetailFragment : BaseFragment() {
     private fun displayLostItemData(item: LostItemResponse) {
         binding.apply {
             // Set title
-
+            if (item.userId == AuthData.userDetailInfo?.id) {
+                btnClaimItem.visibility = View.GONE
+                layoutMypost.visibility = View.VISIBLE
+            } else {
+                layoutMypost.visibility = View.GONE
+                btnClaimItem.visibility = View.VISIBLE
+            }
 
             // Item information
             tvItemName.text = item.title

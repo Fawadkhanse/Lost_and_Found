@@ -22,19 +22,13 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
             android:layout_marginEnd="16dp"
-            android:contentDescription="@string/university_logo"
-            android:src="@drawable/ic_university_logo" />
+            android:contentDescription="@string/login"
+            android:src="@drawable/login_main_icon" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/lost_and_found"
-            android:textColor="@color/primary_teal"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+
     </LinearLayout>
 
     <!-- Login Card -->
@@ -184,11 +178,11 @@
                         android:layout_height="48dp"
                         android:layout_marginTop="24dp"
                         android:background="@drawable/rounded_button"
-                        android:backgroundTint="@color/white"
+                        app:backgroundTint="@color/primary_teal"
                         android:paddingStart="48dp"
                         android:paddingEnd="48dp"
                         android:text="@string/login"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

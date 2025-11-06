@@ -220,33 +220,20 @@ class AuthViewModel(
                     throw Exception("Password must be at least 8 characters")
                 }
 
-                // Simulate API delay
-                kotlinx.coroutines.delay(1500)
-
-                // Mock success response
-                _resetPasswordState.value = Resource.Success(
-                    UpdatePasswordResponse(
-                        detail = "Your password has been reset successfully. You can now login with your new password."
-                    )
-                )
             } catch (e: Exception) {
-                _resetPasswordState.value = Resource.Error(e)
             }
 
-            /*
-            When backend endpoint is available, replace above code with:
 
             val request = ResetPasswordRequest(
                 email = email,
-                token = token,
                 newPassword = newPassword,
                 confirmPassword = confirmPassword
             )
 
             remoteRepository.makeApiRequest(
                 requestModel = request,
-                endpoint = ApiEndpoints.RESET_PASSWORD, // Add this to ApiEndpoints
-                httpMethod = HttpMethod.POST
+                endpoint = ApiEndpoints.FORGOT_PASSWORD, // Add this to ApiEndpoints
+                httpMethod = HttpMethod.PUT
             ).collectAsResource<ResetPasswordResponse>(
                 onEmit = { result ->
                     _resetPasswordState.value = result.map {
@@ -255,7 +242,6 @@ class AuthViewModel(
                 },
                 useMock = false
             )
-            */
         }
     }
 

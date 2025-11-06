@@ -20,6 +20,7 @@ interface RemoteRepository {
     suspend fun makeMultipartRequest(
         params: Map<String, RequestBody>,
         image: MultipartBody.Part?,
-        endpoint: String
+        endpoint: String,
+        httpMethod: HttpMethod = HttpMethod.POST,
     ): Flow<Resource<String>>
 }

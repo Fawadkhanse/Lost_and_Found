@@ -73,6 +73,7 @@ class LoginFragment : BaseFragment() {
 
         // Forgot Password
         binding.tvForgotPassword.setOnClickListener {
+            authViewModel.resetLoginState()
             findNavController().navigate(R.id.action_loginFragment_to_forgotPasswordFragment2)
         }
 

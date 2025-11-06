@@ -212,6 +212,16 @@ abstract class BaseFragment : Fragment() {
 //
 //        )
     }
+ protected fun showSuccessAlert(message: String) {
+        ApiErrorDialog.showCustom(
+            context = requireContext(),
+            title = "Success",
+            isCancelable = true,
+            message = message ?: "Succes",
+            showRetry = false
+
+        )
+    }
 
     /**
      * Show info toast

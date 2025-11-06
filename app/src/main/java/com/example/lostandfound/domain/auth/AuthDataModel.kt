@@ -1,5 +1,6 @@
 package com.example.lostandfound.domain.auth
 
+import android.R
 import com.google.gson.annotations.SerializedName
 
 // ============================================
@@ -403,6 +404,9 @@ data class LostItemResponse(
 
     @SerializedName("user")
     val user: String,
+    @SerializedName("user_id")
+
+    val userId: String,
 
     @SerializedName("title")
     val title: String,
@@ -708,8 +712,49 @@ data class ManualSearchRequest(
     val searchQuery: String,
 
     @SerializedName("search_type")
-    val searchType: String
+    val searchType: String="lost",
+
+    @SerializedName("category_filters")
+    val category: String = ""
 )
+
+data class ManualSearchResponse(
+    @SerializedName("search_metadata")
+    val searchMetadata: SearchMetadata,
+
+    @SerializedName("results")
+    val results: List<LostItemResponse> // Using Any as the results can be empty
+)
+
+data class SearchMetadata(
+    @SerializedName("query")
+    val query: String,
+
+    @SerializedName("type")
+    val type: String,
+
+    @SerializedName("filters_applied")
+    val filtersApplied: FiltersApplied,
+
+    @SerializedName("results_count")
+    val resultsCount: Int,
+
+    @SerializedName("search_duration_seconds")
+    val searchDurationSeconds: Double,
+
+    @SerializedName("max_results")
+    val maxResults: Int
+)
+
+data class FiltersApplied(
+    @SerializedName("colors")
+    val colors: String,
+
+    @SerializedName("categories")
+    val categories: String
+)
+
+
 
 data class ErrorResponse(
     @SerializedName("search_query")
@@ -750,9 +795,6 @@ data class ForgotPasswordResponse(
 data class ResetPasswordRequest(
     @SerializedName("email")
     val email: String,
-
-    @SerializedName("token")
-    val token: String,
 
     @SerializedName("new_password")
     val newPassword: String,

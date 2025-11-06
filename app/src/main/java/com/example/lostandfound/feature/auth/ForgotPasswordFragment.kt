@@ -91,22 +91,13 @@ class ForgotPasswordFragment : BaseFragment() {
     }
 
     private fun showPasswordResetDialog(email: String) {
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle(R.string.password_reset_requested)
-            .setMessage(getString(R.string.password_reset_message, email))
-            .setPositiveButton(R.string.ok) { dialog, _ ->
-                dialog.dismiss()
-                // Navigate back to login
-                val args = Bundle().apply {
-                    putString("user_email", email)
-                    putString("reset_token", "mock_token")
-                }
-                navigateTo(R.id.action_forgotPasswordFragment_to_resetPasswordFragment,args)
+        // Navigate back to login
+        val args = Bundle().apply {
+            putString("user_email", email)
+            putString("reset_token", "mock_token")
+        }
+        navigateTo(R.id.action_forgotPasswordFragment_to_resetPasswordFragment,args)
 
-              //  findNavController().navigateUp()
-            }
-            .setCancelable(false)
-            .show()
     }
 
     private fun observeViewModel() {

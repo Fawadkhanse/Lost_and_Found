@@ -5,7 +5,9 @@ import android.content.Context
 import com.example.lostandfound.data.remote.ApiService
 import com.example.lostandfound.data.remote.HttpMethod
 import com.example.lostandfound.data.Resource
+import com.example.lostandfound.domain.auth.ErrorResponse
 import com.example.lostandfound.domain.repository.RemoteRepository
+import com.example.lostandfound.utils.toPojo
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -46,13 +48,22 @@ class RemoteRepositoryImpl(
                 emit(Resource.Success(body))
             } else {
                 val errorBody = response.errorBody()?.string() ?: ""
-                emit(Resource.Error(Exception(errorBody)))
+                try {
+                    val errorResponse = errorBody.toPojo<com.example.lostandfound.domain.ErrorResponse>()
+                    val message = errorResponse.detail?.firstOrNull() ?: "Unknown error occurred"
+                    emit(Resource.Error(Exception(message)))
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    emit(Resource.Error(Exception("Something went wrong")))
+                }
             }
 
         } catch (e: Exception) {
+            e.printStackTrace()
             emit(Resource.Error(Exception(e.message ?: "Unexpected error")))
         }
     }.catch { e ->
+        e.printStackTrace()
         emit(Resource.Error(Exception(e.message ?: "Network error")))
     }.flowOn(Dispatchers.IO)
 
@@ -60,24 +71,39 @@ class RemoteRepositoryImpl(
     override suspend fun makeMultipartRequest(
         params: Map<String, RequestBody>,
         image: MultipartBody.Part?,
-        endpoint: String
+        endpoint: String,
+        httpMethod: HttpMethod,
     ): Flow<Resource<String>> = flow {
         emit(Resource.Loading)
 
         try {
-            val response = apiService.postMultipart(endpoint, params, image)
-
+            val response: Response<Any> = when (httpMethod) {
+                HttpMethod.POST -> apiService.postMultipart(endpoint, params, image)
+                HttpMethod.PUT -> apiService.putMultipart(endpoint, params, image)
+                else -> throw IllegalArgumentException("Invalid HTTP method")
+            }
             if (response.isSuccessful) {
                 val body = gson.toJson(response.body() ?: "{}")
                 emit(Resource.Success(body))
             } else {
                 val errorBody = response.errorBody()?.string() ?: ""
-                emit(Resource.Error(Exception(errorBody)))
+
+                try {
+                    val errorResponse = errorBody.toPojo<com.example.lostandfound.domain.ErrorResponse>()
+                    val message = errorResponse.detail?.firstOrNull() ?: "Unknown error occurred"
+                    emit(Resource.Error(Exception(message)))
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    emit(Resource.Error(Exception("Something went wrong")))
+                }
+
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             emit(Resource.Error(Exception(e.message ?: "Unexpected error")))
         }
     }.catch { e ->
+        e.printStackTrace()
         emit(Resource.Error(Exception(e.message ?: "Network error")))
     }.flowOn(Dispatchers.IO)
 }

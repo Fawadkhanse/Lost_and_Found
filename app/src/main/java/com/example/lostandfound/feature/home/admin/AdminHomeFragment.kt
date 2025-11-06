@@ -44,7 +44,6 @@ class AdminHomeFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         setupViews()
-        setupBottomNavigation()
         setupListeners()
         observeViewModel()
         loadDashboardData()
@@ -54,10 +53,8 @@ class AdminHomeFragment : BaseFragment() {
         // Set welcome message
         binding.tvWelcome.text = "Hello ${AuthData.fullName}!"
 
-        // Setup swipe to refresh
         binding.swipeRefresh.setOnRefreshListener {
             navigateTo(R.id.action_adminHomeFragment_to_loginFragment)
-           // loadDashboardData()
         }
     }
 
@@ -69,38 +66,11 @@ class AdminHomeFragment : BaseFragment() {
         binding.rvRecentActivities.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = activitiesAdapter
-        //    setHasFixedSize(true)
         }
     }
 
-    private fun setupBottomNavigation() {
-//        bottomNavHelper = AdminBottomNavigationHelper(binding.bottomNavAdmin)
-//
-//        bottomNavHelper.setOnTabSelectedListener { tab ->
-//            when (tab) {
-//                AdminBottomNavigationHelper.Tab.HOME -> {
-//                    // Already on home
-//                }
-//                AdminBottomNavigationHelper.Tab.POST_REQUESTS -> {
-//                    navigateToPostRequests()
-//                }
-//                AdminBottomNavigationHelper.Tab.PROFILE -> {
-//                    navigateToProfile()
-//                }
-//            }
-//        }
-
-        // Set Home as selected
-      //  bottomNavHelper.selectTab(AdminBottomNavigationHelper.Tab.HOME)
-    }
 
     private fun setupListeners() {
-        // Refresh button
-//        binding.btnRefresh.setOnClickListener {
-//            loadDashboardData()
-//        }
-
-        // Statistics Cards Click Listeners
         binding.cardLostItems.setOnClickListener {
             navigateToLostItems()
         }
