@@ -33,6 +33,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
+import androidx.core.view.isVisible
 
 
 /**
@@ -44,7 +45,6 @@ class ResidentHomeFragment : BaseFragment() {
     private var _binding: FragmentResidentBinding? = null
     private val binding get() = _binding!!
 
-    private val itemViewModel: ItemViewModel by viewModel()
     private val dashboardViewModel: DashboardViewModel by viewModel()
     private val categoryViewModel: CategoryViewModel by viewModel()
 
@@ -52,15 +52,12 @@ class ResidentHomeFragment : BaseFragment() {
     private lateinit var categoriesAdapter: CategoriesAdapter
     private val allItems = mutableListOf<ItemModel>()
 
-    // Track loading states
-    private var isLostItemsLoaded = false
-    private var isFoundItemsLoaded = false
     private var hasLoadedOnce = false
     private var isSearchMode = false
 
     // Search filters
-    private var selectedSearchType = "lost" // "lost" or "found"
-    private var selectedCategory = "All" // "All" means all categories
+    private var selectedSearchType = "" // "lost" or "found"
+    private var selectedCategory = "all" // "All" means all categories
 
     private var selectedImageFile: File? = null
 
@@ -94,22 +91,15 @@ class ResidentHomeFragment : BaseFragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        // Commented out: Now using search method on first load
-        // if (!isSearchMode) {
-        //     loadData()
-        // }
-    }
 
     private fun performInitialSearch() {
         // Set category to "All" (pass "All" to backend)
-        selectedCategory = "All"
+        selectedCategory = "all"
 
         val request = ManualSearchRequest(
             searchQuery = "",  // Empty query to get all items
             searchType = selectedSearchType,  // Default is "lost"
-            category = "All"  // Pass "All" for all categories
+            category = "all"  // Pass "All" for all categories
         )
 
         //showInfo("Loading all ${selectedSearchType} items...")
@@ -155,7 +145,6 @@ class ResidentHomeFragment : BaseFragment() {
         itemsAdapter = ItemsAdapter { item ->
             onItemClicked(item)
         }
-
         binding.rvPosts.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = itemsAdapter
@@ -175,7 +164,7 @@ class ResidentHomeFragment : BaseFragment() {
 
     private fun setupSearchFilters() {
         // Setup Category Spinner with "All" as first item
-        val categoryList = mutableListOf("All")
+        val categoryList = mutableListOf("all")
         categoryList.addAll(categories)
 
         val categoryAdapter = ArrayAdapter(
@@ -259,7 +248,7 @@ class ResidentHomeFragment : BaseFragment() {
         selectedCategory = category
 
         // Update spinner selection
-        val categoryList = mutableListOf("All")
+        val categoryList = mutableListOf("all")
         categoryList.addAll(categories)
         val position = categoryList.indexOf(selectedCategory)
         if (position >= 0) {
@@ -267,6 +256,8 @@ class ResidentHomeFragment : BaseFragment() {
         }
 
         applyFilters()
+        selectedSearchType=""
+        performTextSearch()
     }
 
     private fun updateSearchTypeUI() {
@@ -292,7 +283,8 @@ class ResidentHomeFragment : BaseFragment() {
     }
 
     private fun toggleFilterPanel() {
-        if (binding.filterPanel.visibility == View.VISIBLE) {
+        selectedSearchType = if (selectedCategory.isEmpty()) "lost" else selectedSearchType
+        if (binding.filterPanel.isVisible) {
             binding.filterPanel.visibility = View.GONE
             binding.btnToggleFilters.text = "Show Filters ▼"
         } else {
@@ -303,7 +295,7 @@ class ResidentHomeFragment : BaseFragment() {
 
     private fun applyFilters() {
         val categoryPosition = binding.spinnerCategory.selectedItemPosition
-        selectedCategory = if (categoryPosition == 0) "All" else categories[categoryPosition - 1]
+        selectedCategory = if (categoryPosition == 0) "all" else categories[categoryPosition - 1]
 
         val query = binding.etSearch.text.toString().trim()
         performTextSearch()
@@ -311,7 +303,7 @@ class ResidentHomeFragment : BaseFragment() {
 
     private fun clearFilters() {
         selectedSearchType = "lost"
-        selectedCategory = "All"
+        selectedCategory = "all"
         binding.spinnerCategory.setSelection(0)
         updateSearchTypeUI()
         binding.etSearch.text.clear()
@@ -325,7 +317,7 @@ class ResidentHomeFragment : BaseFragment() {
         isSearchMode = query.isNotEmpty() // Only set search mode if there's a query
 
         val categoryPosition = binding.spinnerCategory.selectedItemPosition
-        val categoryFilter = if (categoryPosition == 0) "All" else categories[categoryPosition - 1]
+        val categoryFilter = if (categoryPosition == 0) "all" else categories[categoryPosition - 1]
 
         val request = ManualSearchRequest(
             searchQuery = query,
@@ -335,38 +327,18 @@ class ResidentHomeFragment : BaseFragment() {
 
         if (query.isNotEmpty()) {
             showInfo("Searching ${selectedSearchType} items" +
-                    if (categoryFilter != "All") " in $categoryFilter" else "")
+                    if (categoryFilter != "all") " in $categoryFilter" else "")
             updateSearchModeUI()
         }
 
         dashboardViewModel.manualSearch(request)
     }
 
-    private fun filterCurrentItems() {
-        if (allItems.isEmpty()) {
-            showInfo("No items to filter")
-            return
-        }
-
-        val filteredItems = allItems.filter { item ->
-            val typeMatches = if (selectedSearchType == "lost") !item.isFound else item.isFound
-            val categoryMatches = selectedCategory == "All" ||
-                    item.categoryName.equals(selectedCategory, ignoreCase = true)
-
-            typeMatches && categoryMatches
-        }
-
-        itemsAdapter.submitList(filteredItems.toList())
-
-        val typeText = if (selectedSearchType == "lost") "Lost" else "Found"
-        val categoryText = if (selectedCategory != "All") " in $selectedCategory" else ""
-        showInfo("Showing ${filteredItems.size} $typeText item(s)$categoryText")
-    }
 
     private fun exitSearchMode() {
         isSearchMode = false
         binding.etSearch.text.clear()
-        selectedCategory = "All"
+        selectedCategory = "all"
         binding.spinnerCategory.setSelection(0)
         updateSearchModeUI()
         // Use search method instead of loadData()
@@ -416,37 +388,6 @@ class ResidentHomeFragment : BaseFragment() {
     }
 
     private fun observeViewModels() {
-        // Commented out: No longer using separate lost/found item loading
-        /*
-        viewLifecycleOwner.lifecycleScope.launch {
-            itemViewModel.lostItemsListState.collect { resource ->
-                when (resource) {
-                    is Resource.Loading -> {
-                        if (!hasLoadedOnce) showLoading("Loading lost items...")
-                    }
-                    is Resource.Success -> {
-                        isLostItemsLoaded = true
-                        allItems.removeAll { !it.isFound }
-                        val lostItems = resource.data.results.map { it.toItemModel(false) }
-                        allItems.addAll(lostItems)
-                        if (isFoundItemsLoaded) {
-                            updateRecyclerView()
-                            hideLoading()
-                            hasLoadedOnce = true
-                        }
-                    }
-                    is Resource.Error -> {
-                        isLostItemsLoaded = true
-                        hideLoading()
-                        showError("Failed to load lost items: ${resource.exception.message}")
-                        if (isFoundItemsLoaded) updateRecyclerView()
-                    }
-                    Resource.None -> {}
-                }
-            }
-        }
-        */
-
         viewLifecycleOwner.lifecycleScope.launch {
             dashboardViewModel.imageSearchState.collect { resource ->
                 when (resource) {
@@ -454,7 +395,7 @@ class ResidentHomeFragment : BaseFragment() {
                     is Resource.Success -> {
                         hideLoading()
                         allItems.clear()
-                        val searchResults = resource.data.results.map { it.toItemModel(false) }
+                        val searchResults = resource.data.results.map { it.toItemModel() }
                         allItems.addAll(searchResults)
                         updateRecyclerView()
                         hasLoadedOnce = true
@@ -480,13 +421,13 @@ class ResidentHomeFragment : BaseFragment() {
                     is Resource.Success -> {
                         hideLoading()
                         allItems.clear()
-                        val searchResults = resource.data.results.map { it.toItemModel(false) }
+                        val searchResults = resource.data.results.map { it.toItemModel() }
                         allItems.addAll(searchResults)
                         updateRecyclerView()
                         hasLoadedOnce = true
 
                         val typeText = if (selectedSearchType == "lost") "Lost" else "Found"
-                        val categoryText = if (selectedCategory != "All") " in $selectedCategory" else ""
+                        val categoryText = if (selectedCategory != "all") " in $selectedCategory" else ""
 
                         if (searchResults.isEmpty()) {
                             showInfo("No matching $typeText items found$categoryText")
@@ -503,37 +444,6 @@ class ResidentHomeFragment : BaseFragment() {
             }
         }
 
-        // Commented out: No longer using separate found items loading
-        /*
-        viewLifecycleOwner.lifecycleScope.launch {
-            itemViewModel.foundItemsListState.collect { resource ->
-                when (resource) {
-                    is Resource.Loading -> {
-                        if (!hasLoadedOnce) showLoading("Loading found items...")
-                    }
-                    is Resource.Success -> {
-                        isFoundItemsLoaded = true
-                        allItems.removeAll { it.isFound }
-                        val foundItems = resource.data.results.map { it.toItemModel(true) }
-                        allItems.addAll(foundItems)
-                        if (isLostItemsLoaded) {
-                            updateRecyclerView()
-                            hideLoading()
-                            hasLoadedOnce = true
-                        }
-                    }
-                    is Resource.Error -> {
-                        isFoundItemsLoaded = true
-                        hideLoading()
-                        showError("Failed to load found items: ${resource.exception.message}")
-                        if (isLostItemsLoaded) updateRecyclerView()
-                    }
-                    Resource.None -> {}
-                }
-            }
-        }
-        */
-
         viewLifecycleOwner.lifecycleScope.launch {
             categoryViewModel.categoriesListState.collect { resource ->
                 when (resource) {
@@ -546,7 +456,7 @@ class ResidentHomeFragment : BaseFragment() {
                         setupSearchFilters()
 
                         // Update categories RecyclerView
-                        val categoryList = mutableListOf("All")
+                        val categoryList = mutableListOf("all")
                         categoryList.addAll(categories)
                         categoriesAdapter.submitList(categoryList)
                     }
@@ -572,16 +482,6 @@ class ResidentHomeFragment : BaseFragment() {
         }
     }
 
-    // Commented out: No longer using this method for initial load
-    /*
-    private fun loadData() {
-        isLostItemsLoaded = false
-        isFoundItemsLoaded = false
-        itemViewModel.getAllLostItems()
-        itemViewModel.getAllFoundItems()
-    }
-    */
-
     private fun loadMoreItems() {
         showInfo("Refreshing items...")
         performInitialSearch()
@@ -605,7 +505,7 @@ class ResidentHomeFragment : BaseFragment() {
     private fun onItemClicked(item: ItemModel) {
         val bundle = Bundle().apply {
             putString("itemId", item.id)
-            putString("itemType", if (item.isFound) "FOUND" else "LOST")
+            putString("itemType", if (item.status == "found") "FOUND" else "LOST")
         }
         navigateTo(R.id.action_residentHomeFragment_to_itemDetailFragment, bundle)
     }
@@ -615,29 +515,17 @@ class ResidentHomeFragment : BaseFragment() {
         _binding = null
     }
 
-    private fun LostItemResponse.toItemModel(isFound: Boolean = false): ItemModel {
+    private fun LostItemResponse.toItemModel(): ItemModel {
         return ItemModel(
             id = this.id ?: "",
             title = this.title ?: "Unknown",
             categoryName = this.categoryName ?: "",
-            date = this.lostDate ?: "",
-            location = this.lostLocation ?: "",
-            imageUrl = this.itemImage ?: "",
-            isFound = isFound,
+            date = this.lostDate ?: this.foundDate ?: "",  // Handle both lost and found dates
+            location = this.lostLocation ?: this.foundLocation ?: "",  // Handle both locations
+            imageUrl = this.itemImage ?: this.imageUrl ?: "",  // Handle both image fields
+            isFound = this.status == "found",  // Simply check the status directly
             status = this.status ?: ""
         )
     }
 
-    private fun FoundItemResponse.toItemModel(isFound: Boolean = true): ItemModel {
-        return ItemModel(
-            id = this.id ?: "",
-            title = this.title ?: "Unknown",
-            categoryName = this.categoryName ?: "",
-            date = this.foundDate ?: "",
-            location = this.foundLocation ?: "",
-            imageUrl = this.imageUrl ?: this.itemImage ?: "",
-            isFound = isFound,
-            status = this.status ?: ""
-        )
-    }
 }

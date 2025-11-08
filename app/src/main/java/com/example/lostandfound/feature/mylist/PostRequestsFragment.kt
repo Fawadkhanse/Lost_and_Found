@@ -119,6 +119,7 @@ class PostRequestsFragment : BaseFragment() {
                     // Already here
                 }
                 AdminBottomNavigationHelper.Tab.PROFILE -> navigateToProfile()
+                AdminBottomNavigationHelper.Tab.CATEGORIES -> {}
             }
         }
 
@@ -164,8 +165,8 @@ class PostRequestsFragment : BaseFragment() {
                                 title = item.title,
                                 description = item.description,
                                 category = item.categoryName,
-                                date = item.lostDate,
-                                location = item.lostLocation,
+                                date = item.lostDate?:"",
+                                location = item.lostLocation?:"",
                                 imageUrl = item.itemImage,
                                 user = item.user,
                                 isVerified = item.isVerified

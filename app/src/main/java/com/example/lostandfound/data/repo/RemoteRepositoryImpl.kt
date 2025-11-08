@@ -2,13 +2,19 @@
 package com.example.lostandfound.data.repo
 
 import android.content.Context
+import android.util.Log
 import com.example.lostandfound.data.remote.ApiService
 import com.example.lostandfound.data.remote.HttpMethod
 import com.example.lostandfound.data.Resource
-import com.example.lostandfound.domain.auth.ErrorResponse
+import com.example.lostandfound.domain.ApiErrorResponse
 import com.example.lostandfound.domain.repository.RemoteRepository
 import com.example.lostandfound.utils.toPojo
+import com.example.lostandfound.utils.toPojoOrNull
 import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -24,6 +30,7 @@ class RemoteRepositoryImpl(
 ) : RemoteRepository {
 
     private val gson = Gson()
+    private val TAG ="RepoApi"
 
     override suspend fun makeApiRequest(
         requestModel: Any?,
@@ -49,23 +56,58 @@ class RemoteRepositoryImpl(
             } else {
                 val errorBody = response.errorBody()?.string() ?: ""
                 try {
-                    val errorResponse = errorBody.toPojo<com.example.lostandfound.domain.ErrorResponse>()
-                    val message = errorResponse.detail?.firstOrNull() ?: "Unknown error occurred"
+                    val errorResponse = errorBody.toPojoOrNull<ApiErrorResponse>()
+                    val message = errorResponse?.firstErrorMessage() ?: extractDynamicErrorMessage(errorBody)
+                        ?: "Unknown error occurred"
                     emit(Resource.Error(Exception(message)))
                 } catch (e: Exception) {
                     e.printStackTrace()
+                    Log.d(TAG, "makeApiRequest: ${e.message}")
                     emit(Resource.Error(Exception("Something went wrong")))
                 }
+
             }
 
         } catch (e: Exception) {
             e.printStackTrace()
+            Log.d(TAG, "makeApiRequest: ${e.message}")
             emit(Resource.Error(Exception(e.message ?: "Unexpected error")))
         }
     }.catch { e ->
         e.printStackTrace()
+        Log.d(TAG, "makeApiRequest: ${e.message}")
         emit(Resource.Error(Exception(e.message ?: "Network error")))
     }.flowOn(Dispatchers.IO)
+
+
+
+
+    fun extractDynamicErrorMessage(errorBody: String): String? {
+        return try {
+            val element: JsonElement = JsonParser.parseString(errorBody)
+            if (element.isJsonObject) {
+                val obj: JsonObject = element.asJsonObject
+
+                // Find the first key with a string or array message
+                for ((_, value) in obj.entrySet()) {
+                    when {
+                        value.isJsonArray && value.asJsonArray.size() > 0 -> {
+                            return value.asJsonArray[0].asString
+                        }
+                        value.isJsonPrimitive && value.asJsonPrimitive.isString -> {
+                            return value.asString
+                        }
+                    }
+                }
+            }
+            null
+        } catch (e: Exception) {
+            Log.d(TAG, "makeApiRequest: ${e.message}")
+            Log.d("", "extractDynamicErrorMessage: ")
+            null
+        }
+    }
+
 
     // New method for multipart requests
     override suspend fun makeMultipartRequest(
@@ -89,21 +131,24 @@ class RemoteRepositoryImpl(
                 val errorBody = response.errorBody()?.string() ?: ""
 
                 try {
-                    val errorResponse = errorBody.toPojo<com.example.lostandfound.domain.ErrorResponse>()
-                    val message = errorResponse.detail?.firstOrNull() ?: "Unknown error occurred"
+                    val errorResponse = errorBody.toPojo<ApiErrorResponse>()
+                    val message = errorResponse.firstErrorMessage() ?: "Unknown error occurred"
                     emit(Resource.Error(Exception(message)))
                 } catch (e: Exception) {
+                    Log.d(TAG, "makeApiRequest: ${e.message}")
                     e.printStackTrace()
                     emit(Resource.Error(Exception("Something went wrong")))
                 }
 
             }
         } catch (e: Exception) {
+            Log.d(TAG, "makeApiRequest: ${e.message}")
             e.printStackTrace()
             emit(Resource.Error(Exception(e.message ?: "Unexpected error")))
         }
     }.catch { e ->
         e.printStackTrace()
+        Log.d(TAG, "makeApiRequest: ${e.message}")
         emit(Resource.Error(Exception(e.message ?: "Network error")))
     }.flowOn(Dispatchers.IO)
 }

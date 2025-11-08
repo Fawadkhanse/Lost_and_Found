@@ -1,6 +1,7 @@
 package com.example.lostandfound.domain.auth
 
 import android.R
+import com.example.lostandfound.domain.item.FoundItemResponse
 import com.google.gson.annotations.SerializedName
 
 // ============================================
@@ -386,7 +387,7 @@ data class LostItemRequest(
 
 data class LostItemsListResponse(
     @SerializedName("count")
-    val count: Int,
+    val count: Int?,
 
     @SerializedName("next")
     val next: String?,
@@ -397,7 +398,14 @@ data class LostItemsListResponse(
     @SerializedName("results")
     val results: List<LostItemResponse>
 )
+data class MyItemsListResponse(
+    @SerializedName("lost_items")
+    val myLost: List<LostItemResponse>,
+    @SerializedName("found_items")
+    val myFound: List<FoundItemResponse>
 
+
+)
 data class LostItemResponse(
     @SerializedName("id")
     val id: String,
@@ -406,7 +414,7 @@ data class LostItemResponse(
     val user: String,
     @SerializedName("user_id")
 
-    val userId: String,
+    val userId: String?,
 
     @SerializedName("title")
     val title: String,
@@ -429,14 +437,32 @@ data class LostItemResponse(
     @SerializedName("material_tags")
     val materialTags: String,
 
+    // This can be null if the item is found, not lost
     @SerializedName("lost_location")
-    val lostLocation: String,
+    val lostLocation: String?=null,
+    @SerializedName("found_time")
+    val foundTime: String?=null,
 
+    @SerializedName("storage_location")
+    val storageLocation: String?=null,
+
+
+
+    // This can be null if the item is found, not lost
     @SerializedName("lost_date")
-    val lostDate: String,
+    val lostDate: String?=null,
 
+    // This will be null for lost items
+    @SerializedName("found_date")
+    val foundDate: String?=null,
+
+    // This will be null for lost items
+    @SerializedName("found_location")
+    val foundLocation: String?=null,
+
+    // This can be null if the item is found, not lost
     @SerializedName("lost_time")
-    val lostTime: String,
+    val lostTime: String?,
 
     @SerializedName("brand")
     val brand: String,
@@ -449,6 +475,9 @@ data class LostItemResponse(
 
     @SerializedName("item_image")
     val itemImage: String?,
+
+    @SerializedName("image_url")
+    val imageUrl: String?,
 
     @SerializedName("status")
     val status: String,
@@ -736,6 +765,12 @@ data class SearchMetadata(
     @SerializedName("filters_applied")
     val filtersApplied: FiltersApplied,
 
+    @SerializedName("category_details")
+    val categoryDetails: CategoryDetails?,
+
+    @SerializedName("category_exists")
+    val categoryExists: Boolean,
+
     @SerializedName("results_count")
     val resultsCount: Int,
 
@@ -754,40 +789,14 @@ data class FiltersApplied(
     val categories: String
 )
 
-
-
-data class ErrorResponse(
-    @SerializedName("search_query")
-    val searchQuery: List<String>? = null,
-
-    @SerializedName("search_type")
-    val searchType: List<String>? = null,
-
-    @SerializedName("detail")
-    val detail: String? = null,
-
-    @SerializedName("message")
-    val message: String? = null
+data class CategoryDetails(
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("description")
+    val description: String?
 )
 
-/**
- * Request model for forgot password
- */
-data class ForgotPasswordRequest(
-    @SerializedName("email")
-    val email: String
-)
 
-/**
- * Response model for forgot password
- */
-data class ForgotPasswordResponse(
-    @SerializedName("message")
-    val message: String,
-
-    @SerializedName("detail")
-    val detail: String? = null
-)
 
 /**
  * Request model for reset password (when user has reset token)

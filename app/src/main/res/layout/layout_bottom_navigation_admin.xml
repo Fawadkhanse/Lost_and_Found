@@ -20,7 +20,7 @@
         android:gravity="center"
         android:orientation="vertical"
         android:background="?attr/selectableItemBackgroundBorderless"
-        app:layout_constraintEnd_toStartOf="@id/navPostRequests"
+        app:layout_constraintEnd_toStartOf="@id/navCategories"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -43,6 +43,38 @@
             android:textStyle="bold" />
     </LinearLayout>
 
+    <!-- Categories (NEW) -->
+    <LinearLayout
+        android:id="@+id/navCategories"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:layout_constraintEnd_toStartOf="@id/navPostRequests"
+        app:layout_constraintStart_toEndOf="@id/navHome"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivCategoriesIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="Categories"
+            android:src="@drawable/ic_categery"
+            app:tint="@color/dark_gray" />
+
+        <TextView
+            android:id="@+id/tvCategoriesLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Categories"
+            android:textColor="@color/dark_gray"
+            android:textSize="11sp" />
+    </LinearLayout>
+
     <!-- Post Requests -->
     <LinearLayout
         android:id="@+id/navPostRequests"
@@ -54,7 +86,7 @@
         android:orientation="vertical"
         android:background="?attr/selectableItemBackgroundBorderless"
         app:layout_constraintEnd_toStartOf="@id/navProfile"
-        app:layout_constraintStart_toEndOf="@id/navHome"
+        app:layout_constraintStart_toEndOf="@id/navCategories"
         app:layout_constraintTop_toTopOf="parent">
 
         <FrameLayout
@@ -91,7 +123,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="@string/post_requests"
+            android:text="Requests"
             android:textColor="@color/dark_gray"
             android:textSize="11sp" />
     </LinearLayout>

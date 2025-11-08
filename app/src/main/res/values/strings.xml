@@ -204,27 +204,27 @@
     <string name="discard">Discard</string>
     <string name="keep_editing">Keep Editing</string>
 
-        <!-- Forgot Password Strings -->
-        <string name="forgot_password_title">Forgot Password</string>
-        <string name="password_reset_requested">Password Reset Requested</string>
-        <string name="password_reset_message">Password reset instructions would be sent to %s.\n\nNote: Since this is a demo, please contact your administrator to reset your password.</string>
-        <string name="sending_reset_email">Sending reset email…</string>
-        <string name="reset_email_sent">Reset email sent successfully!</string>
-        <string name="reset_email_error">Failed to send reset email: %s</string>
+    <!-- Forgot Password Strings -->
+    <string name="forgot_password_title">Forgot Password</string>
+    <string name="password_reset_requested">Password Reset Requested</string>
+    <string name="password_reset_message">Password reset instructions would be sent to %s.\n\nNote: Since this is a demo, please contact your administrator to reset your password.</string>
+    <string name="sending_reset_email">Sending reset email…</string>
+    <string name="reset_email_sent">Reset email sent successfully!</string>
+    <string name="reset_email_error">Failed to send reset email: %s</string>
 
-        <!-- Reset Password Strings -->
-        <string name="reset_password_title">Reset Password</string>
-        <string name="reset_password_subtitle">Enter your email and new password</string>
-        <string name="reset_password">Reset Password</string>
-            <string name="resetting_password">Resetting password…</string>
-        <string name="password_reset_success">Password Reset Successful</string>
-        <string name="password_reset_success_message">Your password has been reset successfully. You can now login with your new password.</string>
-        <string name="password_reset_error">Failed to reset password: %s</string>
-        <string name="invalid_reset_token">Invalid or expired reset token</string>
-        <string name="login_now">Login Now</string>
+    <!-- Reset Password Strings -->
+    <string name="reset_password_title">Reset Password</string>
+    <string name="reset_password_subtitle">Enter your email and new password</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="resetting_password">Resetting password…</string>
+    <string name="password_reset_success">Password Reset Successful</string>
+    <string name="password_reset_success_message">Your password has been reset successfully. You can now login with your new password.</string>
+    <string name="password_reset_error">Failed to reset password: %s</string>
+    <string name="invalid_reset_token">Invalid or expired reset token</string>
+    <string name="login_now">Login Now</string>
 
-        <!-- Validation Strings -->
-        <string name="confirm_password_required">Please confirm your password</string>
+    <!-- Validation Strings -->
+    <string name="confirm_password_required">Please confirm your password</string>
 
 
     <!-- Error Dialog Strings -->
@@ -271,6 +271,7 @@
     <!-- Parse Error Strings -->
     <string name="parse_error_title">Data Error</string>
     <string name="parse_error_message">Failed to process server response. Please try again.</string>
+    <string name="add_image">Add image</string>
 
 
 </resources>

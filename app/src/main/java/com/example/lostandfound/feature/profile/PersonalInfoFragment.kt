@@ -151,7 +151,7 @@ class PersonalInfoFragment : BaseFragment() {
                         hideLoading()
                         displayUserProfile(resource.data)
                         // Update AuthData
-                        AuthData.setCurrentUserResponse(resource.data)
+                      //  AuthData.setCurrentUserResponse(resource.data)
                     }
                     is Resource.Error -> {
                         hideLoading()
@@ -331,6 +331,7 @@ class PersonalInfoFragment : BaseFragment() {
             // Enable/disable fields
             etEmail.isEnabled = enabled
             etPhone.isEnabled = enabled
+            etUserId.isEnabled = enabled
 
             // User ID, Tower, Room are always disabled (read-only)
             etUserId.isEnabled = false

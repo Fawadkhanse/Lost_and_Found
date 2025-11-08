@@ -175,7 +175,7 @@ class ChatFragment : BaseFragment() {
 
     private fun observeLostItem() {
         viewLifecycleOwner.lifecycleScope.launch {
-            itemViewModel.lostItemDetailState.collect { resource ->
+            itemViewModel.itemDetailState.collect { resource ->
                 when (resource) {
                     is Resource.Success -> {
                         binding.tvItemPreviewTitle.text = resource.data.title
@@ -193,7 +193,7 @@ class ChatFragment : BaseFragment() {
 
     private fun observeFoundItem() {
         viewLifecycleOwner.lifecycleScope.launch {
-            itemViewModel.foundItemDetailState.collect { resource ->
+            itemViewModel.itemDetailState.collect { resource ->
                 when (resource) {
                     is Resource.Success -> {
                         binding.tvItemPreviewTitle.text = resource.data.title

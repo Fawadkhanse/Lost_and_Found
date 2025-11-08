@@ -189,4 +189,8 @@
         android:name="com.example.lostandfound.feature.auth.ResetPasswordFragment"
         android:label="fragment_reset_password"
         tools:layout="@layout/fragment_reset_password" />
+    <fragment
+        android:id="@+id/categoryFragment"
+        android:name="com.example.lostandfound.feature.category.CategoryFragment"
+        android:label="CategoryFragment" />
 </navigation>

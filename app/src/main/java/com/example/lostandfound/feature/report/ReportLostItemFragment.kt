@@ -75,10 +75,9 @@ class ReportLostItemFragment : BaseReportItemFragment() {
         Glide.with(requireContext())
             .load(uri)
             .centerCrop()
-            .into(binding.ivCamera)
-
-        // Hide the scan text
+            .into(binding.ivItemImage)
         binding.tvScanItem.visibility = View.GONE
+        binding.ivCamera.visibility = View.GONE
     }
 
     override fun setupCategorySpinner() {
@@ -154,4 +153,5 @@ class ReportLostItemFragment : BaseReportItemFragment() {
         super.onDestroyView()
         _binding = null
     }
+
 }

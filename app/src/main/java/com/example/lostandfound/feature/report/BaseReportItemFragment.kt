@@ -77,15 +77,49 @@ abstract class BaseReportItemFragment : BaseFragment() {
     protected abstract fun displaySelectedImage(uri: Uri)
 
     /**
-     * Create file from URI
+     * Create file from URI with compression
      */
     protected fun createFileFromUri(uri: Uri): File {
-        val inputStream = requireContext().contentResolver.openInputStream(uri)
         val file = File(requireContext().cacheDir, "item_image_${System.currentTimeMillis()}.jpg")
 
-        inputStream?.use { input ->
+        try {
+            // Load bitmap from URI
+            val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, uri)
+
+            // Calculate scaled dimensions (max 1024px on longest side)
+            val maxDimension = 1024
+            val scale = Math.min(
+                maxDimension.toFloat() / bitmap.width,
+                maxDimension.toFloat() / bitmap.height
+            )
+
+            val scaledBitmap = if (scale < 1) {
+                val newWidth = (bitmap.width * scale).toInt()
+                val newHeight = (bitmap.height * scale).toInt()
+                android.graphics.Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
+            } else {
+                bitmap
+            }
+
+            // Compress and save to file (80% quality)
             FileOutputStream(file).use { output ->
-                input.copyTo(output)
+                scaledBitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 80, output)
+            }
+
+            // Recycle bitmaps to free memory
+            if (scaledBitmap != bitmap) {
+                scaledBitmap.recycle()
+            }
+            bitmap.recycle()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // Fallback to original method if compression fails
+            val inputStream = requireContext().contentResolver.openInputStream(uri)
+            inputStream?.use { input ->
+                FileOutputStream(file).use { output ->
+                    input.copyTo(output)
+                }
             }
         }
 

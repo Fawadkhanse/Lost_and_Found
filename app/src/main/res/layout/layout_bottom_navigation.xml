@@ -6,7 +6,7 @@
     android:layout_height="56dp"
     android:background="@color/light_gray"
     android:paddingTop="8dp"
-    android:paddingBottom="8dp">
+    android:paddingBottom="5dp">
 
     <!-- Home -->
     <LinearLayout
@@ -69,9 +69,10 @@
                 android:background="@drawable/rounded_button_red"
                 android:gravity="center"
                 android:text="5"
+
                 android:textColor="@color/white"
                 android:textSize="10sp"
-                android:visibility="visible" />
+                android:visibility="gone" />
         </FrameLayout>
 
         <TextView
@@ -99,8 +100,9 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
+            app:tint="@color/dark_gray"
             android:contentDescription="My Post"
-            android:src="@drawable/ic_logo" />
+            android:src="@drawable/ic_mylist" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -127,6 +129,7 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
+            app:tint="@color/dark_gray"
             android:contentDescription="@string/account"
             android:src="@drawable/ic_account" />
 

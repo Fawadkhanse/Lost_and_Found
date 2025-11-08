@@ -8,10 +8,9 @@ import com.example.lostandfound.domain.repository.RemoteRepository
 import com.example.lostandfound.data.Resource
 import com.example.lostandfound.data.repo.RemoteRepositoryImpl
 import com.example.lostandfound.domain.VerificationResponse
-import com.example.lostandfound.domain.auth.LostItemRequest
 import com.example.lostandfound.domain.auth.LostItemResponse
 import com.example.lostandfound.domain.auth.LostItemsListResponse
-import com.example.lostandfound.domain.item.FoundItemRequest
+import com.example.lostandfound.domain.auth.MyItemsListResponse
 import com.example.lostandfound.domain.item.FoundItemResponse
 import com.example.lostandfound.domain.item.FoundItemsListResponse
 import com.example.lostandfound.feature.base.BaseViewModel
@@ -38,9 +37,11 @@ class ItemViewModel(
 
     private val _lostItemsListState = MutableStateFlow<Resource<LostItemsListResponse>>(Resource.None)
     val lostItemsListState: StateFlow<Resource<LostItemsListResponse>> = _lostItemsListState.asStateFlow()
+ private val _myItemsListState = MutableStateFlow<Resource<MyItemsListResponse>>(Resource.None)
+    val myItemsListState: StateFlow<Resource<MyItemsListResponse>> = _myItemsListState.asStateFlow()
 
-    private val _lostItemDetailState = MutableStateFlow<Resource<LostItemResponse>>(Resource.None)
-    val lostItemDetailState: StateFlow<Resource<LostItemResponse>> = _lostItemDetailState.asStateFlow()
+    private val _itemDetailState = MutableStateFlow<Resource<LostItemResponse>>(Resource.None)
+    val itemDetailState: StateFlow<Resource<LostItemResponse>> = _itemDetailState.asStateFlow()
 
     // ============================================
     // Found Items State Flows
@@ -52,8 +53,8 @@ class ItemViewModel(
     private val _foundItemsListState = MutableStateFlow<Resource<FoundItemsListResponse>>(Resource.None)
     val foundItemsListState: StateFlow<Resource<FoundItemsListResponse>> = _foundItemsListState.asStateFlow()
 
-    private val _foundItemDetailState = MutableStateFlow<Resource<FoundItemResponse>>(Resource.None)
-    val foundItemDetailState: StateFlow<Resource<FoundItemResponse>> = _foundItemDetailState.asStateFlow()
+//    private val _foundItemDetailState = MutableStateFlow<Resource<FoundItemResponse>>(Resource.None)
+//    val foundItemDetailState: StateFlow<Resource<FoundItemResponse>> = _foundItemDetailState.asStateFlow()
 
     // ============================================
     // Verification State Flows
@@ -151,6 +152,20 @@ class ItemViewModel(
             )
         }
     }
+fun getAllMYItems() {
+        viewModelScope.launch {
+            remoteRepository.makeApiRequest(
+                requestModel = null,
+                endpoint = ApiEndpoints.MY_ITEMS,
+                httpMethod = HttpMethod.GET
+            ).collectAsResource<MyItemsListResponse>(
+                onEmit = { result ->
+                    _myItemsListState.value = result
+                },
+                useMock = false
+            )
+        }
+    }
 
     /**
      * Get lost item by ID
@@ -163,7 +178,7 @@ class ItemViewModel(
                 httpMethod = HttpMethod.GET
             ).collectAsResource<LostItemResponse>(
                 onEmit = { result ->
-                    _lostItemDetailState.value = result
+                    _itemDetailState.value = result
                 },
                 useMock = false
             )
@@ -259,9 +274,9 @@ class ItemViewModel(
                 requestModel = null,
                 endpoint = ApiEndpoints.FOUND_ITEM_DETAIL.replace("{id}", id),
                 httpMethod = HttpMethod.GET
-            ).collectAsResource<FoundItemResponse>(
+            ).collectAsResource<LostItemResponse>(
                 onEmit = { result ->
-                    _foundItemDetailState.value = result
+                    _itemDetailState.value = result
                 },
                 useMock = false
             )
@@ -371,7 +386,7 @@ class ItemViewModel(
     }
 
     fun resetLostItemDetailState() {
-        _lostItemDetailState.value = Resource.None
+        _itemDetailState.value = Resource.None
     }
 
     fun resetCreateFoundItemState() {
@@ -383,7 +398,7 @@ class ItemViewModel(
     }
 
     fun resetFoundItemDetailState() {
-        _foundItemDetailState.value = Resource.None
+        _itemDetailState.value = Resource.None
     }
 
     fun resetVerifyLostItemState() {

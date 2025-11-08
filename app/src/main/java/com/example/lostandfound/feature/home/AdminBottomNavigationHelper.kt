@@ -10,13 +10,14 @@ import com.example.lostandfound.databinding.LayoutBottomNavigationAdminBinding
 /**
  * Helper class for managing Admin Bottom Navigation
  * Handles selection state and badge count
+ * Updated to include Categories tab
  */
 class AdminBottomNavigationHelper(
     private val binding: LayoutBottomNavigationAdminBinding
 ) {
 
     enum class Tab {
-        HOME, POST_REQUESTS, PROFILE
+        HOME, CATEGORIES, POST_REQUESTS, PROFILE
     }
 
     private var currentTab: Tab = Tab.HOME
@@ -34,6 +35,11 @@ class AdminBottomNavigationHelper(
         binding.navHome.setOnClickListener {
             selectTab(Tab.HOME)
             onTabSelectedListener?.invoke(Tab.HOME)
+        }
+
+        binding.navCategories.setOnClickListener {
+            selectTab(Tab.CATEGORIES)
+            onTabSelectedListener?.invoke(Tab.CATEGORIES)
         }
 
         binding.navPostRequests.setOnClickListener {
@@ -66,6 +72,12 @@ class AdminBottomNavigationHelper(
                     binding.tvHomeLabel
                 )
             }
+            Tab.CATEGORIES -> {
+                setTabSelected(
+                    binding.ivCategoriesIcon,
+                    binding.tvCategoriesLabel
+                )
+            }
             Tab.POST_REQUESTS -> {
                 setTabSelected(
                     binding.ivPostRequestsIcon,
@@ -86,6 +98,7 @@ class AdminBottomNavigationHelper(
      */
     private fun resetAllTabs() {
         setTabUnselected(binding.ivHomeIcon, binding.tvHomeLabel)
+        setTabUnselected(binding.ivCategoriesIcon, binding.tvCategoriesLabel)
         setTabUnselected(binding.ivPostRequestsIcon, binding.tvPostRequestsLabel)
         setTabUnselected(binding.ivProfileIcon, binding.tvProfileLabel)
     }

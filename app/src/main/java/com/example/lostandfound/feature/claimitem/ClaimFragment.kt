@@ -181,7 +181,7 @@ class ClaimFragment : BaseFragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            itemViewModel.foundItemDetailState.collect { resource ->
+            itemViewModel.itemDetailState.collect { resource ->
                 when (resource) {
                     is Resource.Success -> {
                         val item = resource.data

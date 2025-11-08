@@ -40,14 +40,15 @@ class ItemDetailFragment : BaseFragment() {
 
     private var itemId: String? = null
     private var itemType: ItemType = ItemType.LOST
-    private var currentLostItem: LostItemResponse? = null
+    private var currentItem: LostItemResponse? = null
     private var currentFoundItem: FoundItemResponse? = null
 
     enum class ItemType {
         LOST, FOUND
     }
-    private  val ARG_ITEM_ID = "itemId"
-    private  val ARG_ITEM_TYPE = "itemType"
+
+    private val ARG_ITEM_ID = "itemId"
+    private val ARG_ITEM_TYPE = "itemType"
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,11 +91,12 @@ class ItemDetailFragment : BaseFragment() {
         binding.btnContact.setOnClickListener {
             contactItemOwner()
         }
+
         binding.btnEdit.setOnClickListener {
             if (itemType == ItemType.LOST) {
                 navigateTo(R.id.action_addItemFragment_to_reportLostItemFragment, Bundle().apply {
                     putBoolean("isEditMode", true)
-                    putSerializable("item", currentLostItem)
+                    putSerializable("item", currentItem)
                 })
             } else {
                 navigateTo(
@@ -104,27 +106,25 @@ class ItemDetailFragment : BaseFragment() {
                         putSerializable("item", currentFoundItem)
                     })
             }
-
         }
 
         binding.btnDelete.setOnClickListener {
             ApiErrorDialog.showCustom(
                 context = requireContext(),
-                title = "Error",
-                isCancelable = true,
+                title = "Info",
+                isCancelable = false,
                 message = "Are you sure you want to delete this item?",
                 showRetry = true,
                 onAction = {},
                 onOkAction = {
-                    if (itemType==ItemType.LOST){
-                        itemViewModel.deleteLostItem(itemId?:"")
-                    }else{
-                        itemViewModel.deleteFoundItem(itemId?:"")
+                    if (itemType == ItemType.LOST) {
+                        itemViewModel.deleteLostItem(itemId ?: "")
+                    } else {
+                        itemViewModel.deleteFoundItem(itemId ?: "")
                     }
                 }
             )
         }
-
     }
 
 
@@ -136,20 +136,56 @@ class ItemDetailFragment : BaseFragment() {
             }
         } ?: run {
             showError("Item ID not found")
-            // requireActivity().onBackPressedDispatcher.onBackPressed()
         }
     }
 
     private fun observeViewModels() {
-        // Observe Lost Item Detail
+        // Observe Item Detail (works for both Lost and Found)
         viewLifecycleOwner.lifecycleScope.launch {
-            itemViewModel.lostItemDetailState.collect { resource ->
+            itemViewModel.itemDetailState.collect { resource ->
                 when (resource) {
                     is Resource.Loading -> showLoading("Loading item details...")
                     is Resource.Success -> {
                         hideLoading()
-                        currentLostItem = resource.data
-                        displayLostItemData(resource.data)
+                        when (itemType) {
+                            ItemType.LOST -> {
+                                currentItem = resource.data
+                                displayItemData(item = resource.data)
+                            }
+                            ItemType.FOUND -> {
+                                // For found items, store in currentFoundItem but display using same method
+                                currentItem = resource.data
+                                // Convert to FoundItemResponse if needed for navigation
+                                currentFoundItem = FoundItemResponse(
+                                    id = resource.data.id,
+                                    user = resource.data.user,
+                                    title = resource.data.title,
+                                    description = resource.data.description,
+                                    category = resource.data.category,
+                                    categoryName = resource.data.categoryName,
+                                    searchTags = resource.data.searchTags,
+                                    colorTags = resource.data.colorTags,
+                                    materialTags = resource.data.materialTags,
+                                    foundLocation = resource.data.foundLocation ?: "",
+                                    foundDate = resource.data.foundDate ?: "",
+                                    foundTime = resource.data.foundTime ?: "",
+                                    brand = resource.data.brand,
+                                    color = resource.data.color,
+                                    size = resource.data.size,
+                                    itemImage = resource.data.itemImage,
+                                    imageUrl = resource.data.imageUrl,
+                                    status = resource.data.status,
+                                    isVerified = resource.data.isVerified,
+                                    createdAt = resource.data.createdAt,
+                                    updatedAt = resource.data.updatedAt,
+                                    searchTagsList = resource.data.searchTagsList,
+                                    colorTagsList = resource.data.colorTagsList,
+                                    materialTagsList = resource.data.materialTagsList,
+                                    storageLocation = resource.data.storageLocation ?: ""
+                                )
+                                displayItemData(item = resource.data)
+                            }
+                        }
                     }
                     is Resource.Error -> {
                         hideLoading()
@@ -160,19 +196,38 @@ class ItemDetailFragment : BaseFragment() {
             }
         }
 
-        // Observe Found Item Detail
+        // Observe Delete Lost Item
         viewLifecycleOwner.lifecycleScope.launch {
-            itemViewModel.foundItemDetailState.collect { resource ->
+            itemViewModel.rejectLostItemState.collect { resource ->
                 when (resource) {
-                    is Resource.Loading -> showLoading("Loading item details...")
+                    is Resource.Loading -> showLoading("Deleting item...")
                     is Resource.Success -> {
                         hideLoading()
-                        currentFoundItem = resource.data
-                        displayFoundItemData(resource.data)
+                        showSuccess("Item deleted successfully")
+                        findNavController().popBackStack()
                     }
                     is Resource.Error -> {
                         hideLoading()
-                        showError("Failed to load item: ${resource.exception.message}")
+                        showError("Failed to delete item: ${resource.exception.message}")
+                    }
+                    Resource.None -> hideLoading()
+                }
+            }
+        }
+
+        // Observe Delete Found Item
+        viewLifecycleOwner.lifecycleScope.launch {
+            itemViewModel.rejectFoundItemState.collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> showLoading("Deleting item...")
+                    is Resource.Success -> {
+                        hideLoading()
+                        showSuccess("Item deleted successfully")
+                        findNavController().popBackStack()
+                    }
+                    is Resource.Error -> {
+                        hideLoading()
+                        showError("Failed to delete item: ${resource.exception.message}")
                     }
                     Resource.None -> hideLoading()
                 }
@@ -201,42 +256,72 @@ class ItemDetailFragment : BaseFragment() {
         }
     }
 
-    private fun displayLostItemData(item: LostItemResponse) {
+    /**
+     * Unified method to display item data for both Lost and Found items
+     * Handles common fields and type-specific differences
+     */
+    private fun displayItemData(item: LostItemResponse) {
         binding.apply {
-            // Set title
-            if (item.userId == AuthData.userDetailInfo?.id) {
-                btnClaimItem.visibility = View.GONE
-                layoutMypost.visibility = View.VISIBLE
-            } else {
-                layoutMypost.visibility = View.GONE
-                btnClaimItem.visibility = View.VISIBLE
-            }
+            // Determine if this is a found item based on the presence of found-specific fields
+            val isFoundItem = !item.foundDate.isNullOrEmpty() || !item.foundLocation.isNullOrEmpty()
 
-            // Item information
+            // Determine if current user owns this item
+            val isOwnItem = item.user.contains(AuthData.userDetailInfo?.username ?: "")
+
+            // Common item information
             tvItemName.text = item.title
             tvCategory.text = item.categoryName
-            tvDateValue.text = formatDate(item.lostDate)
-            tvTimeValue.text = item.lostTime
-            tvLocationValue.text = item.lostLocation
             tvDescription.text = item.description
 
-            // Additional details
-            if (item.brand.isNotEmpty()) {
+            // Date, Time, and Location (different field names for lost vs found)
+            if (isFoundItem) {
+                tvDateValue.text = formatDate(item.foundDate ?: "")
+                tvTimeValue.text = item.foundTime ?: ""
+                tvLocationValue.text = item.foundLocation ?: ""
+            } else {
+                tvDateValue.text = formatDate(item.lostDate ?: "")
+                tvTimeValue.text = item.lostTime ?: ""
+                tvLocationValue.text = item.lostLocation ?: ""
+            }
+
+            // Storage location (only for found items)
+            if (isFoundItem && !item.storageLocation.isNullOrEmpty()) {
+                tvStorageLocationLabel.visibility = View.VISIBLE
+                tvStorageLocationValue.visibility = View.VISIBLE
+                tvStorageLocationValue.text = item.storageLocation
+            } else {
+                tvStorageLocationLabel.visibility = View.GONE
+                tvStorageLocationValue.visibility = View.GONE
+            }
+
+            // Optional details: Brand
+            if (!item.brand.isNullOrEmpty()) {
                 tvBrandLabel.visibility = View.VISIBLE
                 tvBrandValue.visibility = View.VISIBLE
                 tvBrandValue.text = item.brand
+            } else {
+                tvBrandLabel.visibility = View.GONE
+                tvBrandValue.visibility = View.GONE
             }
 
-            if (item.color.isNotEmpty()) {
+            // Optional details: Color
+            if (!item.color.isNullOrEmpty()) {
                 tvColorLabel.visibility = View.VISIBLE
                 tvColorValue.visibility = View.VISIBLE
                 tvColorValue.text = item.color
+            } else {
+                tvColorLabel.visibility = View.GONE
+                tvColorValue.visibility = View.GONE
             }
 
-            if (item.size.isNotEmpty()) {
+            // Optional details: Size
+            if (!item.size.isNullOrEmpty()) {
                 tvSizeLabel.visibility = View.VISIBLE
                 tvSizeValue.visibility = View.VISIBLE
                 tvSizeValue.text = item.size
+            } else {
+                tvSizeLabel.visibility = View.GONE
+                tvSizeValue.visibility = View.GONE
             }
 
             // Status badge
@@ -248,79 +333,14 @@ class ItemDetailFragment : BaseFragment() {
                 tvTagsLabel.visibility = View.VISIBLE
                 tvTagsValue.visibility = View.VISIBLE
                 tvTagsValue.text = item.searchTagsList.joinToString(", ")
-            }
-
-            // Load image
-            if (!item.itemImage.isNullOrEmpty()) {
-                Glide.with(requireContext())
-                    .load(item.itemImage)
-                    .placeholder(R.drawable.ic_placeholder)
-                    .error(R.drawable.ic_placeholder)
-                    .centerCrop()
-                    .into(ivItemImage)
-            }
-
-            // Button visibility for lost items
-            btnClaimItem.visibility = View.GONE
-            btnViewClaims.visibility = if (AuthData.userDetailInfo?.userType == "admin") {
-                View.VISIBLE
             } else {
-                View.GONE
-            }
-            btnContact.visibility = View.GONE
-        }
-    }
-
-    private fun displayFoundItemData(item: FoundItemResponse) {
-        binding.apply {
-            // Set title
-            //tvTitle.text = "Found Item Details"
-
-            // Item information
-            tvItemName.text = item.title
-            tvCategory.text = item.categoryName
-            tvDateValue.text = formatDate(item.foundDate)
-            tvTimeValue.text = item.foundTime
-            tvLocationValue.text = item.foundLocation
-            tvDescription.text = item.description
-
-            // Storage location
-            tvStorageLocationLabel.visibility = View.VISIBLE
-            tvStorageLocationValue.visibility = View.VISIBLE
-            tvStorageLocationValue.text = item.storageLocation
-
-            // Additional details
-            if (item.brand.isNotEmpty()) {
-                tvBrandLabel.visibility = View.VISIBLE
-                tvBrandValue.visibility = View.VISIBLE
-                tvBrandValue.text = item.brand
+                tvTagsLabel.visibility = View.GONE
+                tvTagsValue.visibility = View.GONE
             }
 
-            if (item.color.isNotEmpty()) {
-                tvColorLabel.visibility = View.VISIBLE
-                tvColorValue.visibility = View.VISIBLE
-                tvColorValue.text = item.color
-            }
-
-            if (item.size.isNotEmpty()) {
-                tvSizeLabel.visibility = View.VISIBLE
-                tvSizeValue.visibility = View.VISIBLE
-                tvSizeValue.text = item.size
-            }
-
-            // Status badge
-            tvStatus.text = item.status.uppercase()
-            updateStatusBadge(item.status)
-
-            // Tags
-            if (item.searchTagsList.isNotEmpty()) {
-                tvTagsLabel.visibility = View.VISIBLE
-                tvTagsValue.visibility = View.VISIBLE
-                tvTagsValue.text = item.searchTagsList.joinToString(", ")
-            }
-
-            // Load image
+            // Load item image
             val imageUrl = item.imageUrl ?: item.itemImage
+
             if (!imageUrl.isNullOrEmpty()) {
                 Glide.with(requireContext())
                     .load(imageUrl)
@@ -330,10 +350,46 @@ class ItemDetailFragment : BaseFragment() {
                     .into(ivItemImage)
             }
 
-            // Button visibility for found items
-            btnClaimItem.visibility = if (item.status == "found") View.VISIBLE else View.GONE
-            btnViewClaims.visibility = View.GONE
-            btnContact.visibility = View.GONE
+            // Button visibility logic
+            if (isFoundItem) {
+                // Found item buttons
+                if (isOwnItem) {
+                    // Owner of found item
+                    layoutMypost.visibility = View.VISIBLE
+                    btnClaimItem.visibility = View.GONE
+                } else {
+                    // Not the owner - can claim if status is "found"
+                    layoutMypost.visibility = View.GONE
+                    btnClaimItem.visibility = if (item.status.equals("found", ignoreCase = true)) {
+                        View.VISIBLE
+                    } else {
+                        View.GONE
+                    }
+                }
+
+                btnViewClaims.visibility = View.GONE
+                btnContact.visibility = if (!isOwnItem) View.VISIBLE else View.GONE
+
+            } else {
+                // Lost item buttons
+                if (isOwnItem) {
+                    // Owner of lost item
+                    btnClaimItem.visibility = View.GONE
+                    layoutMypost.visibility = View.VISIBLE
+                } else {
+                    // Not the owner - show contact button
+                    layoutMypost.visibility = View.GONE
+                    btnClaimItem.visibility = View.GONE
+                }
+
+                btnViewClaims.visibility = if (AuthData.userDetailInfo?.userType == "admin") {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
+
+                btnContact.visibility = if (!isOwnItem) View.VISIBLE else View.GONE
+            }
         }
     }
 
@@ -370,7 +426,16 @@ class ItemDetailFragment : BaseFragment() {
                 putString("foundItemImage", item.imageUrl ?: item.itemImage)
             }
             navigateTo(R.id.action_itemDetailFragment_to_claimFragment, bundle)
-
+        } ?: run {
+            // Fallback if currentFoundItem is null
+            currentItem?.let { item ->
+                val bundle = Bundle().apply {
+                    putString("foundItemId", item.id)
+                    putString("foundItemTitle", item.title)
+                    putString("foundItemImage", item.imageUrl ?: item.itemImage)
+                }
+                navigateTo(R.id.action_itemDetailFragment_to_claimFragment, bundle)
+            }
         }
     }
 
@@ -384,19 +449,12 @@ class ItemDetailFragment : BaseFragment() {
      */
     private fun contactItemOwner() {
         // Get item details for the message
-        val itemTitle = when (itemType) {
-            ItemType.LOST -> currentLostItem?.title
-            ItemType.FOUND -> currentFoundItem?.title
-        } ?: "Item"
-
-        val itemId = when (itemType) {
-            ItemType.LOST -> currentLostItem?.id
-            ItemType.FOUND -> currentFoundItem?.id
-        }
+        val itemTitle = currentItem?.title ?: "Item"
+        val itemId = currentItem?.id
 
         val itemTypeStr = when (itemType) {
-            ItemType.LOST -> "item_lost"
-            ItemType.FOUND -> "item_found"
+            ItemType.LOST -> "lost_item"
+            ItemType.FOUND -> "found_item"
         }
 
         // Open send message dialog
@@ -422,5 +480,4 @@ class ItemDetailFragment : BaseFragment() {
         super.onDestroyView()
         _binding = null
     }
-
 }

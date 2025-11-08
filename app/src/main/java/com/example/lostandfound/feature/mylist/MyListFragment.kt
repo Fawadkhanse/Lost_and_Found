@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
- * MyListFragment - FIXED VERSION
+ * MyListFragment - Using MyItems observer
  * Displays user's claims and posts with proper list synchronization
  */
 class MyListFragment : BaseFragment() {
@@ -36,8 +36,7 @@ class MyListFragment : BaseFragment() {
 
     // Track loading states
     private var areClaimsLoaded = false
-    private var areLostItemsLoaded = false
-    private var areFoundItemsLoaded = false
+    private var areMyItemsLoaded = false
 
     enum class Tab {
         CLAIMS, POSTS
@@ -76,15 +75,10 @@ class MyListFragment : BaseFragment() {
         binding.rvItems.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = myListAdapter
-           // setHasFixedSize(true)
         }
     }
 
     private fun setupListeners() {
-//        binding.btnBack.setOnClickListener {
-//            requireActivity().onBackPressedDispatcher.onBackPressed()
-//        }
-
         binding.btnClaims.setOnClickListener {
             selectTab(Tab.CLAIMS)
         }
@@ -132,9 +126,9 @@ class MyListFragment : BaseFragment() {
             }
         }
 
-        // Observe Lost Items
+        // Observe My Items (both lost and found)
         viewLifecycleOwner.lifecycleScope.launch {
-            itemViewModel.lostItemsListState.collect { resource ->
+            itemViewModel.myItemsListState.collect { resource ->
                 when (resource) {
                     is Resource.Loading -> {
                         if (currentTab == Tab.POSTS) {
@@ -142,16 +136,47 @@ class MyListFragment : BaseFragment() {
                         }
                     }
                     is Resource.Success -> {
-                        areLostItemsLoaded = true
+                        hideLoading()
+                        areMyItemsLoaded = true
 
                         if (currentTab == Tab.POSTS) {
-                            updatePostsList()
+                            val allPosts = mutableListOf<MyListItem>()
+
+                            // Add lost items
+                            val lostItems = resource.data.myLost.map { item ->
+                                MyListItem(
+                                    id = item.id,
+                                    title = item.title,
+                                    status = item.status.replaceFirstChar { it.uppercase() },
+                                    imageUrl = item.imageUrl ?: item.itemImage,
+                                    type = ItemType.LOST_POST,
+                                    createdAt = item.createdAt
+                                )
+                            }
+                            allPosts.addAll(lostItems)
+
+                            // Add found items
+                            val foundItems = resource.data.myFound.map { item ->
+                                MyListItem(
+                                    id = item.id,
+                                    title = item.title,
+                                    status = item.status.replaceFirstChar { it.uppercase() },
+                                    imageUrl = item.imageUrl ?: item.itemImage,
+                                    type = ItemType.FOUND_POST,
+                                    createdAt = item.createdAt
+                                )
+                            }
+                            allPosts.addAll(foundItems)
+
+                            // Sort by creation date (newest first)
+                            allPosts.sortByDescending { it.createdAt }
+                            updateList(allPosts)
                         }
                     }
                     is Resource.Error -> {
                         hideLoading()
-                        areLostItemsLoaded = true
-                        showError("Failed to load lost items: ${resource.exception.message}")
+                        areMyItemsLoaded = true
+                        showError("Failed to load posts: ${resource.exception.message}")
                     }
                     Resource.None -> {
                         // Initial state
@@ -159,79 +184,6 @@ class MyListFragment : BaseFragment() {
                 }
             }
         }
-
-        // Observe Found Items
-        viewLifecycleOwner.lifecycleScope.launch {
-            itemViewModel.foundItemsListState.collect { resource ->
-                when (resource) {
-                    is Resource.Loading -> {
-                        // Already showing loading from lost items
-                    }
-                    is Resource.Success -> {
-                        areFoundItemsLoaded = true
-
-                        if (currentTab == Tab.POSTS) {
-                            updatePostsList()
-                        }
-                    }
-                    is Resource.Error -> {
-                        hideLoading()
-                        areFoundItemsLoaded = true
-                        // Error already handled in lost items observer
-                    }
-                    Resource.None -> {
-                        // Initial state
-                    }
-                }
-            }
-        }
-    }
-
-    private fun updatePostsList() {
-        // Only update when both lost and found items are loaded
-        if (!areLostItemsLoaded || !areFoundItemsLoaded) {
-            return
-        }
-
-        hideLoading()
-
-        val allPosts = mutableListOf<MyListItem>()
-
-        // Get lost items
-        val lostItemsState = itemViewModel.lostItemsListState.value
-        if (lostItemsState is Resource.Success) {
-            val lostItems = lostItemsState.data.results.map { item ->
-                MyListItem(
-                    id = item.id,
-                    title = item.title,
-                    status = item.status.replaceFirstChar { it.uppercase() },
-                    imageUrl = item.itemImage,
-                    type = ItemType.LOST_POST,
-                    createdAt = item.createdAt
-                )
-            }
-            allPosts.addAll(lostItems)
-        }
-
-        // Get found items
-        val foundItemsState = itemViewModel.foundItemsListState.value
-        if (foundItemsState is Resource.Success) {
-            val foundItems = foundItemsState.data.results.map { item ->
-                MyListItem(
-                    id = item.id,
-                    title = item.title,
-                    status = item.status.replaceFirstChar { it.uppercase() },
-                    imageUrl = item.imageUrl ?: item.itemImage,
-                    type = ItemType.FOUND_POST,
-                    createdAt = item.createdAt
-                )
-            }
-            allPosts.addAll(foundItems)
-        }
-
-        // Sort by creation date (newest first)
-        allPosts.sortByDescending { it.createdAt }
-        updateList(allPosts)
     }
 
     private fun selectTab(tab: Tab) {
@@ -239,8 +191,7 @@ class MyListFragment : BaseFragment() {
 
         // Reset loading states
         areClaimsLoaded = false
-        areLostItemsLoaded = false
-        areFoundItemsLoaded = false
+        areMyItemsLoaded = false
 
         when (tab) {
             Tab.CLAIMS -> {
@@ -283,9 +234,8 @@ class MyListFragment : BaseFragment() {
     }
 
     private fun loadPosts() {
-        // Load both lost and found items
-        itemViewModel.getAllLostItems()
-        itemViewModel.getAllFoundItems()
+        // Load both lost and found items in one call
+        itemViewModel.getAllMYItems()
     }
 
     private fun updateList(items: List<MyListItem>) {

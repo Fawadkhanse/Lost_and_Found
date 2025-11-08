@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
         R.id.claimFragment,
         R.id.chatFragment,
         R.id.reportLostItemFragment,
+        R.id.categoryFragment,
         R.id.reportFoundItemFragment
     )
 
@@ -44,7 +45,8 @@ class MainActivity : AppCompatActivity() {
     private val adminBottomBarFragments = setOf(
         R.id.adminHomeFragment,
         R.id.postRequestsFragment,
-        R.id.personalInfoFragment
+        R.id.personalInfoFragment,
+        R.id.categoryFragment
     )
 
     // Fragment titles
@@ -60,7 +62,8 @@ class MainActivity : AppCompatActivity() {
         R.id.claimFragment to "Claim Item",
         R.id.chatFragment to "Chat",
         R.id.reportLostItemFragment to "Report Lost Item",
-        R.id.reportFoundItemFragment to "Report Found Item"
+        R.id.reportFoundItemFragment to "Report Found Item",
+        R.id.categoryFragment to "Add Categories"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -145,6 +148,11 @@ class MainActivity : AppCompatActivity() {
                 AdminBottomNavigationHelper.Tab.HOME -> {
                     if (navController.currentDestination?.id != R.id.adminHomeFragment) {
                         navController.navigate(R.id.adminHomeFragment)
+                    }
+                }
+                AdminBottomNavigationHelper.Tab.CATEGORIES -> {
+                    if (navController.currentDestination?.id != R.id.categoryFragment) {
+                        navController.navigate(R.id.categoryFragment)
                     }
                 }
                 AdminBottomNavigationHelper.Tab.POST_REQUESTS -> {
